@@ -1,0 +1,76 @@
+{
+  "placeholderImages": [
+    {
+      "id": "avatar1",
+      "description": "User avatar 1",
+      "imageUrl": "https://images.unsplash.com/photo-1540569014015-19a7be504e3a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjQ1Nzk3MzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "avatar2",
+      "description": "User avatar 2",
+      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3b21hbiUyMHNtaWxpbmd8ZW58MHx8fHwxNzY0NTMyNTY2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman smiling"
+    },
+    {
+      "id": "avatar3",
+      "description": "User avatar 3",
+      "imageUrl": "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYW4lMjBnbGFzc2VzfGVufDB8fHx8MTc2NDU5NTQ4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man glasses"
+    },
+    {
+      "id": "avatar4",
+      "description": "User avatar 4",
+      "imageUrl": "https://images.unsplash.com/photo-1484863137850-59afcfe05386?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwZXJzb24lMjBzbWlsaW5nfGVufDB8fHx8MTc2NDU2OTgzMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person smiling"
+    },
+    {
+      "id": "tool-drill",
+      "description": "A power drill",
+      "imageUrl": "https://images.unsplash.com/photo-1689935421853-cb23a0bc92e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwb3dlciUyMGRyaWxsfGVufDB8fHx8MTc2NDUxMDc5Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "power drill"
+    },
+    {
+      "id": "tool-ladder",
+      "description": "A stepladder",
+      "imageUrl": "https://images.unsplash.com/photo-1644505021881-50f71b50c7d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxzdGVwbGFkZGVyfGVufDB8fHx8MTc2NDYyMTQzNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "stepladder"
+    },
+    {
+      "id": "tool-lawnmower",
+      "description": "A lawnmower",
+      "imageUrl": "https://images.unsplash.com/photo-1629335493470-f22db7852d39?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bGF3biUyMG1vd2VyfGVufDB8fHx8MTc2NDYyMTQzNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "lawn mower"
+    },
+    {
+      "id": "tool-pressure-washer",
+      "description": "A pressure washer",
+      "imageUrl": "https://images.unsplash.com/photo-1589484771154-d663e839d0be?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwcmVzc3VyZSUyMHdhc2hlcnxlbnwwfHx8fDE3NjQ1MzYzMDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pressure washer"
+    },
+    {
+      "id": "service-gardening",
+      "description": "Gardening services",
+      "imageUrl": "https://images.unsplash.com/photo-1611735341450-74d61e660ad2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxnYXJkZW5pbmd8ZW58MHx8fHwxNzY0NjIxNDM0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "gardening"
+    },
+    {
+      "id": "service-tutoring",
+      "description": "Tutoring services",
+      "imageUrl": "https://images.unsplash.com/photo-1621356986575-05811227a42e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0dXRvcmluZyUyMHN0dWR5fGVufDB8fHx8MTc2NDYyMTQzNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "tutoring study"
+    },
+    {
+      "id": "service-plumbing",
+      "description": "Plumbing services",
+      "imageUrl": "https://images.unsplash.com/photo-1746721437832-bcf682d2addc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwbHVtYmluZyUyMHBpcGVzfGVufDB8fHx8MTc2NDYyMTQzNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "plumbing pipes"
+    },
+    {
+      "id": "service-dogwalking",
+      "description": "Dog walking services",
+      "imageUrl": "https://images.unsplash.com/photo-1542483451-80037cfba5e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkb2clMjB3YWxrfGVufDB8fHx8MTc2NDU1OTU2M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dog walk"
+    }
+  ]
+}
