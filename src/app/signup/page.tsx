@@ -32,7 +32,6 @@ export default function SignupPage() {
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
-    // This effect will run whenever the form values or errors change
     validateForm();
   }, [firstname, lastname, username, email, password, confirmPassword, phoneNumber, location, errors]);
 
@@ -55,16 +54,14 @@ export default function SignupPage() {
   };
 
   const validateForm = () => {
-    const isEmailValid = errors.email === undefined;
-    const isPhoneValid = errors.phoneNumber === undefined;
+    const isEmailValid = errors.email === undefined && email.length > 0;
+    const isPhoneValid = errors.phoneNumber === undefined && phoneNumber.length > 0;
     const allFieldsFilled =
       firstname &&
       lastname &&
       username &&
-      email &&
       password &&
       confirmPassword &&
-      phoneNumber &&
       location;
 
     setIsFormValid(isEmailValid && isPhoneValid && !!allFieldsFilled);
@@ -135,10 +132,10 @@ export default function SignupPage() {
 
       toast({
         title: "Registration Successful",
-        description: "You can now sign in with your new account.",
+        description: "Please check your email to verify your account.",
       });
 
-      router.push('/');
+      router.push(`/verify-otp?identifier=${email}`);
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast({
