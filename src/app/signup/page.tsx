@@ -11,250 +11,244 @@ import { Label } from "@/components/ui/label";
 import AppLogo from "@/components/app-logo";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Eye, EyeOff } from "lucide-react";
 
 const LocationPicker = dynamic(
   () => import('@/components/shared/location-picker'),
   { ssr: false, loading: () => <Skeleton className="h-full w-full" /> }
 );
 
-type FormState = {
-  firstname: string;
-  lastname: string;
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  phoneNumber: string;
-  location: { lat: number; lng: number } | null;
-};
-
-type FormErrors = {
-  [K in keyof FormState]?: string | null;
-};
-
-
 export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [formState, setFormState] = useState<FormState>({
-    firstname: '',
-    lastname: '',
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phoneNumber: '',
-    location: null,
-  });
-
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [errors, setErrors] = useState<{ email?: string; phoneNumber?: string; }>({});
   const [isFormValid, setIsFormValid] = useState(false);
 
-  const validateAllFields = (currentFormState: FormState) => {
-    const newErrors: FormErrors = {};
-    let allValid = true;
+  useEffect(() => {
+    validateForm();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [firstname, lastname, username, email, password, confirmPassword, phoneNumber, location, errors]);
 
-    // Required field check for all fields
-    (Object.keys(currentFormState) as Array<keyof FormState>).forEach((key) => {
-        if (!currentFormState[key]) {
-            newErrors[key] = 'This field is required.';
-            allValid = false;
-        }
-    });
-
-    // Email validation
+  const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (currentFormState.email && !emailRegex.test(currentFormState.email)) {
-        newErrors.email = "Please enter a valid email address.";
-        allValid = false;
-    }
-
-    // Phone number validation
-    const phoneRegex = /^\d{10,15}$/;
-    if (currentFormState.phoneNumber && !phoneRegex.test(String(currentFormState.phoneNumber).replace(/\D/g, ''))) {
-        newErrors.phoneNumber = "Please enter a valid phone number (10-15 digits).";
-        allValid = false;
-    }
-
-    // Password length
-    if (currentFormState.password && currentFormState.password.length < 8) {
-        newErrors.password = "Password must be at least 8 characters long.";
-        allValid = false;
-    }
-
-    // Password confirmation
-    if (currentFormState.password && currentFormState.confirmPassword && currentFormState.password !== currentFormState.confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match.";
-        allValid = false;
-    }
-    
-    setErrors(newErrors);
-    
-    const allFieldsFilled = Object.values(currentFormState).every(value => value !== '' && value !== null);
-    const finalValidity = allValid && allFieldsFilled;
-    setIsFormValid(finalValidity);
-    return finalValidity;
-  };
-
-  const validateField = (name: keyof FormState, value: any, currentState: FormState) => {
-    let error: string | null = null;
-    if (!value) {
-      error = "This field is required.";
+    if (!emailRegex.test(email)) {
+      setErrors(prev => ({ ...prev, email: 'Please enter a valid email address.' }));
     } else {
-        switch (name) {
-            case 'email':
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(value)) {
-                    error = "Please enter a valid email address.";
-                }
-                break;
-            case 'phoneNumber':
-                const phoneRegex = /^\d{10,15}$/;
-                if (!phoneRegex.test(String(value).replace(/\D/g, ''))) {
-                    error = "Please enter a valid phone number (10-15 digits).";
-                }
-                break;
-            case 'password':
-                if (value.length < 8) {
-                    error = "Password must be at least 8 characters long.";
-                }
-                break;
-            case 'confirmPassword':
-                if (value !== currentState.password) {
-                    error = "Passwords do not match.";
-                }
-                break;
-            default:
-                break;
-        }
+      setErrors(prev => ({ ...prev, email: undefined }));
     }
-    
-    const newErrors = { ...errors, [name]: error };
-
-    if (name === 'password' && currentState.confirmPassword) {
-        if (value !== currentState.confirmPassword) {
-            newErrors.confirmPassword = "Passwords do not match.";
-        } else {
-            newErrors.confirmPassword = null;
-        }
-    }
-    setErrors(newErrors);
-    
-    // Check overall form validity after any field changes
-    const checkFormValidity = (state: FormState, currentErrors: FormErrors) => {
-        const hasErrors = Object.values(currentErrors).some(e => e !== null);
-        const allFieldsFilled = Object.values(state).every(v => v !== '' && v !== null);
-        setIsFormValid(!hasErrors && allFieldsFilled);
-    }
-    checkFormValidity(currentState, newErrors);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target as { id: keyof FormState; value: string };
-    const newFormState = { ...formState, [id]: value };
-    setFormState(newFormState);
-    validateField(id, value, newFormState);
-  };
-  
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const { id, value } = e.target as { id: keyof FormState; value: string };
-    validateField(id, value, formState);
+  const validatePhoneNumber = (phone: string) => {
+    const phoneRegex = /^\d{10,15}$/; // Simple regex for 10-15 digits
+    if (!phoneRegex.test(phone.replace(/[-()\s]/g, ''))) {
+      setErrors(prev => ({ ...prev, phoneNumber: 'Please enter a valid phone number (10-15 digits).' }));
+    } else {
+      setErrors(prev => ({ ...prev, phoneNumber: undefined }));
+    }
   };
 
-  const handleLocationChange = (location: { lat: number; lng: number } | null) => {
-    const newFormState = { ...formState, location };
-    setFormState(newFormState);
-    validateField('location', location, newFormState);
-  }
+  const validateForm = () => {
+    const isEmailValid = errors.email === undefined && email.length > 0;
+    const isPhoneValid = errors.phoneNumber === undefined && phoneNumber.length > 0;
+    const allFieldsFilled =
+      firstname &&
+      lastname &&
+      username &&
+      password &&
+      confirmPassword &&
+      location;
+
+    setIsFormValid(isEmailValid && isPhoneValid && !!allFieldsFilled);
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    validateEmail(newEmail);
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPhone = e.target.value;
+    setPhoneNumber(newPhone);
+    validatePhoneNumber(newPhone);
+  };
+
 
   const handleSignUp = async () => {
-    const isValid = validateAllFields(formState);
+    if (!isFormValid) {
+        toast({
+            variant: "destructive",
+            title: "Registration Failed",
+            description: "Please fill out all fields correctly.",
+        });
+        return;
+    }
 
-    if (!isValid) {
+    if (password !== confirmPassword) {
       toast({
         variant: "destructive",
         title: "Registration Failed",
-        description: "Please correct the errors before submitting.",
+        description: "Passwords do not match.",
       });
       return;
     }
 
-    // Replace this with your actual sign-up logic
-    console.log("Form submitted:", formState);
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl) {
+      toast({
+        variant: "destructive",
+        title: "Configuration Error",
+        description: "The backend URL is not configured. Please contact support.",
+      });
+      return;
+    }
 
-    toast({
+    try {
+      const response = await fetch(`${backendUrl}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username,
+          firstname,
+          lastname,
+          email,
+          password,
+          phoneNumber,
+          location
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'An unknown error occurred during registration.');
+      }
+
+      toast({
         title: "Registration Successful",
-        description: "You can now sign in with your new account.",
-    });
+        description: "Please check your email to verify your account.",
+      });
 
-    router.push('/');
+      router.push(`/verify-otp?identifier=${email}`);
+    } catch (error: any) {
+      console.error("Sign up error:", error);
+      toast({
+        variant: "destructive",
+        title: "Registration Failed",
+        description: error.message || "An unexpected error occurred.",
+      });
+    }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
-      <Card className="w-full mx-auto">
+      <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <AppLogo />
           </div>
           <CardTitle className="text-2xl font-headline">Join the Nexus</CardTitle>
           <CardDescription>Create an account to start sharing with your neighbors.</CardDescription>
+          <p className="text-sm text-muted-foreground pt-2">All fields are required.</p>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="firstname">First Name</Label>
-                <Input id="firstname" required value={formState.firstname} onChange={handleChange} onBlur={handleBlur} />
-                {errors.firstname && <p className="text-xs text-destructive">{errors.firstname}</p>}
+                <Label htmlFor="first-name">First Name</Label>
+                <Input id="first-name" required value={firstname} onChange={(e) => setFirstname(e.target.value)} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="lastname">Last Name</Label>
-                <Input id="lastname" required value={formState.lastname} onChange={handleChange} onBlur={handleBlur} />
-                {errors.lastname && <p className="text-xs text-destructive">{errors.lastname}</p>}
+                <Label htmlFor="last-name">Last Name</Label>
+                <Input id="last-name" required value={lastname} onChange={(e) => setLastname(e.target.value)} />
               </div>
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="username">Username</Label>
-              <Input id="username" required value={formState.username} onChange={handleChange} onBlur={handleBlur} />
-              {errors.username && <p className="text-xs text-destructive">{errors.username}</p>}
+              <Input id="username" required value={username} onChange={(e) => setUsername(e.target.value)} />
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" required value={formState.email} onChange={handleChange} onBlur={handleBlur} />
-              {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+              <Input id="email" type="email" required value={email} onChange={handleEmailChange} />
+              {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="phoneNumber">Phone Number</Label>
-              <Input id="phoneNumber" type="tel" required value={formState.phoneNumber} onChange={handleChange} onBlur={handleBlur} />
-              {errors.phoneNumber && <p className="text-xs text-destructive">{errors.phoneNumber}</p>}
+              <Label htmlFor="phone-number">Phone Number (Do not include country code)</Label>
+              <Input id="phone-number" type="tel" required value={phoneNumber} onChange={handlePhoneChange} />
+              {errors.phoneNumber && <p className="text-sm text-destructive">{errors.phoneNumber}</p>}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required value={formState.password} onChange={handleChange} onBlur={handleBlur} />
-              {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
+              <div className="relative">
+                <Input 
+                    id="password" 
+                    type={showPassword ? "text" : "password"} 
+                    required 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pr-10"
+                />
+                 <Button 
+                    type="button" 
+                    variant="ghost" 
+                    size="icon" 
+                    className="absolute inset-y-0 right-0 h-full px-3"
+                    onClick={() => setShowPassword(prev => !prev)}
+                >
+                    {showPassword ? <EyeOff /> : <Eye />}
+                    <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+                </Button>
+              </div>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input id="confirmPassword" type="password" required value={formState.confirmPassword} onChange={handleChange} onBlur={handleBlur} />
-              {errors.confirmPassword && <p className="text-xs text-destructive">{errors.confirmPassword}</p>}
+              <Label htmlFor="confirm-password">Confirm Password</Label>
+              <div className="relative">
+                <Input 
+                    id="confirm-password" 
+                    type={showConfirmPassword ? "text" : "password"} 
+                    required 
+                    value={confirmPassword} 
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="pr-10"
+                />
+                 <Button 
+                    type="button" 
+                    variant="ghost" 
+                    size="icon" 
+                    className="absolute inset-y-0 right-0 h-full px-3"
+                    onClick={() => setShowConfirmPassword(prev => !prev)}
+                >
+                    {showConfirmPassword ? <EyeOff /> : <Eye />}
+                    <span className="sr-only">{showConfirmPassword ? 'Hide password' : 'Show password'}</span>
+                </Button>
+              </div>
             </div>
 
             <div className="grid gap-2">
               <Label>Location</Label>
               <CardDescription>Search for or click on the map to set your location.</CardDescription>
               <div className="h-[400px] rounded-md overflow-hidden border relative">
-                <LocationPicker onLocationChange={handleLocationChange} />
+                <LocationPicker onLocationChange={setLocation} />
               </div>
-              {errors.location && <p className="text-xs text-destructive">{errors.location}</p>}
-              {formState.location && (
+
+              {location && (
                 <p className="text-xs text-muted-foreground">
-                  Selected: Lat {formState.location.lat.toFixed(4)}, Lng {formState.location.lng.toFixed(4)}
+                  Selected: Lat {location.lat.toFixed(4)}, Lng {location.lng.toFixed(4)}
                 </p>
               )}
             </div>
