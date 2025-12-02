@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import StarRating from "@/components/shared/star-rating";
-import { Verified } from "lucide-react";
+import { Verified, MapPin } from "lucide-react";
 import AuthenticatedImage from "@/components/shared/authenticated-image";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -27,6 +27,10 @@ type UserProfile = {
         isVerified: boolean;
         rating_avg: string;
         createdAt: string;
+        geo_location: {
+            type: string;
+            coordinates: [number, number];
+        }
     };
     profile: {
         id: string;
@@ -73,8 +77,11 @@ export default function ProfilePage() {
       }
     };
 
-    fetchProfile();
-  }, [authUser, api, toast]);
+    if (authUser) {
+      fetchProfile();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authUser, api]);
 
   if (isLoading || !profileData) {
     return (
@@ -86,6 +93,7 @@ export default function ProfilePage() {
                   <Skeleton className="h-8 w-40 mb-2" />
                   <Skeleton className="h-5 w-24 mb-3" />
                   <Skeleton className="h-6 w-20 mb-4" />
+                  <Skeleton className="h-4 w-full px-4 mb-2" />
                   <Skeleton className="h-4 w-48" />
               </CardContent>
           </Card>
@@ -119,6 +127,10 @@ export default function ProfilePage() {
                     <Label>Your Address</Label>
                     <Skeleton className="h-10 w-full" />
                 </div>
+                <div className="space-y-2">
+                    <Label>Geo Location</Label>
+                    <Skeleton className="h-10 w-full" />
+                </div>
                 <Separator />
                  <div className="space-y-2">
                     <Label>Current Password</Label>
@@ -139,6 +151,7 @@ export default function ProfilePage() {
   const { user, profile } = profileData;
   const rating = parseFloat(user.rating_avg);
   const fullName = `${user.firstname} ${user.lastname}`;
+  const coordinates = user.geo_location?.coordinates ? `[${user.geo_location.coordinates.join(', ')}]` : 'Not available';
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">
@@ -163,7 +176,7 @@ export default function ProfilePage() {
                     )}
                 </div>
                  <p className="text-muted-foreground mt-4 italic">"{profile.bio}"</p>
-                <p className="text-muted-foreground mt-4">Member since {new Date(user.createdAt).toLocaleDateString()}</p>
+                <p className="text-muted-foreground mt-4 text-sm">Member since {new Date(user.createdAt).toLocaleDateString()}</p>
             </CardContent>
         </Card>
       </div>
@@ -195,6 +208,13 @@ export default function ProfilePage() {
             <div className="space-y-2">
                 <Label htmlFor="address">Your Address</Label>
                 <Input id="address" defaultValue={profile.address} />
+            </div>
+             <div className="space-y-2">
+                <Label htmlFor="geolocation">Geo Location (Coordinates)</Label>
+                <div className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5 text-muted-foreground" />
+                    <Input id="geolocation" defaultValue={coordinates} readOnly />
+                </div>
             </div>
             <Separator />
             <div className="space-y-2">
