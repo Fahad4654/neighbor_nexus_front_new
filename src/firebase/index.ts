@@ -2,43 +2,41 @@
 
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore'
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore'
 
-// IMPORTANT: DO NOT MODIFY THIS FUNCTION
+let firebaseApp: FirebaseApp;
+let auth: Auth;
+let firestore: Firestore;
+
+// This function initializes Firebase and returns the SDK instances.
+// It's safe to call this multiple times, as it will only initialize once.
 export function initializeFirebase() {
-  if (getApps().length) {
-    return getSdks(getApp());
+  if (!getApps().length) {
+    if (!firebaseConfig.apiKey) {
+      throw new Error("Firebase configuration is not available. Please check your environment variables and src/firebase/config.ts.");
+    }
+    firebaseApp = initializeApp(firebaseConfig);
+    auth = getAuth(firebaseApp);
+    firestore = getFirestore(firebaseApp);
+  } else {
+    firebaseApp = getApp();
+    auth = getAuth(firebaseApp);
+    firestore = getFirestore(firebaseApp);
   }
-  
-  // When deployed to App Hosting, process.env.FIREBASE_CONFIG is automatically populated
-  // and is the recommended way to initialize.
-  if (process.env.FIREBASE_CONFIG) {
-      try {
-        const firebaseConfigFromEnv = JSON.parse(process.env.FIREBASE_CONFIG);
-        return getSdks(initializeApp(firebaseConfigFromEnv));
-      } catch (e) {
-        console.error("Failed to parse FIREBASE_CONFIG", e);
-      }
-  }
-  
-  // For local development, fall back to using the manually provided config
-  // from src/firebase/config.ts which uses NEXT_PUBLIC_ variables.
-  // This is also a valid way to initialize, but FIREBASE_CONFIG is preferred for App Hosting.
-  if (firebaseConfig.apiKey) {
-    return getSdks(initializeApp(firebaseConfig));
-  }
-
-  // If neither are available, we can't initialize.
-  throw new Error("Firebase configuration is not available. Please check your environment variables.");
+  return { firebaseApp, auth, firestore };
 }
 
 
-export function getSdks(firebaseApp: FirebaseApp) {
+export function getSdks() {
+  // This ensures Firebase is initialized before we try to get the SDKs
+  if (!firebaseApp) {
+    initializeFirebase();
+  }
   return {
     firebaseApp,
-    auth: getAuth(firebaseApp),
-    firestore: getFirestore(firebaseApp)
+    auth,
+    firestore,
   };
 }
 
