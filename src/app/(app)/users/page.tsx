@@ -7,6 +7,7 @@ import { users } from "@/lib/data";
 import { MoreHorizontal, CheckCircle, XCircle } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import AuthenticatedImage from "@/components/shared/authenticated-image";
 
 export default function UsersPage() {
   return (
@@ -44,7 +45,7 @@ export default function UsersPage() {
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar>
-                          <AvatarImage src={user.avatarUrl} alt={user.name} />
+                          <AuthenticatedImage src={user.avatarUrl} alt={user.name} className="aspect-square h-full w-full" />
                           <AvatarFallback>{user.firstname.charAt(0)}{user.lastname.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="font-medium">{user.username}</div>

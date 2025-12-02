@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { users } from "@/lib/data";
 import { Users, Wrench } from "lucide-react";
+import AuthenticatedImage from "@/components/shared/authenticated-image";
 
 const nexusUsers = users.filter(u => u.nexus === 'Oakwood');
 
@@ -47,7 +48,7 @@ export default function NexusPage() {
             {nexusUsers.map(user => (
               <div key={user.id} className="flex items-center gap-4">
                 <Avatar>
-                  <AvatarImage src={user.avatarUrl} />
+                  <AuthenticatedImage src={user.avatarUrl} alt={user.name} className="aspect-square h-full w-full" />
                   <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>

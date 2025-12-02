@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import AppHeader from '@/components/app-header';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
+import AuthenticatedImage from '@/components/shared/authenticated-image';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -125,7 +126,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {user && (
             <div className="flex items-center gap-2 p-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={user.profile?.avatarUrl} />
+                <AuthenticatedImage src={user.profile?.avatarUrl} alt={user.firstname} className="aspect-square h-full w-full" />
                 <AvatarFallback>{getInitials(user.firstname, user.lastname)}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-sm text-sidebar-foreground">

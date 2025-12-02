@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import StarRating from "@/components/shared/star-rating";
 import { users } from "@/lib/data";
 import { Verified } from "lucide-react";
+import AuthenticatedImage from "@/components/shared/authenticated-image";
 
 export default function ProfilePage() {
   const user = users[0]; // Using Alice as the sample user
@@ -18,7 +19,7 @@ export default function ProfilePage() {
         <Card>
             <CardContent className="pt-6 flex flex-col items-center text-center">
                 <Avatar className="h-24 w-24 mb-4">
-                    <AvatarImage src={user.avatarUrl} />
+                    <AuthenticatedImage src={user.avatarUrl} alt={user.name} className="aspect-square h-full w-full" />
                     <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                 </Avatar>
                 <CardTitle className="text-2xl font-headline">{user.name}</CardTitle>

@@ -1,16 +1,17 @@
 'use client';
 
 import React, { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { getUserById, User } from "@/lib/data";
+import { getUserById } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { Search, Send, MessageCircle } from "lucide-react";
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking } from "@/firebase";
 import { collection, query, orderBy, serverTimestamp } from "firebase/firestore";
+import AuthenticatedImage from "@/components/shared/authenticated-image";
 
 function ConversationList({ onSelectConversation, selectedConversationId }: { onSelectConversation: (id: string | null) => void; selectedConversationId: string | null; }) {
     const { user } = useUser();
@@ -48,7 +49,7 @@ function ConversationList({ onSelectConversation, selectedConversationId }: { on
                                 convo.id === selectedConversationId ? "bg-accent text-accent-foreground" : "hover:bg-muted"
                             )}>
                                 <Avatar>
-                                    <AvatarImage src={otherParticipant?.avatarUrl} />
+                                    <AuthenticatedImage src={otherParticipant?.avatarUrl} alt={otherParticipant?.name || ''} className="aspect-square h-full w-full" />
                                     <AvatarFallback>{otherParticipant?.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1 truncate">
@@ -114,7 +115,7 @@ function ChatWindow({ conversationId }: { conversationId: string | null }) {
         <Card className="h-full flex flex-col">
             <div className="p-4 border-b flex items-center gap-3">
                  <Avatar>
-                    <AvatarImage src={otherParticipant?.avatarUrl} />
+                    <AuthenticatedImage src={otherParticipant?.avatarUrl} alt={otherParticipant?.name || ''} className="aspect-square h-full w-full" />
                     <AvatarFallback>{otherParticipant?.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <h2 className="text-xl font-bold">{otherParticipant?.name}</h2>
