@@ -140,10 +140,13 @@ export default function SignupPage() {
     }
     setErrors(newErrors);
     
-    // Check overall form validity
-    const hasErrors = Object.values(newErrors).some(e => e !== null);
-    const allFieldsFilled = Object.values(currentState).every(v => v !== '' && v !== null);
-    setIsFormValid(!hasErrors && allFieldsFilled);
+    // Check overall form validity after any field changes
+    const checkFormValidity = (state: FormState, currentErrors: FormErrors) => {
+        const hasErrors = Object.values(currentErrors).some(e => e !== null);
+        const allFieldsFilled = Object.values(state).every(v => v !== '' && v !== null);
+        setIsFormValid(!hasErrors && allFieldsFilled);
+    }
+    checkFormValidity(currentState, newErrors);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
