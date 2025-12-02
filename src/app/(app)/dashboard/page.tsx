@@ -1,3 +1,5 @@
+'use client';
+
 import { StatCard } from "@/components/dashboard/stat-card";
 import { TransactionChart } from "@/components/dashboard/transaction-chart";
 import { PenetrationChart } from "@/components/dashboard/penetration-chart";
@@ -5,14 +7,19 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { users, listings, transactions } from "@/lib/data";
+import { useAuth } from "@/hooks/use-auth";
 
 import { Activity, Users, DollarSign, Ratio } from "lucide-react";
 
 export default function DashboardPage() {
     const recentTransactions = transactions.slice(0, 5);
+    const { user } = useAuth();
 
   return (
     <div className="flex-1 space-y-4">
+      {user && (
+        <h1 className="text-2xl font-bold">Welcome back, {user.firstname}!</h1>
+      )}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard 
             title="Activation Rate"

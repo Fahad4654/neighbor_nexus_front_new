@@ -27,9 +27,28 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import AppHeader from '@/components/app-header';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  }
+
+  const getInitials = (firstname: string | undefined, lastname: string | undefined) => {
+    if (firstname && lastname) {
+      return `${firstname.charAt(0)}${lastname.charAt(0)}`;
+    }
+    if (firstname) {
+        return firstname.charAt(0);
+    }
+    return 'U';
+  };
 
   return (
     <SidebarProvider>
@@ -103,21 +122,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-          <div className="flex items-center gap-2 p-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="https://picsum.photos/seed/avatar1/100/100" />
-              <AvatarFallback>AJ</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col text-sm text-sidebar-foreground">
-              <span className="font-semibold">Alice Johnson</span>
-              <span className="text-xs">alice@example.com</span>
+          {user && (
+            <div className="flex items-center gap-2 p-2">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={user.profile?.avatarUrl} />
+                <AvatarFallback>{getInitials(user.firstname, user.lastname)}</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col text-sm text-sidebar-foreground">
+                <span className="font-semibold">{user.firstname} {user.lastname}</span>
+                <span className="text-xs">{user.email}</span>
+              </div>
+              <Button onClick={handleLogout} variant="ghost" size="icon" className="ml-auto text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+                  <LogOut />
+              </Button>
             </div>
-            <Button asChild variant="ghost" size="icon" className="ml-auto text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-                <Link href="/">
-                    <LogOut />
-                </Link>
-            </Button>
-          </div>
+          )}
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
