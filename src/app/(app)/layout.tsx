@@ -93,14 +93,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === '/chat'}>
-                <Link href="/chat">
-                  <MessageCircle />
-                  Chat
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
               <SidebarMenuButton asChild isActive={pathname === '/users'}>
                 <Link href="/users">
                   <Users />
