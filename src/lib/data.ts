@@ -56,6 +56,20 @@ export type Review = {
   date: string;
 };
 
+export type Message = {
+    id: string;
+    conversationId: string;
+    senderId: string;
+    content: string;
+    timestamp: string;
+};
+
+export type Conversation = {
+    id: string;
+    participantIds: string[];
+    lastMessage: Message;
+};
+
 export const users: User[] = [
   { id: 'u1', username: 'ajohnson', firstname: 'Alice', lastname: 'Johnson', email: 'alice@example.com', phoneNumber: '123-456-7890', avatarUrl: findImage('avatar1')?.imageUrl ?? '', dataAiHint: findImage('avatar1')?.imageHint ?? '', isAdmin: true, isVerified: true, rating_avg: 4.8, geo_location: 'Oakwood', createdAt: '2023-01-15', name: 'Alice Johnson', joinDate: '2023-01-15', nexus: 'Oakwood', rating: 4.8 },
   { id: 'u2', username: 'bwilliams', firstname: 'Bob', lastname: 'Williams', email: 'bob@example.com', phoneNumber: '234-567-8901', avatarUrl: findImage('avatar2')?.imageUrl ?? '', dataAiHint: findImage('avatar2')?.imageHint ?? '', isAdmin: false, isVerified: true, rating_avg: 4.5, geo_location: 'Maple Creek', createdAt: '2023-02-20', name: 'Bob Williams', joinDate: '2023-02-20', nexus: 'Maple Creek', rating: 4.5 },
@@ -87,6 +101,24 @@ export const reviews: Review[] = [
   { id: 'r5', listingId: 'l3', reviewerId: 'u2', rating: 4, comment: 'The ladder was a bit wobbly but got the job done.', date: '2023-05-22' },
 ];
 
+const messages: Message[] = [
+    { id: 'm1', conversationId: 'c1', senderId: 'u2', content: 'Hey! Is the drill still available for this weekend?', timestamp: '2023-06-28T10:00:00Z' },
+    { id: 'm2', conversationId: 'c1', senderId: 'u1', content: 'Hi Bob, yes it is!', timestamp: '2023-06-28T10:05:00Z' },
+    { id: 'm3', conversationId: 'c1', senderId: 'u2', content: 'Great, I\'ll send a request.', timestamp: '2023-06-28T10:06:00Z' },
+    { id: 'm4', conversationId: 'c2', senderId: 'u3', content: 'I\'m interested in the pressure washer. Is the price negotiable?', timestamp: '2023-06-27T14:00:00Z' },
+    { id: 'm5', conversationId: 'c3', senderId: 'u4', content: 'Your profile says you are in Willow Heights, could you tutor my son at our home?', timestamp: '2023-06-26T18:30:00Z' },
+];
+
+
+export const conversations: Conversation[] = [
+    { id: 'c1', participantIds: ['u1', 'u2'], lastMessage: messages[2] },
+    { id: 'c2', participantIds: ['u1', 'u3'], lastMessage: messages[3] },
+    { id: 'c3', participantIds: ['u1', 'u4'], lastMessage: messages[4] },
+];
+
+
 export const getListingById = (id: string) => listings.find(l => l.id === id);
 export const getUserById = (id: string) => users.find(u => u.id === id);
 export const getReviewsByListingId = (id: string) => reviews.filter(r => r.listingId === id);
+export const getConversationsForUser = (userId: string) => conversations.filter(c => c.participantIds.includes(userId));
+export const getMessagesForConversation = (conversationId: string) => messages.filter(m => m.conversationId === conversationId);
