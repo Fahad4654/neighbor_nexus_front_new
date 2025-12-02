@@ -31,6 +31,7 @@ export default function LocationPicker({ onLocationChange }: LocationPickerProps
     const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
+        // This now runs only once, preventing re-renders from HMR in dev
         setIsClient(true);
     }, []);
 
@@ -50,7 +51,7 @@ export default function LocationPicker({ onLocationChange }: LocationPickerProps
 
   return (
     <MapContainer 
-      key={isClient ? 'leaflet-map-client' : 'leaflet-map-server'}
+      key="leaflet-map-client"
       center={displayPosition} 
       zoom={position ? 13 : 5} 
       scrollWheelZoom={false} 
