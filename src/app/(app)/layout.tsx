@@ -20,7 +20,6 @@ import {
   User,
   LogOut,
   History,
-  MessageSquare,
 } from "lucide-react";
 import AppLogo from "@/components/app-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -82,14 +81,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <Link href="/history">
                   <History />
                   History
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === '/chat'}>
-                <Link href="/chat">
-                  <MessageSquare />
-                  Chat
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
