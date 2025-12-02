@@ -102,13 +102,21 @@ export default function ProfilePage() {
                         <Label htmlFor="fullName">Full Name</Label>
                         <Skeleton className="h-10 w-full" />
                     </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="username">Username</Label>
+                        <Skeleton className="h-10 w-full" />
+                    </div>
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
                         <Skeleton className="h-10 w-full" />
                     </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="phone">Phone Number</Label>
+                        <Skeleton className="h-10 w-full" />
+                    </div>
                 </div>
                  <div className="space-y-2">
-                    <Label>Your Nexus</Label>
+                    <Label>Your Address</Label>
                     <Skeleton className="h-10 w-full" />
                 </div>
                 <Separator />
@@ -154,6 +162,7 @@ export default function ProfilePage() {
                         </Badge>
                     )}
                 </div>
+                 <p className="text-muted-foreground mt-4 italic">"{profile.bio}"</p>
                 <p className="text-muted-foreground mt-4">Member since {new Date(user.createdAt).toLocaleDateString()}</p>
             </CardContent>
         </Card>
@@ -171,13 +180,21 @@ export default function ProfilePage() {
                     <Input id="fullName" defaultValue={fullName} />
                 </div>
                 <div className="space-y-2">
+                    <Label htmlFor="username">Username</Label>
+                    <Input id="username" defaultValue={user.username} />
+                </div>
+                <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input id="email" type="email" defaultValue={user.email} />
                 </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input id="phone" type="tel" defaultValue={user.phoneNumber} />
+                </div>
             </div>
             <div className="space-y-2">
-                <Label htmlFor="nexus">Your Address</Label>
-                <Input id="nexus" defaultValue={profile.address} />
+                <Label htmlFor="address">Your Address</Label>
+                <Input id="address" defaultValue={profile.address} />
             </div>
             <Separator />
             <div className="space-y-2">
