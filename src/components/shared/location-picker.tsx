@@ -1,72 +1,65 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import React, { useState, useEffect } from 'react';
+import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// Fix for default icon issue with Webpack
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-});
+const containerStyle = {
+  width: '100%',
+  height: '100%',
+};
 
+const defaultCenter = {
+  lat: 51.505,
+  lng: -0.09,
+};
 
 interface LocationPickerProps {
-    onLocationChange: (location: { lat: number; lng: number }) => void;
+  onLocationChange: (location: { lat: number; lng: number } | null) => void;
 }
-
-function MapEvents({ onMapClick }: { onMapClick: (e: L.LeafletMouseEvent) => void }) {
-  useMapEvents({
-    click: onMapClick,
-  });
-  return null;
-}
-
-const defaultPosition = { lat: 51.505, lng: -0.09 };
 
 export default function LocationPicker({ onLocationChange }: LocationPickerProps) {
-    const [position, setPosition] = useState<L.LatLng | null>(null);
-    const [isClient, setIsClient] = useState(false);
+  const [position, setPosition] = useState<{ lat: number; lng: number } | null>(defaultCenter);
 
-    useEffect(() => {
-        setIsClient(true);
-        // On initial mount, set the default position and inform the parent
-        onLocationChange(defaultPosition);
-    }, [onLocationChange]);
+  const { isLoaded, loadError } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY || '',
+  });
 
-    const handleMapClick = (e: L.LeafletMouseEvent) => {
-        const newPos = e.latlng;
-        setPosition(newPos);
-        onLocationChange({ lat: newPos.lat, lng: newPos.lng });
-    };
+  useEffect(() => {
+    // Pass the default location up on initial load
+    if (defaultCenter) {
+      onLocationChange(defaultCenter);
+    }
+  }, [onLocationChange]);
 
-    const displayPosition = useMemo(() => {
-        return position ? position : new L.LatLng(defaultPosition.lat, defaultPosition.lng) // Use default if no position is set
-    }, [position]);
+  const handleMapClick = (event: google.maps.MapMouseEvent) => {
+    if (event.latLng) {
+      const newPosition = {
+        lat: event.latLng.lat(),
+        lng: event.latLng.lng(),
+      };
+      setPosition(newPosition);
+      onLocationChange(newPosition);
+    }
+  };
 
+  if (loadError) {
+    return <div>Error loading maps. Please check the API key.</div>;
+  }
 
-  if (!isClient) {
+  if (!isLoaded) {
     return <Skeleton className="h-full w-full" />;
   }
 
   return (
-    <MapContainer 
-      key="leaflet-map-client"
-      center={displayPosition} 
-      zoom={position ? 13 : 5} 
-      scrollWheelZoom={false} 
-      style={{ height: '100%', width: '100%' }}
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={position || defaultCenter}
+      zoom={position ? 13 : 5}
+      onClick={handleMapClick}
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <MapEvents onMapClick={handleMapClick} />
-      <Marker position={displayPosition}></Marker>
-    </MapContainer>
+      {position && <Marker position={position} />}
+    </GoogleMap>
   );
 }

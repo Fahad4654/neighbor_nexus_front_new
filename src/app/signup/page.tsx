@@ -12,11 +12,10 @@ import AppLogo from "@/components/app-logo";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Dynamically import the LocationPicker component to ensure it's only client-side rendered
-const LocationPicker = dynamic(() => import('@/components/shared/location-picker'), { 
-    ssr: false,
-    loading: () => <Skeleton className="h-[200px] w-full" />
-});
+const LocationPicker = dynamic(
+  () => import('@/components/shared/location-picker'),
+  { ssr: false, loading: () => <Skeleton className="h-[200px] w-full" /> }
+);
 
 export default function SignupPage() {
   const router = useRouter();
@@ -50,42 +49,39 @@ export default function SignupPage() {
     }
 
     try {
-        const response = await fetch(`${backendUrl}/auth/register`, {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ 
-                username,
-                firstname,
-                lastname,
-                email,
-                password,
-                phoneNumber,
-                location
-            }),
-        });
+      const response = await fetch(`${backendUrl}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username,
+          firstname,
+          lastname,
+          email,
+          password,
+          phoneNumber,
+          location
+        }),
+      });
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.message || 'An unknown error occurred during registration.');
-        }
+      if (!response.ok) {
+        throw new Error(data.message || 'An unknown error occurred during registration.');
+      }
 
-        toast({
-            title: "Registration Successful",
-            description: "You can now sign in with your new account.",
-        });
+      toast({
+        title: "Registration Successful",
+        description: "You can now sign in with your new account.",
+      });
 
-        router.push('/');
-
+      router.push('/');
     } catch (error: any) {
-        console.error("Sign up error:", error);
-        toast({
-            variant: "destructive",
-            title: "Registration Failed",
-            description: error.message || "An unexpected error occurred.",
-        });
+      console.error("Sign up error:", error);
+      toast({
+        variant: "destructive",
+        title: "Registration Failed",
+        description: error.message || "An unexpected error occurred.",
+      });
     }
   };
 
@@ -102,50 +98,58 @@ export default function SignupPage() {
         <CardContent>
           <div className="grid gap-4">
             <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                    <Label htmlFor="first-name">First Name</Label>
-                    <Input id="first-name" placeholder="John" required value={firstname} onChange={(e) => setFirstname(e.target.value)} />
-                </div>
-                <div className="grid gap-2">
-                    <Label htmlFor="last-name">Last Name</Label>
-                    <Input id="last-name" placeholder="Doe" required value={lastname} onChange={(e) => setLastname(e.target.value)} />
-                </div>
+              <div className="grid gap-2">
+                <Label htmlFor="first-name">First Name</Label>
+                <Input id="first-name" required value={firstname} onChange={(e) => setFirstname(e.target.value)} />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="last-name">Last Name</Label>
+                <Input id="last-name" required value={lastname} onChange={(e) => setLastname(e.target.value)} />
+              </div>
             </div>
-             <div className="grid gap-2">
+
+            <div className="grid gap-2">
               <Label htmlFor="username">Username</Label>
-              <Input id="username" placeholder="johndoe" required value={username} onChange={(e) => setUsername(e.target.value)} />
+              <Input id="username" required value={username} onChange={(e) => setUsername(e.target.value)} />
             </div>
+
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
+
             <div className="grid gap-2">
               <Label htmlFor="phone-number">Phone Number</Label>
-              <Input id="phone-number" type="tel" placeholder="01234567890" required value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+              <Input id="phone-number" type="tel" required value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
             </div>
+
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
 
             <div className="grid gap-2">
-                <Label>Location</Label>
-                <CardDescription>Click on the map to set your location.</CardDescription>
-                <div className="h-[200px] rounded-md overflow-hidden border">
-                    <LocationPicker onLocationChange={setLocation} />
-                </div>
-                 {location && <p className="text-xs text-muted-foreground">Location Selected: Lat: {location.lat.toFixed(4)}, Lng: {location.lng.toFixed(4)}</p>}
+              <Label>Location</Label>
+              <CardDescription>Select your location on the map.</CardDescription>
+              <div className="h-[200px] rounded-md overflow-hidden border">
+                <LocationPicker onLocationChange={setLocation} />
+              </div>
+
+              {location && (
+                <p className="text-xs text-muted-foreground">
+                  Selected: Lat {location.lat.toFixed(4)}, Lng {location.lng.toFixed(4)}
+                </p>
+              )}
             </div>
 
-            <Button onClick={handleSignUp} type="submit" className="w-full">
+            <Button onClick={handleSignUp} className="w-full">
               Create Account
             </Button>
           </div>
+
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
-            <Link href="/" className="underline">
-              Sign in
-            </Link>
+            <Link href="/" className="underline">Sign in</Link>
           </div>
         </CardContent>
       </Card>
