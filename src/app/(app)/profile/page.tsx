@@ -131,16 +131,6 @@ export default function ProfilePage() {
                     <Label>Geo Location</Label>
                     <Skeleton className="h-10 w-full" />
                 </div>
-                <Separator />
-                 <div className="space-y-2">
-                    <Label>Current Password</Label>
-                    <Skeleton className="h-10 w-full" />
-                </div>
-                 <div className="space-y-2">
-                    <Label>New Password</Label>
-                    <Skeleton className="h-10 w-full" />
-                </div>
-                <Button disabled>Update Profile</Button>
             </CardContent>
           </Card>
         </div>
@@ -216,16 +206,6 @@ export default function ProfilePage() {
                     <Input id="geolocation" defaultValue={coordinates} readOnly />
                 </div>
             </div>
-            <Separator />
-            <div className="space-y-2">
-                <Label htmlFor="current-password">Current Password</Label>
-                <Input id="current-password" type="password" />
-            </div>
-            <div className="space-y-2">
-                <Label htmlFor="new-password">New Password</Label>
-                <Input id="new-password" type="password" />
-            </div>
-            <Button>Update Profile</Button>
           </CardContent>
         </Card>
       </div>
