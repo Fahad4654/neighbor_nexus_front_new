@@ -6,10 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import AppLogo from "@/components/app-logo";
-import { useAuth, initiateEmailSignIn } from '@/firebase';
+import { useAuth } from '@/firebase';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function LoginPage() {
   const auth = useAuth();
@@ -18,7 +19,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const { toast } = useToast();
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
     if (!email || !password) {
       toast({
         variant: "destructive",
@@ -27,8 +28,17 @@ export default function LoginPage() {
       });
       return;
     }
-    initiateEmailSignIn(auth, email, password);
-    router.push('/dashboard');
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push('/dashboard');
+    } catch (error: any) {
+      console.error("Sign in error:", error);
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: error.message || "An unexpected error occurred.",
+      });
+    }
   };
 
   return (
