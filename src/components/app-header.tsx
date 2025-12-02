@@ -1,10 +1,11 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Bell } from 'lucide-react';
+import { Search, Bell, MessageSquare } from 'lucide-react';
 
 export default function AppHeader() {
   const pathname = usePathname();
@@ -25,6 +26,12 @@ export default function AppHeader() {
         )}
       </div>
       <div className="flex-1" />
+      <Button asChild variant="ghost" size="icon" className="rounded-full relative text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+        <Link href="/chat">
+          <MessageSquare className="h-8 w-8" />
+          <span className="sr-only">Chat</span>
+        </Link>
+      </Button>
       <Button variant="ghost" size="icon" className="rounded-full relative text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
         <Bell className="h-8 w-8" />
         <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
