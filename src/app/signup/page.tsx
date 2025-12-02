@@ -3,12 +3,20 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import AppLogo from "@/components/app-logo";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Dynamically import the LocationPicker component to ensure it's only client-side rendered
+const LocationPicker = dynamic(() => import('@/components/shared/location-picker'), { 
+    ssr: false,
+    loading: () => <Skeleton className="h-[200px] w-full" />
+});
 
 export default function SignupPage() {
   const router = useRouter();
@@ -19,13 +27,14 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   const handleSignUp = async () => {
-    if (!username || !firstname || !email || !password || !phoneNumber) {
+    if (!username || !firstname || !email || !password || !phoneNumber || !location) {
       toast({
         variant: "destructive",
         title: "Registration Failed",
-        description: "Please fill out all required fields.",
+        description: "Please fill out all required fields and select a location on the map.",
       });
       return;
     }
@@ -40,31 +49,7 @@ export default function SignupPage() {
       return;
     }
 
-    const getLocation = (): Promise<{ lat: number; lng: number }> => {
-        return new Promise((resolve, reject) => {
-            if (!navigator.geolocation) {
-                reject(new Error("Geolocation is not supported by your browser."));
-            } else {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        resolve({
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude,
-                        });
-                    },
-                    () => {
-                        // Default to a location if user denies permission, or handle as an error
-                        // For this example, we'll reject, but you could resolve a default.
-                        reject(new Error("Unable to retrieve your location. Please enable location services."));
-                    }
-                );
-            }
-        });
-    };
-
     try {
-        const location = await getLocation();
-
         const response = await fetch(`${backendUrl}/auth/register`, {
             method: 'POST',
             headers: {
@@ -106,7 +91,7 @@ export default function SignupPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
-      <Card className="w-full max-w-md mx-auto">
+      <Card className="w-full max-w-lg mx-auto">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <AppLogo />
@@ -142,6 +127,16 @@ export default function SignupPage() {
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
+
+            <div className="grid gap-2">
+                <Label>Location</Label>
+                <CardDescription>Click on the map to set your location.</CardDescription>
+                <div className="h-[200px] rounded-md overflow-hidden border">
+                    <LocationPicker onLocationChange={setLocation} />
+                </div>
+                 {location && <p className="text-xs text-muted-foreground">Location Selected: Lat: {location.lat.toFixed(4)}, Lng: {location.lng.toFixed(4)}</p>}
+            </div>
+
             <Button onClick={handleSignUp} type="submit" className="w-full">
               Create Account
             </Button>
