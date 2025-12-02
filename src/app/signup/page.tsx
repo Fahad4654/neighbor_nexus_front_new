@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
@@ -28,25 +28,53 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [errors, setErrors] = useState<{ email?: string }>({});
+  const [isFormValid, setIsFormValid] = useState(false);
 
-  const handleSignUp = async () => {
-    if (!firstname || !lastname || !username || !email || !password || !confirmPassword || !phoneNumber || !location) {
-      toast({
-        variant: "destructive",
-        title: "Registration Failed",
-        description: "Please fill out all required fields and select a location on the map.",
-      });
-      return;
-    }
+  useEffect(() => {
+    // This effect will run whenever the form values or errors change
+    validateForm();
+  }, [firstname, lastname, username, email, password, confirmPassword, phoneNumber, location, errors]);
 
+  const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      toast({
-        variant: "destructive",
-        title: "Registration Failed",
-        description: "Please enter a valid email address.",
-      });
-      return;
+      setErrors(prev => ({ ...prev, email: 'Please enter a valid email address.' }));
+    } else {
+      setErrors(prev => ({ ...prev, email: undefined }));
+    }
+  };
+
+  const validateForm = () => {
+    const isEmailValid = errors.email === undefined;
+    const allFieldsFilled =
+      firstname &&
+      lastname &&
+      username &&
+      email &&
+      password &&
+      confirmPassword &&
+      phoneNumber &&
+      location;
+
+    setIsFormValid(isEmailValid && !!allFieldsFilled);
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    validateEmail(newEmail);
+  };
+
+
+  const handleSignUp = async () => {
+    if (!isFormValid) {
+        toast({
+            variant: "destructive",
+            title: "Registration Failed",
+            description: "Please fill out all fields correctly.",
+        });
+        return;
     }
 
     if (password !== confirmPassword) {
@@ -136,7 +164,8 @@ export default function SignupPage() {
 
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input id="email" type="email" required value={email} onChange={handleEmailChange} />
+              {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
             </div>
 
             <div className="grid gap-2">
@@ -168,7 +197,7 @@ export default function SignupPage() {
               )}
             </div>
 
-            <Button onClick={handleSignUp} className="w-full">
+            <Button onClick={handleSignUp} className="w-full" disabled={!isFormValid}>
               Create Account
             </Button>
           </div>
