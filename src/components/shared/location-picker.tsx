@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Fix for default icon issue with Webpack
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -27,6 +28,11 @@ function MapEvents({ onMapClick }: { onMapClick: (e: L.LeafletMouseEvent) => voi
 
 export default function LocationPicker({ onLocationChange }: LocationPickerProps) {
     const [position, setPosition] = useState<L.LatLng | null>(null);
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     const handleMapClick = (e: L.LeafletMouseEvent) => {
         setPosition(e.latlng);
@@ -35,11 +41,21 @@ export default function LocationPicker({ onLocationChange }: LocationPickerProps
 
     const displayPosition = useMemo(() => {
         return position ? position : new L.LatLng(51.505, -0.09) // Default to London
-    }, [position])
+    }, [position]);
 
+
+  if (!isClient) {
+    return <Skeleton className="h-full w-full" />;
+  }
 
   return (
-    <MapContainer center={displayPosition} zoom={position ? 13 : 5} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+    <MapContainer 
+      key={isClient ? 'leaflet-map-client' : 'leaflet-map-server'}
+      center={displayPosition} 
+      zoom={position ? 13 : 5} 
+      scrollWheelZoom={false} 
+      style={{ height: '100%', width: '100%' }}
+    >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
