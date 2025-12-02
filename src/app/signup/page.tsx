@@ -30,7 +30,7 @@ export default function SignupPage() {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   const handleSignUp = async () => {
-    if (!username || !firstname || !email || !password || !phoneNumber || !location) {
+    if (!firstname || !lastname || !username || !email || !password || !confirmPassword || !phoneNumber || !location) {
       toast({
         variant: "destructive",
         title: "Registration Failed",
@@ -104,6 +104,7 @@ export default function SignupPage() {
           </div>
           <CardTitle className="text-2xl font-headline">Join the Nexus</CardTitle>
           <CardDescription>Create an account to start sharing with your neighbors.</CardDescription>
+          <p className="text-sm text-muted-foreground pt-2">All fields are required.</p>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
