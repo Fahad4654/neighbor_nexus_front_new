@@ -4,6 +4,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { GoogleMap, useJsApiLoader, Marker, Autocomplete } from '@react-google-maps/api';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { LocateFixed } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const containerStyle = {
   width: '100%',
@@ -25,6 +28,7 @@ export default function LocationPicker({ onLocationChange }: LocationPickerProps
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(defaultCenter);
   const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
+  const { toast } = useToast();
 
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -74,6 +78,44 @@ export default function LocationPicker({ onLocationChange }: LocationPickerProps
       console.log('Autocomplete is not loaded yet!');
     }
   };
+  
+  const handleMyLocationClick = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (geoPosition) => {
+          const newPosition = {
+            lat: geoPosition.coords.latitude,
+            lng: geoPosition.coords.longitude,
+          };
+          setPosition(newPosition);
+          onLocationChange(newPosition);
+
+          if (mapRef.current) {
+            mapRef.current.panTo(newPosition);
+            mapRef.current.setZoom(15);
+          }
+           toast({
+            title: "Location Found",
+            description: "Map centered on your current location.",
+          });
+        },
+        (error) => {
+           console.error("Error getting user location: ", error);
+           toast({
+            variant: "destructive",
+            title: "Location Error",
+            description: "Could not get your location. Please ensure you've granted permission.",
+          });
+        }
+      );
+    } else {
+       toast({
+        variant: "destructive",
+        title: "Location Error",
+        description: "Geolocation is not supported by your browser.",
+      });
+    }
+  };
 
   if (loadError) {
     return <div>Error loading maps. Please check the API key.</div>;
@@ -111,6 +153,16 @@ export default function LocationPicker({ onLocationChange }: LocationPickerProps
             />
           </Autocomplete>
       </div>
+      <Button
+        type="button"
+        size="icon"
+        variant="secondary"
+        className="absolute bottom-4 right-4 h-10 w-10 shadow-md"
+        onClick={handleMyLocationClick}
+      >
+        <LocateFixed className="h-5 w-5" />
+        <span className="sr-only">My Location</span>
+      </Button>
     </div>
   );
 }
