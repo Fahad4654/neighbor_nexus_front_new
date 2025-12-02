@@ -1,0 +1,94 @@
+/**
+ * Core Philosophy: This ruleset enforces a strict user-ownership model where all
+ * data is private to the user. Access is granted based on the user's unique
+ * ID (`userId`) present in the document path.
+ *
+ * Data Structure: All application data is organized under the `/users/{userId}`
+ * path. This hierarchical structure ensures that a user's inboxes and the
+ * messages within them are logically and securely grouped under their own data tree.
+ * For example: `/users/user_abc/inboxes/inbox_123/messages/msg_xyz`.
+ *
+ * Key Security Decisions:
+ * - No Public Data: All collections are private. There are no publicly readable
+ *   collections, preventing anonymous access and data leakage.
+ * - No User Listing: The rules do not allow querying the top-level `/users`
+ *   collection, making it impossible for one user to discover others.
+ * - Path-Based Security: Authorization is primarily determined by matching the
+ *   authenticated user's ID (`request.auth.uid`) with the `{userId}` wildcard
+ *   in the document path. This is fast, secure, and avoids costly lookups.
+ * - Relational Integrity: On creation, rules validate that internal ID fields
+ *   (like `userId` in an Inbox document) match the IDs in the path, ensuring
+ *   data consistency. These key relational fields are immutable after creation.
+ *
+ * Denormalization for Authorization: The data model uses a path-based ownership
+ * strategy, which is a form of denormalization. By placing all of a user's data
+ * under `/users/{userId}`, we can write simple, performant rules like
+ * `isOwner(userId)` without needing extra `get()` calls to check ownership on
+ * parent or related documents.
+ *
+ * Structural Segregation: The use of user-specific subcollections
+ * (`/users/{userId}/inboxes/...`) is a prime example of structural segregation.
+ * This pattern inherently secures a user's private data, making list operations
+ * safe and efficient as queries are naturally confined to the authenticated
+ * user's data tree.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions for improved readability and reusability.
+
+    /**
+     * Checks if the user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Validates that the requesting user's UID matches the document's owner ID
+     * from the path. This is the primary function for ownership-based security.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Ensures an operation is performed by the document owner and that the
+     * document already exists. Critical for secure update and delete operations.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Enforces that only the user who owns the data tree can access their inbox.
+     * @path /users/{userId}/inboxes/{inboxId}
+     * @allow (get) An authenticated user (uid: 'user_abc') reading their own inbox at `/users/user_abc/inboxes/inbox_123`.
+     * @deny (get) A different user (uid: 'user_xyz') attempting to read `/users/user_abc/inboxes/inbox_123`.
+     * @principle Restricts access to a user's own data tree.
+     */
+    match /users/{userId}/inboxes/{inboxId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+
+      /**
+       * @description Secures messages within an inbox, inheriting ownership from the parent path.
+       * @path /users/{userId}/inboxes/{inboxId}/messages/{messageId}
+       * @allow (list) An authenticated user (uid: 'user_abc') listing messages at `/users/user_abc/inboxes/inbox_123/messages`.
+       * @deny (create) An authenticated user (uid: 'user_abc') creating a message where the `senderId` is not them.
+       * @principle Enforces inherited document ownership and validates relational integrity on create.
+       */
+      match /messages/{messageId} {
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) && request.resource.data.senderId == request.auth.uid && request.resource.data.recipientId == userId;
+        allow update: if isExistingOwner(userId) && request.resource.data.senderId == resource.data.senderId && request.resource.data.recipientId == resource.data.recipientId;
+        allow delete: if isExistingOwner(userId);
+      }
+    }
+  }
+}
