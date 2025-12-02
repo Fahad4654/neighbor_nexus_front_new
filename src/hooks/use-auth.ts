@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { api } from '@/lib/api';
 
 type User = {
     id: string;
@@ -46,14 +47,24 @@ export const useAuth = () => {
         }
     }, []);
 
-    const logout = () => {
+    const logout = useCallback(() => {
         localStorage.removeItem('user');
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         setUser(null);
         setAccessToken(null);
         setRefreshToken(null);
-    };
+        // Redirect to login page, ensuring it runs only on the client.
+        if (typeof window !== 'undefined') {
+            window.location.href = '/';
+        }
+    }, []);
 
-    return { user, accessToken, refreshToken, isLoading, logout };
+    // Memoize the api utility to include the logout function
+    const memoizedApi = useCallback(() => {
+        return api(logout);
+    }, [logout]);
+
+
+    return { user, accessToken, refreshToken, isLoading, logout, api: memoizedApi };
 };
