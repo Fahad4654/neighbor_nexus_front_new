@@ -26,22 +26,26 @@ function MapEvents({ onMapClick }: { onMapClick: (e: L.LeafletMouseEvent) => voi
   return null;
 }
 
+const defaultPosition = { lat: 51.505, lng: -0.09 };
+
 export default function LocationPicker({ onLocationChange }: LocationPickerProps) {
     const [position, setPosition] = useState<L.LatLng | null>(null);
     const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
-        // This now runs only once, preventing re-renders from HMR in dev
         setIsClient(true);
-    }, []);
+        // On initial mount, set the default position and inform the parent
+        onLocationChange(defaultPosition);
+    }, [onLocationChange]);
 
     const handleMapClick = (e: L.LeafletMouseEvent) => {
-        setPosition(e.latlng);
-        onLocationChange({ lat: e.latlng.lat, lng: e.latlng.lng });
+        const newPos = e.latlng;
+        setPosition(newPos);
+        onLocationChange({ lat: newPos.lat, lng: newPos.lng });
     };
 
     const displayPosition = useMemo(() => {
-        return position ? position : new L.LatLng(51.505, -0.09) // Default to London
+        return position ? position : new L.LatLng(defaultPosition.lat, defaultPosition.lng) // Use default if no position is set
     }, [position]);
 
 
@@ -62,7 +66,7 @@ export default function LocationPicker({ onLocationChange }: LocationPickerProps
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <MapEvents onMapClick={handleMapClick} />
-      {position && <Marker position={position}></Marker>}
+      <Marker position={displayPosition}></Marker>
     </MapContainer>
   );
 }
