@@ -9,14 +9,24 @@ import AppLogo from "@/components/app-logo";
 import { useAuth, initiateEmailSignIn } from '@/firebase';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
   const auth = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { toast } = useToast();
 
   const handleSignIn = () => {
+    if (!email || !password) {
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Please enter both email and password.",
+      });
+      return;
+    }
     initiateEmailSignIn(auth, email, password);
     router.push('/dashboard');
   };
@@ -44,7 +54,7 @@ export default function LoginPage() {
                   Forgot your password?
                 </Link>
               </div>
-              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSignIn()} />
             </div>
             <Button onClick={handleSignIn} type="submit" className="w-full">
               Sign in
