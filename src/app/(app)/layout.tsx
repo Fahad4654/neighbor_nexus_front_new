@@ -92,14 +92,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === '/users'}>
-                <Link href="/users">
-                  <Users />
-                  Users
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            {user?.isAdmin && (
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === '/users'}>
+                  <Link href="/users">
+                    <Users />
+                    Users
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
             <SidebarMenuItem>
               <SidebarMenuButton asChild isActive={pathname.startsWith('/listings')}>
                 <Link href="/listings">
