@@ -91,6 +91,11 @@ export default function LocationPicker({ onLocationChange }: LocationPickerProps
         zoom={position ? 13 : 11}
         onClick={handleMapClick}
         onLoad={(map) => { mapRef.current = map; }}
+        options={{
+            streetViewControl: false,
+            mapTypeControl: false,
+            fullscreenControl: false,
+        }}
       >
         {position && <Marker position={position} />}
       </GoogleMap>
