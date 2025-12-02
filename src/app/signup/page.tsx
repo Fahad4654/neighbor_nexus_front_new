@@ -185,8 +185,7 @@ export default function SignupPage() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="phone-number">Phone Number</Label>
-              <CardDescription className="text-xs">Do not include country code.</CardDescription>
+              <Label htmlFor="phone-number">Phone Number (Do not include country code)</Label>
               <Input id="phone-number" type="tel" required value={phoneNumber} onChange={handlePhoneChange} />
               {errors.phoneNumber && <p className="text-sm text-destructive">{errors.phoneNumber}</p>}
             </div>
