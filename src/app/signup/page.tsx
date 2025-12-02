@@ -28,7 +28,7 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [errors, setErrors] = useState<{ email?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; phoneNumber?: string; }>({});
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
@@ -45,8 +45,18 @@ export default function SignupPage() {
     }
   };
 
+  const validatePhoneNumber = (phone: string) => {
+    const phoneRegex = /^\d{10,15}$/; // Simple regex for 10-15 digits
+    if (!phoneRegex.test(phone.replace(/[-()\s]/g, ''))) {
+      setErrors(prev => ({ ...prev, phoneNumber: 'Please enter a valid phone number (10-15 digits).' }));
+    } else {
+      setErrors(prev => ({ ...prev, phoneNumber: undefined }));
+    }
+  };
+
   const validateForm = () => {
     const isEmailValid = errors.email === undefined;
+    const isPhoneValid = errors.phoneNumber === undefined;
     const allFieldsFilled =
       firstname &&
       lastname &&
@@ -57,13 +67,19 @@ export default function SignupPage() {
       phoneNumber &&
       location;
 
-    setIsFormValid(isEmailValid && !!allFieldsFilled);
+    setIsFormValid(isEmailValid && isPhoneValid && !!allFieldsFilled);
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
     setEmail(newEmail);
     validateEmail(newEmail);
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPhone = e.target.value;
+    setPhoneNumber(newPhone);
+    validatePhoneNumber(newPhone);
   };
 
 
@@ -170,7 +186,8 @@ export default function SignupPage() {
 
             <div className="grid gap-2">
               <Label htmlFor="phone-number">Phone Number</Label>
-              <Input id="phone-number" type="tel" required value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+              <Input id="phone-number" type="tel" required value={phoneNumber} onChange={handlePhoneChange} />
+              {errors.phoneNumber && <p className="text-sm text-destructive">{errors.phoneNumber}</p>}
             </div>
 
             <div className="grid gap-2">
