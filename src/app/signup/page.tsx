@@ -50,7 +50,53 @@ export default function SignupPage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isFormValid, setIsFormValid] = useState(false);
 
-  const validateField = (name: keyof FormState, value: any) => {
+  const validateAllFields = (currentFormState: FormState) => {
+    const newErrors: FormErrors = {};
+    let allValid = true;
+
+    // Required field check for all fields
+    (Object.keys(currentFormState) as Array<keyof FormState>).forEach((key) => {
+        if (!currentFormState[key]) {
+            newErrors[key] = 'This field is required.';
+            allValid = false;
+        }
+    });
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (currentFormState.email && !emailRegex.test(currentFormState.email)) {
+        newErrors.email = "Please enter a valid email address.";
+        allValid = false;
+    }
+
+    // Phone number validation
+    const phoneRegex = /^\d{10,15}$/;
+    if (currentFormState.phoneNumber && !phoneRegex.test(String(currentFormState.phoneNumber).replace(/\D/g, ''))) {
+        newErrors.phoneNumber = "Please enter a valid phone number (10-15 digits).";
+        allValid = false;
+    }
+
+    // Password length
+    if (currentFormState.password && currentFormState.password.length < 8) {
+        newErrors.password = "Password must be at least 8 characters long.";
+        allValid = false;
+    }
+
+    // Password confirmation
+    if (currentFormState.password && currentFormState.confirmPassword && currentFormState.password !== currentFormState.confirmPassword) {
+        newErrors.confirmPassword = "Passwords do not match.";
+        allValid = false;
+    }
+    
+    setErrors(newErrors);
+    
+    const allFieldsFilled = Object.values(currentFormState).every(value => value !== '' && value !== null);
+    const finalValidity = allValid && allFieldsFilled;
+    setIsFormValid(finalValidity);
+    return finalValidity;
+  };
+
+  const validateField = (name: keyof FormState, value: any, currentState: FormState) => {
     let error: string | null = null;
     if (!value) {
       error = "This field is required.";
@@ -74,7 +120,7 @@ export default function SignupPage() {
                 }
                 break;
             case 'confirmPassword':
-                if (value !== formState.password) {
+                if (value !== currentState.password) {
                     error = "Passwords do not match.";
                 }
                 break;
@@ -83,50 +129,45 @@ export default function SignupPage() {
         }
     }
     
-    setErrors(prev => ({ ...prev, [name]: error }));
+    const newErrors = { ...errors, [name]: error };
 
-    if (name === 'password' && formState.confirmPassword) {
-        if (value !== formState.confirmPassword) {
-            setErrors(prev => ({...prev, confirmPassword: "Passwords do not match."}))
+    if (name === 'password' && currentState.confirmPassword) {
+        if (value !== currentState.confirmPassword) {
+            newErrors.confirmPassword = "Passwords do not match.";
         } else {
-            setErrors(prev => ({...prev, confirmPassword: null}))
+            newErrors.confirmPassword = null;
         }
     }
+    setErrors(newErrors);
+    
+    // Check overall form validity
+    const hasErrors = Object.values(newErrors).some(e => e !== null);
+    const allFieldsFilled = Object.values(currentState).every(v => v !== '' && v !== null);
+    setIsFormValid(!hasErrors && allFieldsFilled);
   };
-  
-  useEffect(() => {
-    const validateForm = () => {
-        const hasErrors = Object.values(errors).some(error => error !== null);
-        const allFieldsFilled = Object.values(formState).every(value => value !== '' && value !== null);
-        setIsFormValid(!hasErrors && allFieldsFilled);
-    };
-    validateForm();
-  }, [formState, errors]);
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormState(prev => ({ ...prev, [id]: value }));
-    validateField(id as keyof FormState, value);
+    const { id, value } = e.target as { id: keyof FormState; value: string };
+    const newFormState = { ...formState, [id]: value };
+    setFormState(newFormState);
+    validateField(id, value, newFormState);
   };
   
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    validateField(id as keyof FormState, value);
+    const { id, value } = e.target as { id: keyof FormState; value: string };
+    validateField(id, value, formState);
   };
 
   const handleLocationChange = (location: { lat: number; lng: number } | null) => {
-    setFormState(prev => ({ ...prev, location }));
-    validateField('location', location);
+    const newFormState = { ...formState, location };
+    setFormState(newFormState);
+    validateField('location', location, newFormState);
   }
 
   const handleSignUp = async () => {
-    // Re-validate all fields on submit, just in case
-    Object.keys(formState).forEach(key => {
-        validateField(key as keyof FormState, formState[key as keyof FormState]);
-    });
+    const isValid = validateAllFields(formState);
 
-    if (!isFormValid) {
+    if (!isValid) {
       toast({
         variant: "destructive",
         title: "Registration Failed",
@@ -134,6 +175,9 @@ export default function SignupPage() {
       });
       return;
     }
+
+    // Replace this with your actual sign-up logic
+    console.log("Form submitted:", formState);
 
     toast({
         title: "Registration Successful",
