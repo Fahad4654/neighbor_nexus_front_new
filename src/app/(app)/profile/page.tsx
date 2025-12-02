@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
+import { format, parseISO } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,6 +37,17 @@ type UserProfile = {
         avatarUrl: string;
         address: string;
     };
+};
+
+// Helper function to add ordinal suffix to day
+const getDayWithOrdinal = (day: number) => {
+    if (day > 3 && day < 21) return `${day}th`;
+    switch (day % 10) {
+        case 1:  return `${day}st`;
+        case 2:  return `${day}nd`;
+        case 3:  return `${day}rd`;
+        default: return `${day}th`;
+    }
 };
 
 export default function ProfilePage() {
@@ -145,6 +157,16 @@ export default function ProfilePage() {
   const fullName = `${user.firstname} ${user.lastname}`;
   const coordinates = user.geo_location?.coordinates ? `[${user.geo_location.coordinates.join(', ')}]` : 'Not available';
 
+  const formattedDate = (dateString: string) => {
+    try {
+      const date = parseISO(dateString);
+      const day = getDayWithOrdinal(date.getDate());
+      return format(date, `'${day}' MMMM, yyyy`);
+    } catch(e) {
+      return "Invalid date"
+    }
+  }
+
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="lg:col-span-1">
@@ -168,7 +190,7 @@ export default function ProfilePage() {
                     )}
                 </div>
                  <p className="text-muted-foreground mt-4 italic">"{profile.bio}"</p>
-                <p className="text-muted-foreground mt-4 text-sm">Member since {new Date(user.createdAt).toLocaleDateString()}</p>
+                <p className="text-muted-foreground mt-4 text-sm">Member since {formattedDate(user.createdAt)}</p>
             </CardContent>
         </Card>
       </div>
