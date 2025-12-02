@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { api } from '@/lib/api';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { api as apiFactory } from '@/lib/api';
 
 type User = {
     id: string;
@@ -42,9 +42,9 @@ export const useAuth = () => {
         }
     }, []);
 
-    const memoizedApi = useCallback(() => {
+    const api = useMemo(() => {
         // Pass performLogout instead of a function that would cause a re-render
-        return api(performLogout);
+        return apiFactory(performLogout);
     }, [performLogout]);
 
     useEffect(() => {
@@ -71,15 +71,15 @@ export const useAuth = () => {
             try {
                 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
                 if(backendUrl) {
-                    await memoizedApi().post(`${backendUrl}/auth/logout`, { refreshToken: currentRefreshToken });
+                    await api.post(`${backendUrl}/auth/logout`, { refreshToken: currentRefreshToken });
                 }
             } catch (error) {
                 console.error("Logout API call failed, logging out client-side anyway.", error);
             }
         }
         performLogout();
-    }, [memoizedApi, performLogout]);
+    }, [api, performLogout]);
 
 
-    return { user, accessToken, refreshToken, isLoading, logout, api: memoizedApi() };
+    return { user, accessToken, refreshToken, isLoading, logout, api };
 };
