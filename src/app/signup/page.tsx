@@ -14,7 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const LocationPicker = dynamic(
   () => import('@/components/shared/location-picker'),
-  { ssr: false, loading: () => <Skeleton className="h-[200px] w-full" /> }
+  { ssr: false, loading: () => <Skeleton className="h-full w-full" /> }
 );
 
 export default function SignupPage() {
@@ -131,7 +131,7 @@ export default function SignupPage() {
             <div className="grid gap-2">
               <Label>Location</Label>
               <CardDescription>Search for or click on the map to set your location.</CardDescription>
-              <div className="h-[200px] rounded-md overflow-hidden border relative">
+              <div className="h-[400px] rounded-md overflow-hidden border relative">
                 <LocationPicker onLocationChange={setLocation} />
               </div>
 
