@@ -45,7 +45,7 @@ export default function ForgotPasswordPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'An unknown error occurred.');
+        throw new Error(data.message || data.error || 'An unknown error occurred.');
       }
 
       toast({

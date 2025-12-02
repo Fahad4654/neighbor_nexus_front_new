@@ -61,7 +61,7 @@ export default function ProfilePage() {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.message || 'Failed to fetch profile data');
+            throw new Error(data.message || data.error || 'Failed to fetch profile data');
         }
         setProfileData(data);
       } catch (error: any) {

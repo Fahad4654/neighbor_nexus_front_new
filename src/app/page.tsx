@@ -52,7 +52,7 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'An unknown error occurred.');
+        throw new Error(data.message || data.error || 'An unknown error occurred.');
       }
 
       // Store user info and tokens in local storage

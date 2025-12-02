@@ -20,7 +20,7 @@ const refreshToken = async (onLogout: () => void) => {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.message || 'Failed to refresh token');
+            throw new Error(data.message || data.error || 'Failed to refresh token');
         }
 
         const { accessToken } = data;

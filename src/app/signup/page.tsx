@@ -33,6 +33,7 @@ export default function SignupPage() {
 
   useEffect(() => {
     validateForm();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [firstname, lastname, username, email, password, confirmPassword, phoneNumber, location, errors]);
 
   const validateEmail = (email: string) => {
@@ -127,7 +128,7 @@ export default function SignupPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'An unknown error occurred during registration.');
+        throw new Error(data.message || data.error || 'An unknown error occurred during registration.');
       }
 
       toast({
