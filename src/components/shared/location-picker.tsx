@@ -10,8 +10,8 @@ const containerStyle = {
 };
 
 const defaultCenter = {
-  lat: 51.505,
-  lng: -0.09,
+  lat: 23.8103,
+  lng: 90.4125,
 };
 
 interface LocationPickerProps {
@@ -56,7 +56,7 @@ export default function LocationPicker({ onLocationChange }: LocationPickerProps
     <GoogleMap
       mapContainerStyle={containerStyle}
       center={position || defaultCenter}
-      zoom={position ? 13 : 5}
+      zoom={position ? 13 : 11}
       onClick={handleMapClick}
     >
       {position && <Marker position={position} />}
