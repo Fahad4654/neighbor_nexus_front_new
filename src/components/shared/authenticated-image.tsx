@@ -5,11 +5,13 @@ import Image, { type ImageProps } from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from '@/components/ui/skeleton';
 
-interface AuthenticatedImageProps extends Omit<ImageProps, 'src'> {
+interface AuthenticatedImageProps extends Omit<ImageProps, 'src' | 'width' | 'height'> {
   src: string | null | undefined;
+  width?: number;
+  height?: number;
 }
 
-const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt, ...props }) => {
+const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt, width, height, ...props }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { accessToken } = useAuth();
@@ -84,8 +86,14 @@ const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt, ...pr
     // For now, AvatarFallback will handle this in parent components
     return null;
   }
+  
+  if (width && height) {
+    return <Image src={imageUrl} alt={alt} width={width} height={height} {...props} />;
+  }
 
-  return <Image src={imageUrl} alt={alt} {...props} />;
+  // If width and height are not provided, we assume fill is desired.
+  // The parent container must have relative positioning.
+  return <Image src={imageUrl} alt={alt} fill {...props} />;
 };
 
 export default AuthenticatedImage;
