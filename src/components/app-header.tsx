@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Bell, MessageSquare } from 'lucide-react';
+import { Search, Bell, MessageCircle } from 'lucide-react';
 
 export default function AppHeader() {
   const pathname = usePathname();
@@ -28,7 +28,7 @@ export default function AppHeader() {
       <div className="flex-1" />
       <Button asChild variant="ghost" size="icon" className="rounded-full relative text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
         <Link href="/chat">
-          <MessageSquare className="h-8 w-8" />
+          <MessageCircle className="h-8 w-8" />
           <span className="sr-only">Chat</span>
         </Link>
       </Button>
