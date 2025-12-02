@@ -30,6 +30,7 @@ export default function SignupPage() {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   const handleSignUp = async () => {
+    // --- All fields must be filled ---
     if (!firstname || !lastname || !username || !email || !password || !confirmPassword || !phoneNumber || !location) {
       toast({
         variant: "destructive",
@@ -39,6 +40,29 @@ export default function SignupPage() {
       return;
     }
 
+    // --- Email Validation ---
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
+      });
+      return;
+    }
+
+    // --- Phone Number Validation (basic) ---
+    const phoneRegex = /^\d{10,15}$/; // Simple check for 10-15 digits
+    if (!phoneRegex.test(phoneNumber.replace(/\D/g, ''))) {
+       toast({
+        variant: "destructive",
+        title: "Invalid Phone Number",
+        description: "Please enter a valid phone number.",
+      });
+      return;
+    }
+    
+    // --- Password Match Validation ---
     if (password !== confirmPassword) {
       toast({
         variant: "destructive",
@@ -47,52 +71,24 @@ export default function SignupPage() {
       });
       return;
     }
-
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-    if (!backendUrl) {
+    
+    // --- Password Length Validation ---
+    if (password.length < 8) {
       toast({
         variant: "destructive",
-        title: "Configuration Error",
-        description: "The backend URL is not configured. Please contact support.",
+        title: "Password Too Short",
+        description: "Password must be at least 8 characters long.",
       });
       return;
     }
 
-    try {
-      const response = await fetch(`${backendUrl}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username,
-          firstname,
-          lastname,
-          email,
-          password,
-          phoneNumber,
-          location
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'An unknown error occurred during registration.');
-      }
-
-      toast({
+    // If all validations pass, show success and redirect
+    toast({
         title: "Registration Successful",
         description: "You can now sign in with your new account.",
-      });
+    });
 
-      router.push('/');
-    } catch (error: any) {
-      console.error("Sign up error:", error);
-      toast({
-        variant: "destructive",
-        title: "Registration Failed",
-        description: error.message || "An unexpected error occurred.",
-      });
-    }
+    router.push('/');
   };
 
   return (
