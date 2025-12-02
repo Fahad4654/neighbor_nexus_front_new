@@ -1,34 +1,53 @@
 'use client';
 
-import React, { type ReactNode } from 'react';
+import React, { useState, useEffect, type ReactNode } from 'react';
 import { FirebaseProvider } from '@/firebase/provider';
-import { initializeFirebase, getFirebaseAuth, getFirebaseFirestore } from '@/firebase';
+import { initializeFirebase } from '@/firebase';
+import type { FirebaseApp } from 'firebase/app';
+import type { Auth } from 'firebase/auth';
+import type { Firestore } from 'firebase/firestore';
 
 interface FirebaseClientProviderProps {
   children: ReactNode;
 }
 
-// By initializing here, inside a 'use client' component, we ensure this code
-// only runs on the client where the environment variables are available.
-const firebaseApp = initializeFirebase();
-
-// We only proceed if Firebase initialized successfully.
-const auth = firebaseApp ? getFirebaseAuth() : null;
-const firestore = firebaseApp ? getFirebaseFirestore() : null;
+interface FirebaseServices {
+  app: FirebaseApp;
+  auth: Auth;
+  firestore: Firestore;
+}
 
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
+  const [services, setServices] = useState<FirebaseServices | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // We must handle the case where Firebase fails to initialize.
-  if (!firebaseApp || !auth || !firestore) {
-    // This could be a more user-friendly error screen
-    return <div>Error: Could not initialize Firebase. Please check your configuration.</div>;
+  useEffect(() => {
+    // This effect runs only on the client, after the component has mounted.
+    try {
+      const { firebaseApp, auth, firestore } = initializeFirebase();
+      setServices({ app: firebaseApp, auth, firestore });
+    } catch (e: any) {
+      console.error("Firebase initialization failed:", e);
+      setError(e.message || "Failed to initialize Firebase. Check console for details.");
+    }
+  }, []); // The empty dependency array ensures this runs only once.
+
+  if (error) {
+    // Render an error message if initialization fails.
+    return <div>Error: {error}</div>;
+  }
+
+  if (!services) {
+    // Render a loading state or null while Firebase is initializing.
+    // This prevents children from trying to use Firebase before it's ready.
+    return null; 
   }
 
   return (
     <FirebaseProvider
-      firebaseApp={firebaseApp}
-      auth={auth}
-      firestore={firestore}
+      firebaseApp={services.app}
+      auth={services.auth}
+      firestore={services.firestore}
     >
       {children}
     </FirebaseProvider>

@@ -1,37 +1,33 @@
 'use client';
 
 import { firebaseConfig } from '@/firebase/config';
-import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
+import { getAuth, type Auth } from 'firebase/auth';
+import { getFirestore, type Firestore } from 'firebase/firestore';
 
 export function initializeFirebase() {
-  if (typeof window !== 'undefined') {
-    if (getApps().length === 0) {
-        if (!firebaseConfig.apiKey) {
-            throw new Error("Firebase configuration is not available. Please check your environment variables and src/firebase/config.ts.");
-        }
-        return initializeApp(firebaseConfig);
-    } else {
-        return getApp();
-    }
+  if (typeof window === 'undefined') {
+    // This should not happen if called correctly from a client component effect
+    throw new Error("Firebase must be initialized on the client side.");
   }
-  return null;
-}
+  
+  if (getApps().length > 0) {
+    const app = getApp();
+    const auth = getAuth(app);
+    const firestore = getFirestore(app);
+    return { firebaseApp: app, auth, firestore };
+  }
 
-// These are now functions that get the instance, ensuring they are called only when needed.
-export function getFirebaseAuth(): Auth {
-  const app = initializeFirebase();
-  if (!app) throw new Error("Firebase not initialized");
-  return getAuth(app);
-}
+  if (!firebaseConfig.apiKey) {
+      throw new Error("Firebase configuration is not available. Please check your environment variables and src/firebase/config.ts.");
+  }
 
-export function getFirebaseFirestore(): Firestore {
-  const app = initializeFirebase();
-  if (!app) throw new Error("Firebase not initialized");
-  return getFirestore(app);
-}
+  const firebaseApp = initializeApp(firebaseConfig);
+  const auth = getAuth(firebaseApp);
+  const firestore = getFirestore(firebaseApp);
 
+  return { firebaseApp, auth, firestore };
+}
 
 export * from './provider';
 export * from './client-provider';
