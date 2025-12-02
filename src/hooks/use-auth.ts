@@ -29,6 +29,24 @@ export const useAuth = () => {
     const [refreshToken, setRefreshToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    const performLogout = useCallback(() => {
+        localStorage.removeItem('user');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        setUser(null);
+        setAccessToken(null);
+        setRefreshToken(null);
+        // Redirect to login page, ensuring it runs only on the client.
+        if (typeof window !== 'undefined') {
+            window.location.href = '/';
+        }
+    }, []);
+
+    const memoizedApi = useCallback(() => {
+        // Pass performLogout instead of a function that would cause a re-render
+        return api(performLogout);
+    }, [performLogout]);
+
     useEffect(() => {
         try {
             const storedUser = localStorage.getItem('user');
@@ -46,25 +64,22 @@ export const useAuth = () => {
             setIsLoading(false);
         }
     }, []);
-
-    const logout = useCallback(() => {
-        localStorage.removeItem('user');
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        setUser(null);
-        setAccessToken(null);
-        setRefreshToken(null);
-        // Redirect to login page, ensuring it runs only on the client.
-        if (typeof window !== 'undefined') {
-            window.location.href = '/';
+    
+    const logout = useCallback(async () => {
+        const currentRefreshToken = localStorage.getItem('refreshToken');
+        if (currentRefreshToken) {
+            try {
+                const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+                if(backendUrl) {
+                    await memoizedApi().post(`${backendUrl}/auth/logout`, { refreshToken: currentRefreshToken });
+                }
+            } catch (error) {
+                console.error("Logout API call failed, logging out client-side anyway.", error);
+            }
         }
-    }, []);
-
-    // Memoize the api utility to include the logout function
-    const memoizedApi = useCallback(() => {
-        return api(logout);
-    }, [logout]);
+        performLogout();
+    }, [memoizedApi, performLogout]);
 
 
-    return { user, accessToken, refreshToken, isLoading, logout, api: memoizedApi };
+    return { user, accessToken, refreshToken, isLoading, logout, api: memoizedApi() };
 };

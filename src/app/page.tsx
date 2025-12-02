@@ -9,12 +9,15 @@ import AppLogo from "@/components/app-logo";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+
 
 export default function LoginPage() {
   const router = useRouter();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const { toast } = useToast();
+  const { api } = useAuth();
 
   const handleSignIn = async () => {
     if (!identifier || !password) {
@@ -37,6 +40,7 @@ export default function LoginPage() {
     }
 
     try {
+      // We don't need the custom API hook for login as it's a public route
       const response = await fetch(`${backendUrl}/auth/login`, {
         method: 'POST',
         headers: {
