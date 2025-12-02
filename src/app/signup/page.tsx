@@ -30,7 +30,7 @@ export default function SignupPage() {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   const handleSignUp = async () => {
-    if (!username || !firstname || !email || !password || !phoneNumber || !location) {
+    if (!firstname || !lastname || !username || !email || !password || !confirmPassword || !phoneNumber || !location) {
       toast({
         variant: "destructive",
         title: "Registration Failed",
