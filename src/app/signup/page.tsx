@@ -130,8 +130,8 @@ export default function SignupPage() {
 
             <div className="grid gap-2">
               <Label>Location</Label>
-              <CardDescription>Select your location on the map.</CardDescription>
-              <div className="h-[200px] rounded-md overflow-hidden border">
+              <CardDescription>Search for or click on the map to set your location.</CardDescription>
+              <div className="h-[200px] rounded-md overflow-hidden border relative">
                 <LocationPicker onLocationChange={setLocation} />
               </div>
 
