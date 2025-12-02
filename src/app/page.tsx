@@ -6,30 +6,61 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import AppLogo from "@/components/app-logo";
-import { useAuth } from '@/firebase';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function LoginPage() {
-  const auth = useAuth();
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const { toast } = useToast();
 
   const handleSignIn = async () => {
-    if (!email || !password) {
+    if (!identifier || !password) {
       toast({
         variant: "destructive",
         title: "Login Failed",
-        description: "Please enter both email and password.",
+        description: "Please enter both your identifier and password.",
       });
       return;
     }
+
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl) {
+      toast({
+        variant: "destructive",
+        title: "Configuration Error",
+        description: "The backend URL is not configured. Please contact support.",
+      });
+      return;
+    }
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const response = await fetch(`${backendUrl}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ identifier, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'An unknown error occurred.');
+      }
+
+      // Store user info and tokens in local storage
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      toast({
+        title: "Login Successful",
+        description: "Welcome back!",
+      });
+
       router.push('/dashboard');
     } catch (error: any) {
       console.error("Sign in error:", error);
@@ -54,8 +85,8 @@ export default function LoginPage() {
         <CardContent>
           <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Label htmlFor="email">Email or Username</Label>
+              <Input id="email" type="text" placeholder="user@example.com" required value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
             </div>
             <div className="grid gap-2">
               <div className="flex items-center">
