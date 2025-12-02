@@ -105,7 +105,11 @@ export default function ProfilePage() {
             <CardContent className="space-y-6">
                 <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                        <Label htmlFor="fullName">Full Name</Label>
+                        <Label htmlFor="firstname">First Name</Label>
+                        <Skeleton className="h-10 w-full" />
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="lastname">Last Name</Label>
                         <Skeleton className="h-10 w-full" />
                     </div>
                      <div className="space-y-2">
@@ -177,8 +181,12 @@ export default function ProfilePage() {
           <CardContent className="space-y-6">
             <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name</Label>
-                    <Input id="fullName" defaultValue={fullName} />
+                    <Label htmlFor="firstname">First Name</Label>
+                    <Input id="firstname" defaultValue={user.firstname} />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="lastname">Last Name</Label>
+                    <Input id="lastname" defaultValue={user.lastname} />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="username">Username</Label>
