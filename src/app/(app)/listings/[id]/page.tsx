@@ -8,6 +8,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import StarRating from "@/components/shared/star-rating";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, Verified } from "lucide-react";
+import AuthenticatedImage from "@/components/shared/authenticated-image";
 
 export default function ListingDetailPage({ params }: { params: { id: string } }) {
   const listing = getListingById(params.id);
@@ -64,7 +65,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-4">
                   <Avatar className="h-16 w-16">
-                    <AvatarImage src={owner.avatarUrl} data-ai-hint={owner.dataAiHint} />
+                    <AuthenticatedImage src={owner.avatarUrl} alt={owner.name} className="aspect-square h-full w-full" data-ai-hint={owner.dataAiHint} />
                     <AvatarFallback>{owner.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div>
@@ -94,7 +95,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
               return (
                 <div key={review.id} className="flex gap-4">
                   <Avatar>
-                    <AvatarImage src={reviewer?.avatarUrl} data-ai-hint={reviewer?.dataAiHint} />
+                    <AuthenticatedImage src={reviewer?.avatarUrl} alt={reviewer?.name || ''} className="aspect-square h-full w-full" data-ai-hint={reviewer?.dataAiHint} />
                     <AvatarFallback>{reviewer?.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div>

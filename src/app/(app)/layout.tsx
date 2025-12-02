@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 import {
   SidebarProvider,
   Sidebar,
@@ -20,6 +21,7 @@ import {
   User,
   LogOut,
   History,
+  MessageCircle,
 } from "lucide-react";
 import AppLogo from "@/components/app-logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -29,11 +31,20 @@ import { Badge } from "@/components/ui/badge";
 import AppHeader from '@/components/app-header';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
+import AuthenticatedImage from '@/components/shared/authenticated-image';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user, isLoading, logout } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/');
+    }
+  }, [user, isLoading, router]);
+
 
   const handleLogout = () => {
     logout();
@@ -49,6 +60,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
     return 'U';
   };
+
+  if (isLoading || !user) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+            <AppLogo />
+            <p className="text-muted-foreground">Loading your experience...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>
@@ -70,14 +92,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={pathname === '/users'}>
-                <Link href="/users">
-                  <Users />
-                  Users
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            {user?.isAdmin && (
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === '/users'}>
+                  <Link href="/users">
+                    <Users />
+                    Users
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
             <SidebarMenuItem>
               <SidebarMenuButton asChild isActive={pathname.startsWith('/listings')}>
                 <Link href="/listings">
@@ -125,7 +149,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {user && (
             <div className="flex items-center gap-2 p-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={user.profile?.avatarUrl} />
+                <AuthenticatedImage src={user.profile?.avatarUrl} alt={user.firstname} className="aspect-square h-full w-full" fill/>
                 <AvatarFallback>{getInitials(user.firstname, user.lastname)}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-sm text-sidebar-foreground">

@@ -9,12 +9,17 @@ import AppLogo from "@/components/app-logo";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import { Eye, EyeOff } from "lucide-react";
+
 
 export default function LoginPage() {
   const router = useRouter();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
+  const { api } = useAuth();
 
   const handleSignIn = async () => {
     if (!identifier || !password) {
@@ -37,6 +42,7 @@ export default function LoginPage() {
     }
 
     try {
+      // We don't need the custom API hook for login as it's a public route
       const response = await fetch(`${backendUrl}/auth/login`, {
         method: 'POST',
         headers: {
@@ -48,7 +54,7 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'An unknown error occurred.');
+        throw new Error(data.message || data.error || 'An unknown error occurred.');
       }
 
       // Store user info and tokens in local storage
@@ -91,11 +97,31 @@ export default function LoginPage() {
             <div className="grid gap-2">
               <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
-                <Link href="#" className="ml-auto inline-block text-sm underline">
+                <Link href="/forgot-password" className="ml-auto inline-block text-sm underline">
                   Forgot your password?
                 </Link>
               </div>
-              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSignIn()} />
+              <div className="relative">
+                <Input 
+                    id="password" 
+                    type={showPassword ? 'text' : 'password'} 
+                    required 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    onKeyDown={(e) => e.key === 'Enter' && handleSignIn()}
+                    className="pr-10"
+                />
+                <Button 
+                    type="button" 
+                    variant="ghost" 
+                    size="icon" 
+                    className="absolute inset-y-0 right-0 h-full px-3"
+                    onClick={() => setShowPassword(prev => !prev)}
+                >
+                    {showPassword ? <EyeOff /> : <Eye />}
+                    <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+                </Button>
+              </div>
             </div>
             <Button onClick={handleSignIn} type="submit" className="w-full">
               Sign in
