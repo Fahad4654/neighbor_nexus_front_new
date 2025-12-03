@@ -140,7 +140,7 @@ export default function ListingsPage() {
                   <Badge variant={listing.listing_type === 'Tool' ? 'secondary' : 'default'} className="w-fit mb-2">{listing.listing_type}</Badge>
                   <CardTitle className="text-lg font-headline mb-1">{listing.title}</CardTitle>
                   <CardDescription className="text-base font-bold text-primary flex-grow mt-auto">
-                    ${parseFloat(listing.daily_price).toFixed(2)} / day
+                    BDT {parseFloat(listing.daily_price).toFixed(2)} / day
                   </CardDescription>
                 </CardContent>
               </Card>

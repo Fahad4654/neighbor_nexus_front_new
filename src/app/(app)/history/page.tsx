@@ -42,7 +42,7 @@ export default function HistoryPage() {
                     <Badge variant={tx.status === 'completed' ? 'default' : 'secondary'} className="capitalize">{tx.status}</Badge>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">{new Date(tx.endDate).toLocaleDateString()}</TableCell>
-                  <TableCell className="text-right">${tx.total.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">BDT {tx.total.toFixed(2)}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

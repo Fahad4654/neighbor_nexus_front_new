@@ -30,14 +30,14 @@ export default function DashboardPage() {
         />
         <StatCard 
             title="Transaction Volume"
-            value="$12,450"
+            value="BDT 12,450"
             icon={DollarSign}
             change="+18.7%"
             changeType="increase"
         />
         <StatCard 
             title="Commission Earned"
-            value="$1,245"
+            value="BDT 1,245"
             icon={Activity}
             change="+18.7%"
             changeType="increase"
@@ -89,7 +89,7 @@ export default function DashboardPage() {
                                 <TableCell className="hidden md:table-cell">
                                     <Badge variant={tx.status === 'completed' ? 'default' : 'secondary'} className="capitalize">{tx.status}</Badge>
                                 </TableCell>
-                                <TableCell className="text-right">${tx.total.toFixed(2)}</TableCell>
+                                <TableCell className="text-right">BDT {tx.total.toFixed(2)}</TableCell>
                             </TableRow>
                         )
                     })}

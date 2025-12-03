@@ -189,7 +189,7 @@ export function CreateListingDialog({ onListingCreated }: CreateListingDialogPro
                   name="hourly_price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Hourly Price ($)</FormLabel>
+                      <FormLabel>Hourly Price (BDT)</FormLabel>
                       <FormControl>
                         <Input type="number" {...field} />
                       </FormControl>
@@ -202,7 +202,7 @@ export function CreateListingDialog({ onListingCreated }: CreateListingDialogPro
                   name="daily_price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Daily Price ($)</FormLabel>
+                      <FormLabel>Daily Price (BDT)</FormLabel>
                       <FormControl>
                         <Input type="number" {...field} />
                       </FormControl>
@@ -216,7 +216,7 @@ export function CreateListingDialog({ onListingCreated }: CreateListingDialogPro
               name="security_deposit"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Security Deposit ($)</FormLabel>
+                  <FormLabel>Security Deposit (BDT)</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>

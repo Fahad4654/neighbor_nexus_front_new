@@ -50,7 +50,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
         <div className="space-y-6">
           <Card>
             <CardHeader>
-                <CardTitle className="text-2xl font-bold text-primary">${listing.price.toFixed(2)}<span className="text-sm font-normal text-muted-foreground"> / {listing.priceUnit}</span></CardTitle>
+                <CardTitle className="text-2xl font-bold text-primary">BDT {listing.price.toFixed(2)}<span className="text-sm font-normal text-muted-foreground"> / {listing.priceUnit}</span></CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <Button size="lg" className="w-full">Request to {listing.type === 'Tool' ? 'Rent' : 'Book'}</Button>
