@@ -6,13 +6,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, CheckCircle, XCircle, Users as UsersIcon } from "lucide-react";
+import { MoreHorizontal, CheckCircle, XCircle, Users as UsersIcon, PlusCircle } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import AuthenticatedImage from "@/components/shared/authenticated-image";
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { CreateUserDialog } from '@/components/users/create-user-dialog';
 
 type UserProfile = {
   id: string;
@@ -40,7 +41,7 @@ type User = {
 };
 
 export default function UsersPage() {
-  const { api } = useAuth();
+  const { api, user: authUser } = useAuth();
   const { toast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -98,9 +99,12 @@ export default function UsersPage() {
 
   return (
     <Card className="flex flex-col h-full">
-      <CardHeader>
-        <CardTitle>Users</CardTitle>
-        <CardDescription>Manage the users in your nexus.</CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+            <CardTitle>Users</CardTitle>
+            <CardDescription>Manage the users in your nexus.</CardDescription>
+        </div>
+        {authUser?.isAdmin && <CreateUserDialog onUserCreated={fetchUsers} />}
       </CardHeader>
       <CardContent className="p-0 flex-1">
         {isLoading ? (
