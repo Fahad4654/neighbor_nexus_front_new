@@ -98,7 +98,7 @@ export default function ProfilePage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-1">
           <Card>
-              <CardContent className="pt-6 flex flex-col items-center text-center">
+              <CardContent className="pt-6 flex flex-col items-center justify-center text-center">
                   <Skeleton className="h-24 w-24 rounded-full mb-4" />
                   <Skeleton className="h-8 w-40 mb-2" />
                   <Skeleton className="h-5 w-24 mb-3" />
@@ -171,7 +171,7 @@ export default function ProfilePage() {
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="lg:col-span-1">
         <Card>
-            <CardContent className="pt-6 flex flex-col items-center text-center">
+            <CardContent className="pt-6 flex flex-col items-center justify-center text-center">
                 <Avatar className="h-24 w-24 mb-4">
                     <AuthenticatedImage src={profile.avatarUrl} alt={fullName} />
                     <AvatarFallback>{user.firstname.charAt(0)}{user.lastname.charAt(0)}</AvatarFallback>
