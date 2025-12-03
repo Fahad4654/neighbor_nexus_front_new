@@ -20,7 +20,7 @@ export default function DashboardPage() {
       {user && (
         <h1 className="text-2xl font-bold">Welcome back, {user.firstname}!</h1>
       )}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard 
             title="Activation Rate"
             value="72.5%"

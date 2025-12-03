@@ -95,7 +95,7 @@ export default function ProfilePage() {
 
   if (isLoading || !profileData) {
     return (
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
         <div className="lg:col-span-1">
           <Card>
               <CardContent className="pt-6 flex flex-col items-center justify-center text-center">
@@ -168,7 +168,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
+    <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
       <div className="lg:col-span-1">
         <Card>
             <CardContent className="pt-6 flex flex-col items-center justify-center text-center">

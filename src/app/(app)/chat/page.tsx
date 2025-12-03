@@ -180,7 +180,7 @@ export default function ChatPage() {
         </div>
         <div className={cn(
              "md:col-span-2 lg:col-span-3 h-full",
-             !selectedConversationId && "hidden md:block"
+             !selectedConversationId && "hidden md:flex"
         )}>
             <ChatWindow conversationId={selectedConversationId} onBack={() => setSelectedConversationId(null)} />
         </div>
