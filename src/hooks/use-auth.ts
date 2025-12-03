@@ -38,8 +38,8 @@ export const useAuth = () => {
         setUser(null);
         setAccessToken(null);
         setRefreshToken(null);
-        // Navigation is now handled by the layout component's effect
-    }, []);
+        router.push('/');
+    }, [router]);
 
     const api = useMemo(() => {
         // Pass performLogout instead of a function that would cause a re-render
@@ -77,8 +77,7 @@ export const useAuth = () => {
             }
         }
         performLogout();
-        router.push('/');
-    }, [api, performLogout, router]);
+    }, [api, performLogout]);
 
 
     return { user, accessToken, refreshToken, isLoading, logout, api };
