@@ -27,7 +27,7 @@ export type Tool = {
 };
 
 export default function ListingsPage() {
-  const { api } = useAuth();
+  const { api, user } = useAuth();
   const { toast } = useToast();
   const [listings, setListings] = useState<Tool[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -86,7 +86,7 @@ export default function ListingsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-headline font-bold">My Listings</h1>
-        <CreateListingDialog onListingCreated={fetchListings} />
+        {user && !user.isAdmin && <CreateListingDialog onListingCreated={fetchListings} />}
       </div>
 
       {isLoading && (
