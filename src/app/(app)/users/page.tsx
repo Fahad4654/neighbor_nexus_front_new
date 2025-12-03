@@ -157,6 +157,7 @@ export default function UsersPage() {
               <Table>
                 <TableHeader className="sticky top-0 bg-card">
                   <TableRow>
+                    <TableHead>No.</TableHead>
                     <TableHead>Username</TableHead>
                     <TableHead>Full Name</TableHead>
                     <TableHead className="hidden md:table-cell">Email</TableHead>
@@ -172,8 +173,9 @@ export default function UsersPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((user) => (
+                  {users.map((user, index) => (
                     <TableRow key={user.id}>
+                      <TableCell>{(pagination.page - 1) * pagination.pageSize + index + 1}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar>
