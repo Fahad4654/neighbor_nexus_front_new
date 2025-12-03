@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, CheckCircle, XCircle, Users as UsersIcon, PlusCircle } from "lucide-react";
+import { MoreHorizontal, CheckCircle, XCircle, Users as UsersIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import AuthenticatedImage from "@/components/shared/authenticated-image";
 import { useAuth } from '@/hooks/use-auth';
@@ -40,14 +40,27 @@ type User = {
   profile: UserProfile | null;
 };
 
+type PaginationState = {
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+};
+
 export default function UsersPage() {
   const { api, user: authUser } = useAuth();
   const { toast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState<PaginationState>({
+    total: 0,
+    page: 1,
+    pageSize: 10,
+    totalPages: 1,
+  });
 
-  const fetchUsers = useCallback(async () => {
+  const fetchUsers = useCallback(async (page: number) => {
     setIsLoading(true);
     setError(null);
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -61,7 +74,7 @@ export default function UsersPage() {
       const response = await api.post(`${backendUrl}/users/all`, {
         order: 'createdAt',
         asc: 'DESC',
-        page: 1,
+        page: page,
         pageSize: 10,
       });
 
@@ -72,6 +85,7 @@ export default function UsersPage() {
       }
       
       setUsers(result.usersList?.data || []);
+      setPagination(result.usersList?.pagination || { total: 0, page: 1, pageSize: 10, totalPages: 1 });
     } catch (err: any) {
       setError(err.message);
       toast({
@@ -85,8 +99,8 @@ export default function UsersPage() {
   }, [api, toast]);
 
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    fetchUsers(pagination.page);
+  }, [fetchUsers, pagination.page]);
   
   const getInitials = (firstname: string, lastname: string) => {
     return `${firstname?.charAt(0) ?? ''}${lastname?.charAt(0) ?? ''}`.toUpperCase();
@@ -97,6 +111,12 @@ export default function UsersPage() {
     return `[${geo.coordinates[0]}, ${geo.coordinates[1]}]`;
   };
 
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= pagination.totalPages) {
+      setPagination(prev => ({ ...prev, page: newPage }));
+    }
+  };
+
   return (
     <Card className="flex flex-col h-full">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -104,7 +124,7 @@ export default function UsersPage() {
             <CardTitle>Users</CardTitle>
             <CardDescription>Manage the users in your nexus.</CardDescription>
         </div>
-        {authUser?.isAdmin && <CreateUserDialog onUserCreated={fetchUsers} />}
+        {authUser?.isAdmin && <CreateUserDialog onUserCreated={() => fetchUsers(pagination.page)} />}
       </CardHeader>
       <CardContent className="p-0 flex-1">
         {isLoading ? (
@@ -202,6 +222,29 @@ export default function UsersPage() {
           </div>
         )}
       </CardContent>
+       <CardFooter className="flex items-center justify-between pt-4">
+        <div className="text-sm text-muted-foreground">
+          Page {pagination.page} of {pagination.totalPages}
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handlePageChange(pagination.page - 1)}
+            disabled={pagination.page <= 1}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handlePageChange(pagination.page + 1)}
+            disabled={pagination.page >= pagination.totalPages}
+          >
+            Next
+          </Button>
+        </div>
+      </CardFooter>
     </Card>
   );
 }
