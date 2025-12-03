@@ -100,7 +100,8 @@ export default function UsersPage() {
 
   useEffect(() => {
     fetchUsers(pagination.page);
-  }, [fetchUsers, pagination.page]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination.page]);
   
   const getInitials = (firstname: string, lastname: string) => {
     return `${firstname?.charAt(0) ?? ''}${lastname?.charAt(0) ?? ''}`.toUpperCase();
@@ -126,7 +127,7 @@ export default function UsersPage() {
         </div>
         {authUser?.isAdmin && <CreateUserDialog onUserCreated={() => fetchUsers(pagination.page)} />}
       </CardHeader>
-      <CardContent className="p-0 flex-1 overflow-y-auto">
+      <CardContent className="p-0 flex-1 overflow-auto">
         {isLoading ? (
           <div className="p-4 space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
