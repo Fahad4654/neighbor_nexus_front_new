@@ -112,7 +112,15 @@ export default function UsersPage() {
 
   const formatCoordinates = (geo?: { coordinates: [number, number] }) => {
     if (!geo || !geo.coordinates) return 'N/A';
-    return `[${geo.coordinates[0]}, ${geo.coordinates[1]}]`;
+    // Assuming coordinates are [longitude, latitude]
+    const longitude = geo.coordinates[0];
+    const latitude = geo.coordinates[1];
+    return (
+      <div>
+        <div>Latitude: {latitude.toFixed(4)}</div>
+        <div>Longitude: {longitude.toFixed(4)}</div>
+      </div>
+    );
   };
 
   const handlePageChange = (newPage: number) => {
