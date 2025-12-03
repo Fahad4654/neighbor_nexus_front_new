@@ -130,7 +130,7 @@ export default function UsersPage() {
   };
 
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex flex-col h-full w-full">
       <CardHeader>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
