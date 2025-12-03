@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import AuthenticatedImage from '@/components/shared/authenticated-image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Wrench } from 'lucide-react';
+import { CreateListingDialog } from '@/components/listings/create-listing-dialog';
 
 type ToolImage = {
   id: string;
@@ -17,7 +18,7 @@ type ToolImage = {
   is_primary: boolean;
 };
 
-type Tool = {
+export type Tool = {
   listing_id: string;
   title: string;
   listing_type: 'Tool' | 'Skill';
@@ -32,51 +33,49 @@ export default function ListingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchListings = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl) {
+      setError("Backend URL is not configured.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await api.post(`${backendUrl}/tools/all`, {
+        order: 'createdAt',
+        asc: 'DESC',
+        page: 1,
+        pageSize: 10,
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || result.error || 'Failed to fetch listings.');
+      }
+
+      setListings(result.data || []);
+    } catch (err: any) {
+      setError(err.message);
+      toast({
+        variant: 'destructive',
+        title: 'Error fetching listings',
+        description: err.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [api, toast]);
+
   useEffect(() => {
-    const fetchListings = async () => {
-      setIsLoading(true);
-      setError(null);
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-      if (!backendUrl) {
-        setError("Backend URL is not configured.");
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const response = await api.post(`${backendUrl}/tools/all`, {
-          order: 'createdAt',
-          asc: 'DESC',
-          page: 1,
-          pageSize: 10,
-        });
-
-        const result = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(result.message || result.error || 'Failed to fetch listings.');
-        }
-
-        setListings(result.data || []);
-      } catch (err: any) {
-        setError(err.message);
-        toast({
-          variant: 'destructive',
-          title: 'Error fetching listings',
-          description: err.message,
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchListings();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [api]);
+  }, [fetchListings]);
 
   const getPrimaryImage = (images: ToolImage[]) => {
     if (!images || images.length === 0) {
-      // Return a default placeholder if no images are available
       return '/media/tools/default.png';
     }
     const primary = images.find(img => img.is_primary);
@@ -87,6 +86,7 @@ export default function ListingsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-headline font-bold">My Listings</h1>
+        <CreateListingDialog onListingCreated={fetchListings} />
       </div>
 
       {isLoading && (
