@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { api as apiFactory } from '@/lib/api';
 
 type User = {
@@ -28,6 +29,7 @@ export const useAuth = () => {
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const [refreshToken, setRefreshToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const router = useRouter();
 
     const performLogout = useCallback(() => {
         localStorage.removeItem('user');
@@ -36,10 +38,7 @@ export const useAuth = () => {
         setUser(null);
         setAccessToken(null);
         setRefreshToken(null);
-        // Redirect to login page, ensuring it runs only on the client.
-        if (typeof window !== 'undefined') {
-            window.location.href = '/';
-        }
+        // Navigation is now handled by the layout component's effect
     }, []);
 
     const api = useMemo(() => {
@@ -78,7 +77,8 @@ export const useAuth = () => {
             }
         }
         performLogout();
-    }, [api, performLogout]);
+        router.push('/');
+    }, [api, performLogout, router]);
 
 
     return { user, accessToken, refreshToken, isLoading, logout, api };
