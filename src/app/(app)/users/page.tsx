@@ -126,7 +126,7 @@ export default function UsersPage() {
         </div>
         {authUser?.isAdmin && <CreateUserDialog onUserCreated={() => fetchUsers(pagination.page)} />}
       </CardHeader>
-      <CardContent className="p-0 flex-1">
+      <CardContent className="p-0 flex-1 overflow-y-auto">
         {isLoading ? (
           <div className="p-4 space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -152,79 +152,75 @@ export default function UsersPage() {
                 <AlertDescription>There are no users to display at this time.</AlertDescription>
             </Alert>
         ) : (
-          <div className="h-full overflow-y-auto">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader className="sticky top-0 bg-card">
-                  <TableRow>
-                    <TableHead>No.</TableHead>
-                    <TableHead>Username</TableHead>
-                    <TableHead>Full Name</TableHead>
-                    <TableHead className="hidden md:table-cell">Email</TableHead>
-                    <TableHead className="hidden md:table-cell">Phone</TableHead>
-                    <TableHead className="hidden sm:table-cell">Verified</TableHead>
-                    <TableHead className="hidden sm:table-cell">Admin</TableHead>
-                    <TableHead className="hidden md:table-cell">Rating</TableHead>
-                    <TableHead className="hidden md:table-cell">Location</TableHead>
-                    <TableHead className="hidden md:table-cell">Created</TableHead>
-                    <TableHead>
-                      <span className="sr-only">Actions</span>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users.map((user, index) => (
-                    <TableRow key={user.id}>
-                      <TableCell>{(pagination.page - 1) * pagination.pageSize + index + 1}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Avatar>
-                            <AuthenticatedImage src={user.profile?.avatarUrl} alt={`${user.firstname} ${user.lastname}`} />
-                            <AvatarFallback>{getInitials(user.firstname, user.lastname)}</AvatarFallback>
-                          </Avatar>
-                          <div className="font-medium">{user.username}</div>
-                        </div>
-                      </TableCell>
-                      <TableCell>{user.firstname} {user.lastname}</TableCell>
-                      <TableCell className="hidden md:table-cell">{user.email}</TableCell>
-                      <TableCell className="hidden md:table-cell">{user.phoneNumber}</TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        <Badge variant={user.isVerified ? 'default' : 'secondary'}>
-                          {user.isVerified ? <CheckCircle className="h-4 w-4 mr-1" /> : <XCircle className="h-4 w-4 mr-1" />}
-                          {user.isVerified ? 'Verified' : 'Unverified'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                          <Badge variant={user.isAdmin ? 'default' : 'secondary'}>
-                              {user.isAdmin ? 'Admin' : 'User'}
-                          </Badge>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">{parseFloat(user.rating_avg).toFixed(1)}</TableCell>
-                      <TableCell className="hidden md:table-cell">{formatCoordinates(user.geo_location)}</TableCell>
-                      <TableCell className="hidden md:table-cell">{new Date(user.createdAt).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button aria-haspopup="true" size="icon" variant="ghost">
-                              <MoreHorizontal className="h-4 w-4" />
-                              <span className="sr-only">Toggle menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem>View Profile</DropdownMenuItem>
-                            <DropdownMenuItem>Message</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
+          <Table>
+            <TableHeader className="sticky top-0 bg-card">
+              <TableRow>
+                <TableHead>No.</TableHead>
+                <TableHead>Username</TableHead>
+                <TableHead>Full Name</TableHead>
+                <TableHead className="hidden md:table-cell">Email</TableHead>
+                <TableHead className="hidden md:table-cell">Phone</TableHead>
+                <TableHead className="hidden sm:table-cell">Verified</TableHead>
+                <TableHead className="hidden sm:table-cell">Admin</TableHead>
+                <TableHead className="hidden md:table-cell">Rating</TableHead>
+                <TableHead className="hidden md:table-cell">Location</TableHead>
+                <TableHead className="hidden md:table-cell">Created</TableHead>
+                <TableHead>
+                  <span className="sr-only">Actions</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {users.map((user, index) => (
+                <TableRow key={user.id}>
+                  <TableCell>{(pagination.page - 1) * pagination.pageSize + index + 1}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Avatar>
+                        <AuthenticatedImage src={user.profile?.avatarUrl} alt={`${user.firstname} ${user.lastname}`} />
+                        <AvatarFallback>{getInitials(user.firstname, user.lastname)}</AvatarFallback>
+                      </Avatar>
+                      <div className="font-medium">{user.username}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell>{user.firstname} {user.lastname}</TableCell>
+                  <TableCell className="hidden md:table-cell">{user.email}</TableCell>
+                  <TableCell className="hidden md:table-cell">{user.phoneNumber}</TableCell>
+                  <TableCell className="hidden sm:table-cell">
+                    <Badge variant={user.isVerified ? 'default' : 'secondary'}>
+                      {user.isVerified ? <CheckCircle className="h-4 w-4 mr-1" /> : <XCircle className="h-4 w-4 mr-1" />}
+                      {user.isVerified ? 'Verified' : 'Unverified'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell">
+                      <Badge variant={user.isAdmin ? 'default' : 'secondary'}>
+                          {user.isAdmin ? 'Admin' : 'User'}
+                      </Badge>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">{parseFloat(user.rating_avg).toFixed(1)}</TableCell>
+                  <TableCell className="hidden md:table-cell">{formatCoordinates(user.geo_location)}</TableCell>
+                  <TableCell className="hidden md:table-cell">{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button aria-haspopup="true" size="icon" variant="ghost">
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Toggle menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>View Profile</DropdownMenuItem>
+                        <DropdownMenuItem>Message</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         )}
       </CardContent>
-       <CardFooter className="flex items-center justify-between pt-4">
+       <CardFooter className="flex items-center justify-between pt-4 border-t">
         <div className="text-sm text-muted-foreground">
           Page {pagination.page} of {pagination.totalPages}
         </div>
