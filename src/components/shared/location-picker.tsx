@@ -37,11 +37,13 @@ export default function LocationPicker({ onLocationChange }: LocationPickerProps
   });
 
   useEffect(() => {
-    // Pass the default location up on initial load
+    // Pass the default location up on initial load.
+    // This should only run once when the component mounts.
     if (defaultCenter) {
       onLocationChange(defaultCenter);
     }
-  }, [onLocationChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleMapClick = (event: google.maps.MapMouseEvent) => {
     if (event.latLng) {
