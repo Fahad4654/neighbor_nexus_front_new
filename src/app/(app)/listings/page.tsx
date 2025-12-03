@@ -132,7 +132,7 @@ export default function ListingsPage() {
                     <AuthenticatedImage
                       src={getPrimaryImage(listing.images)}
                       alt={listing.title}
-                      className="object-cover"
+                      className="object-contain"
                     />
                   </div>
                 </CardHeader>
