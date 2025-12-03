@@ -189,7 +189,10 @@ export default function ProfilePage() {
                         </Badge>
                     )}
                 </div>
-                 <p className="text-muted-foreground mt-4 italic">"{profile.bio}"</p>
+                 <div className="text-left w-full mt-4">
+                    <p className="font-semibold text-sm">Bio</p>
+                    <p className="text-muted-foreground text-sm italic">"{profile.bio}"</p>
+                </div>
                 <p className="text-muted-foreground mt-4 text-sm">Member since {formattedDate(user.createdAt)}</p>
             </CardContent>
         </Card>
