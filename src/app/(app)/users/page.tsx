@@ -139,7 +139,11 @@ export default function UsersPage() {
                         <SelectContent>
                             <SelectItem value="createdAt">Date Created</SelectItem>
                             <SelectItem value="username">Username</SelectItem>
+                            <SelectItem value="firstname">First Name</SelectItem>
+                            <SelectItem value="lastname">Last Name</SelectItem>
                             <SelectItem value="email">Email</SelectItem>
+                            <SelectItem value="isAdmin">Admin Status</SelectItem>
+                            <SelectItem value="isVerified">Verification Status</SelectItem>
                             <SelectItem value="rating_avg">Rating</SelectItem>
                         </SelectContent>
                     </Select>
