@@ -13,14 +13,14 @@ export default function HistoryPage() {
         <CardTitle>Activity History</CardTitle>
         <CardDescription>A record of your past activity in the nexus.</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="overflow-auto">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Item / Service</TableHead>
-              <TableHead className="hidden md:table-cell">With</TableHead>
-              <TableHead className="hidden sm:table-cell">Status</TableHead>
-              <TableHead className="hidden md:table-cell">Date</TableHead>
+              <TableHead>With</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Date</TableHead>
               <TableHead className="text-right">Total</TableHead>
               <TableHead>
                 <span className="sr-only">Actions</span>
@@ -37,11 +37,11 @@ export default function HistoryPage() {
                     <div className="font-medium">{listing?.title}</div>
                     <div className="text-sm text-muted-foreground">{listing?.type}</div>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">{otherUser?.name}</TableCell>
-                  <TableCell className="hidden sm:table-cell">
+                  <TableCell>{otherUser?.name}</TableCell>
+                  <TableCell>
                     <Badge variant={tx.status === 'completed' ? 'default' : 'secondary'} className="capitalize">{tx.status}</Badge>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">{new Date(tx.endDate).toLocaleDateString()}</TableCell>
+                  <TableCell>{new Date(tx.endDate).toLocaleDateString()}</TableCell>
                   <TableCell className="text-right">BDT {tx.total.toFixed(2)}</TableCell>
                   <TableCell>
                     <DropdownMenu>

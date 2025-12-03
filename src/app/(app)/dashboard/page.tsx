@@ -63,13 +63,13 @@ export default function DashboardPage() {
             <CardTitle>Recent Transactions</CardTitle>
             <CardDescription>A list of the most recent exchanges in the nexus.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-auto">
             <Table>
                 <TableHeader>
                     <TableRow>
                         <TableHead>User</TableHead>
-                        <TableHead className="hidden md:table-cell">Item</TableHead>
-                        <TableHead className="hidden sm:table-cell">Status</TableHead>
+                        <TableHead>Item</TableHead>
+                        <TableHead>Status</TableHead>
                         <TableHead className="text-right">Amount</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -81,12 +81,12 @@ export default function DashboardPage() {
                             <TableRow key={tx.id}>
                                 <TableCell>
                                     <div className="font-medium">{renter?.name}</div>
-                                    <div className="hidden text-sm text-muted-foreground md:inline">
+                                    <div className="text-sm text-muted-foreground">
                                         {renter?.email}
                                     </div>
                                 </TableCell>
-                                <TableCell className="hidden md:table-cell">{listing?.title}</TableCell>
-                                <TableCell className="hidden sm:table-cell">
+                                <TableCell>{listing?.title}</TableCell>
+                                <TableCell>
                                     <Badge variant={tx.status === 'completed' ? 'default' : 'secondary'} className="capitalize">{tx.status}</Badge>
                                 </TableCell>
                                 <TableCell className="text-right">BDT {tx.total.toFixed(2)}</TableCell>
