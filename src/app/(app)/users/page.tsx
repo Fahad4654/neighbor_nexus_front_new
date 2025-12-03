@@ -14,6 +14,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { CreateUserDialog } from '@/components/users/create-user-dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 type UserProfile = {
   id: string;
@@ -53,6 +55,8 @@ export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortColumn, setSortColumn] = useState('createdAt');
+  const [sortDirection, setSortDirection] = useState<'ASC' | 'DESC'>('DESC');
   const [pagination, setPagination] = useState<PaginationState>({
     total: 0,
     page: 1,
@@ -60,7 +64,7 @@ export default function UsersPage() {
     totalPages: 1,
   });
 
-  const fetchUsers = useCallback(async (page: number) => {
+  const fetchUsers = useCallback(async (page: number, order: string, asc: 'ASC' | 'DESC') => {
     setIsLoading(true);
     setError(null);
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -72,8 +76,8 @@ export default function UsersPage() {
 
     try {
       const response = await api.post(`${backendUrl}/users/all`, {
-        order: 'createdAt',
-        asc: 'DESC',
+        order: order,
+        asc: asc,
         page: page,
         pageSize: 10,
       });
@@ -99,9 +103,8 @@ export default function UsersPage() {
   }, [api, toast]);
 
   useEffect(() => {
-    fetchUsers(pagination.page);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination.page]);
+    fetchUsers(pagination.page, sortColumn, sortDirection);
+  }, [fetchUsers, pagination.page, sortColumn, sortDirection]);
   
   const getInitials = (firstname: string, lastname: string) => {
     return `${firstname?.charAt(0) ?? ''}${lastname?.charAt(0) ?? ''}`.toUpperCase();
@@ -120,18 +123,48 @@ export default function UsersPage() {
 
   return (
     <Card className="flex flex-col h-full">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-            <CardTitle>Users</CardTitle>
-            <CardDescription>Manage the users in your nexus.</CardDescription>
+      <CardHeader>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+                <CardTitle>Users</CardTitle>
+                <CardDescription>Manage the users in your nexus.</CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+                <div className="grid gap-2">
+                    <Label htmlFor="sort-column" className="sr-only">Sort by</Label>
+                     <Select value={sortColumn} onValueChange={setSortColumn}>
+                        <SelectTrigger id="sort-column" className="w-[150px]">
+                            <SelectValue placeholder="Sort by" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="createdAt">Date Created</SelectItem>
+                            <SelectItem value="username">Username</SelectItem>
+                            <SelectItem value="email">Email</SelectItem>
+                            <SelectItem value="rating_avg">Rating</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                 <div className="grid gap-2">
+                    <Label htmlFor="sort-direction" className="sr-only">Sort direction</Label>
+                    <Select value={sortDirection} onValueChange={(value) => setSortDirection(value as 'ASC' | 'DESC')}>
+                        <SelectTrigger id="sort-direction" className="w-[150px]">
+                            <SelectValue placeholder="Sort direction" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="DESC">Descending</SelectItem>
+                            <SelectItem value="ASC">Ascending</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                {authUser?.isAdmin && <CreateUserDialog onUserCreated={() => fetchUsers(1, sortColumn, sortDirection)} />}
+            </div>
         </div>
-        {authUser?.isAdmin && <CreateUserDialog onUserCreated={() => fetchUsers(pagination.page)} />}
       </CardHeader>
       <CardContent className="p-0 flex-1 overflow-auto">
         {isLoading ? (
           <div className="p-4 space-y-2">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-4">
+              <div key={i} className="flex items-center gap-4 p-2">
                 <Skeleton className="h-10 w-10 rounded-full" />
                 <div className="flex-1 space-y-1">
                   <Skeleton className="h-4 w-1/4" />
@@ -154,7 +187,7 @@ export default function UsersPage() {
             </Alert>
         ) : (
           <Table>
-            <TableHeader className="sticky top-0 bg-card">
+            <TableHeader className="sticky top-0 bg-card z-10">
               <TableRow>
                 <TableHead>No.</TableHead>
                 <TableHead>Username</TableHead>
