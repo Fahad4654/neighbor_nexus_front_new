@@ -29,6 +29,7 @@ import { PlusCircle, Eye, EyeOff } from 'lucide-react';
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardDescription } from '../ui/card';
+import { Switch } from '../ui/switch';
 
 const LocationPicker = dynamic(
   () => import('@/components/shared/location-picker'),
@@ -42,6 +43,7 @@ const userSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   phoneNumber: z.string().min(10, 'Phone number is required'),
+  isAdmin: z.boolean().default(false),
   location: z.object({
     lat: z.number(),
     lng: z.number(),
@@ -69,6 +71,7 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
       email: '',
       password: '',
       phoneNumber: '',
+      isAdmin: false,
       location: null,
     },
   });
@@ -224,6 +227,24 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
                     <Input type="tel" placeholder="01712345678" {...field} />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="isAdmin"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel>Is Admin</FormLabel>
+                     <FormMessage />
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />
