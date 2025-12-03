@@ -69,7 +69,7 @@ export default function DashboardPage() {
                     <TableRow>
                         <TableHead>User</TableHead>
                         <TableHead className="hidden md:table-cell">Item</TableHead>
-                        <TableHead className="hidden md:table-cell">Status</TableHead>
+                        <TableHead className="hidden sm:table-cell">Status</TableHead>
                         <TableHead className="text-right">Amount</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -86,7 +86,7 @@ export default function DashboardPage() {
                                     </div>
                                 </TableCell>
                                 <TableCell className="hidden md:table-cell">{listing?.title}</TableCell>
-                                <TableCell className="hidden md:table-cell">
+                                <TableCell className="hidden sm:table-cell">
                                     <Badge variant={tx.status === 'completed' ? 'default' : 'secondary'} className="capitalize">{tx.status}</Badge>
                                 </TableCell>
                                 <TableCell className="text-right">BDT {tx.total.toFixed(2)}</TableCell>

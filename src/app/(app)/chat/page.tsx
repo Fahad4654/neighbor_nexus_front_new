@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getUserById } from "@/lib/data";
 import { cn } from "@/lib/utils";
-import { Search, Send, MessageCircle } from "lucide-react";
+import { Search, Send, MessageCircle, ArrowLeft } from "lucide-react";
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking } from "@/firebase";
 import { collection, query, orderBy, serverTimestamp } from "firebase/firestore";
 import AuthenticatedImage from "@/components/shared/authenticated-image";
@@ -68,7 +68,7 @@ function ConversationList({ onSelectConversation, selectedConversationId }: { on
     )
 }
 
-function ChatWindow({ conversationId }: { conversationId: string | null }) {
+function ChatWindow({ conversationId, onBack }: { conversationId: string | null, onBack: () => void }) {
     const { user } = useUser();
     const firestore = useFirestore();
     const [newMessage, setNewMessage] = useState('');
@@ -101,7 +101,7 @@ function ChatWindow({ conversationId }: { conversationId: string | null }) {
 
     if (!conversationId) {
         return (
-            <Card className="h-full flex flex-col items-center justify-center">
+            <Card className="h-full flex-col items-center justify-center hidden md:flex">
                 <div className="text-center">
                     <MessageCircle className="h-16 w-16 text-muted-foreground mx-auto" />
                     <h2 className="mt-4 text-xl font-semibold">Select a conversation</h2>
@@ -114,6 +114,9 @@ function ChatWindow({ conversationId }: { conversationId: string | null }) {
     return (
         <Card className="h-full flex flex-col">
             <div className="p-4 border-b flex items-center gap-3">
+                 <Button variant="ghost" size="icon" className="md:hidden" onClick={onBack}>
+                    <ArrowLeft className="h-6 w-6" />
+                 </Button>
                  <Avatar>
                     <AuthenticatedImage src={otherParticipant?.avatarUrl} alt={otherParticipant?.name || ''} className="aspect-square h-full w-full" />
                     <AvatarFallback>{otherParticipant?.name.charAt(0)}</AvatarFallback>
@@ -163,20 +166,23 @@ function ChatWindow({ conversationId }: { conversationId: string | null }) {
 export default function ChatPage() {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
 
-  // Automatically select the first conversation if available
-    React.useEffect(() => {
-        // This is a placeholder. In a real app you might fetch conversations and set the first one.
-        // For now, we can't do this easily without knowing the conversation IDs from firestore ahead of time.
-        // A user would typically click a conversation to select it.
-  }, []);
+  const handleSelectConversation = (id: string | null) => {
+    setSelectedConversationId(id);
+  }
 
   return (
     <div className="h-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <div className="md:col-span-1 lg:col-span-1 h-full hidden md:block">
-            <ConversationList onSelectConversation={setSelectedConversationId} selectedConversationId={selectedConversationId} />
+        <div className={cn(
+            "md:col-span-1 lg:col-span-1 h-full",
+            selectedConversationId && "hidden md:block"
+        )}>
+            <ConversationList onSelectConversation={handleSelectConversation} selectedConversationId={selectedConversationId} />
         </div>
-        <div className="md:col-span-2 lg:col-span-3 h-full">
-            <ChatWindow conversationId={selectedConversationId} />
+        <div className={cn(
+             "md:col-span-2 lg:col-span-3 h-full",
+             !selectedConversationId && "hidden md:block"
+        )}>
+            <ChatWindow conversationId={selectedConversationId} onBack={() => setSelectedConversationId(null)} />
         </div>
     </div>
   );

@@ -61,7 +61,7 @@ export default function NexusPage() {
           </CardContent>
         </Card>
       </div>
-      <div>
+      <div className="lg:col-span-1">
         <Card>
           <CardHeader>
             <CardTitle>Define Your Nexus</CardTitle>

@@ -151,7 +151,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background p-4">
+    <div className="flex items-center justify-center min-h-screen bg-background p-4 sm:p-6 lg:p-8">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
@@ -163,7 +163,7 @@ export default function SignupPage() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="first-name">First Name</Label>
                 <Input id="first-name" required value={firstname} onChange={(e) => setFirstname(e.target.value)} />
@@ -242,7 +242,7 @@ export default function SignupPage() {
             <div className="grid gap-2">
               <Label>Location</Label>
               <CardDescription>Search for or click on the map to set your location.</CardDescription>
-              <div className="h-[400px] rounded-md overflow-hidden border relative">
+              <div className="h-[300px] sm:h-[400px] rounded-md overflow-hidden border relative">
                 <LocationPicker onLocationChange={setLocation} />
               </div>
 

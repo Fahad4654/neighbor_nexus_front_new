@@ -129,7 +129,7 @@ export default function UsersPage() {
                 <CardTitle>Users</CardTitle>
                 <CardDescription>Manage the users in your nexus.</CardDescription>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
                 <div className="grid gap-2">
                     <Label htmlFor="sort-column" className="sr-only">Sort by</Label>
                      <Select value={sortColumn} onValueChange={setSortColumn}>
@@ -195,14 +195,14 @@ export default function UsersPage() {
               <TableRow>
                 <TableHead>No.</TableHead>
                 <TableHead>Username</TableHead>
-                <TableHead>Full Name</TableHead>
-                <TableHead className="hidden md:table-cell">Email</TableHead>
-                <TableHead className="hidden md:table-cell">Phone</TableHead>
+                <TableHead className="hidden sm:table-cell">Full Name</TableHead>
+                <TableHead className="hidden lg:table-cell">Email</TableHead>
+                <TableHead className="hidden xl:table-cell">Phone</TableHead>
                 <TableHead className="hidden sm:table-cell">Verified</TableHead>
-                <TableHead className="hidden sm:table-cell">Admin</TableHead>
-                <TableHead className="hidden md:table-cell">Rating</TableHead>
-                <TableHead className="hidden md:table-cell">Location</TableHead>
-                <TableHead className="hidden md:table-cell">Created</TableHead>
+                <TableHead className="hidden md:table-cell">Admin</TableHead>
+                <TableHead className="hidden lg:table-cell">Rating</TableHead>
+                <TableHead className="hidden xl:table-cell">Location</TableHead>
+                <TableHead className="hidden xl:table-cell">Created</TableHead>
                 <TableHead>
                   <span className="sr-only">Actions</span>
                 </TableHead>
@@ -221,23 +221,23 @@ export default function UsersPage() {
                       <div className="font-medium">{user.username}</div>
                     </div>
                   </TableCell>
-                  <TableCell>{user.firstname} {user.lastname}</TableCell>
-                  <TableCell className="hidden md:table-cell">{user.email}</TableCell>
-                  <TableCell className="hidden md:table-cell">{user.phoneNumber}</TableCell>
+                  <TableCell className="hidden sm:table-cell">{user.firstname} {user.lastname}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{user.email}</TableCell>
+                  <TableCell className="hidden xl:table-cell">{user.phoneNumber}</TableCell>
                   <TableCell className="hidden sm:table-cell">
                     <Badge variant={user.isVerified ? 'default' : 'secondary'}>
                       {user.isVerified ? <CheckCircle className="h-4 w-4 mr-1" /> : <XCircle className="h-4 w-4 mr-1" />}
                       {user.isVerified ? 'Verified' : 'Unverified'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell">
+                  <TableCell className="hidden md:table-cell">
                       <Badge variant={user.isAdmin ? 'default' : 'secondary'}>
                           {user.isAdmin ? 'Admin' : 'User'}
                       </Badge>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">{parseFloat(user.rating_avg).toFixed(1)}</TableCell>
-                  <TableCell className="hidden md:table-cell">{formatCoordinates(user.geo_location)}</TableCell>
-                  <TableCell className="hidden md:table-cell">{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{parseFloat(user.rating_avg).toFixed(1)}</TableCell>
+                  <TableCell className="hidden xl:table-cell">{formatCoordinates(user.geo_location)}</TableCell>
+                  <TableCell className="hidden xl:table-cell">{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
