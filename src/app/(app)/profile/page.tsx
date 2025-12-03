@@ -189,7 +189,7 @@ export default function ProfilePage() {
                         </Badge>
                     )}
                 </div>
-                 <div className="text-left w-full mt-4">
+                 <div className="text-center w-full mt-4">
                     <p className="font-semibold text-sm">Bio</p>
                     <p className="text-muted-foreground text-sm italic">"{profile.bio}"</p>
                 </div>
