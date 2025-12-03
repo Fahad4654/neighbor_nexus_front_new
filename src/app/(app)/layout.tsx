@@ -46,9 +46,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, [user, isLoading, router]);
 
 
-  const handleLogout = () => {
-    logout();
-    router.push('/');
+  const handleLogout = async () => {
+    await logout();
   }
 
   const getInitials = (firstname: string | undefined, lastname: string | undefined) => {
