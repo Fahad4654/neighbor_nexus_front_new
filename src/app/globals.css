@@ -4,50 +4,50 @@
 
 @layer base {
   :root {
-    --background: 140 80% 97%; /* Very Light Mint White */
-    --foreground: 215 19% 17%; /* Dark Slate */
+    --background: 248 100% 98%; /* Pale Lavender White */
+    --foreground: 244 49% 20%; /* Darker Indigo */
 
-    --card: 140 80% 98%; /* Slightly lighter than background */
-    --card-foreground: 215 19% 17%;
+    --card: 248 100% 99%; /* Slightly lighter than background */
+    --card-foreground: 244 49% 20%;
 
-    --popover: 140 80% 97%;
-    --popover-foreground: 215 19% 17%;
+    --popover: 248 100% 98%;
+    --popover-foreground: 244 49% 20%;
 
-    --primary: 194 93% 37%; /* Darker Cyan */
-    --primary-foreground: 140 80% 97%;
+    --primary: 327 82% 60%; /* Hot Pink */
+    --primary-foreground: 248 100% 98%;
 
-    --secondary: 43 97% 56%; /* Deep Amber/Gold */
-    --secondary-foreground: 215 19% 17%;
+    --secondary: 259 90% 66%; /* Vivid Violet */
+    --secondary-foreground: 244 49% 20%;
     
-    --muted: 216 15% 90%; /* Light Slate */
-    --muted-foreground: 215 19% 45%;
+    --muted: 244 49% 95%; /* Light Slate */
+    --muted-foreground: 244 49% 55%;
 
-    --accent: 43 97% 56%; /* Deep Amber/Gold */
-    --accent-foreground: 215 19% 17%;
+    --accent: 259 90% 66%; /* Vivid Violet */
+    --accent-foreground: 244 49% 20%;
 
     --destructive: 0 84% 60%; 
     --destructive-foreground: 210 40% 98%;
     
-    --border: 216 15% 85%;
-    --input: 216 15% 85%;
-    --ring: 194 93% 37%;
+    --border: 244 49% 90%;
+    --input: 244 49% 90%;
+    --ring: 327 82% 60%;
 
     --radius: 0.5rem;
     
-    --chart-1: 194 93% 37%;
-    --chart-2: 188 95% 43%;
-    --chart-3: 43 97% 56%;
-    --chart-4: 215 19% 17%;
-    --chart-5: 216 15% 90%;
+    --chart-1: 327 82% 60%;
+    --chart-2: 259 90% 66%;
+    --chart-3: 244 59% 50%;
+    --chart-4: 244 49% 20%;
+    --chart-5: 244 49% 95%;
 
-    --sidebar-background: 188 95% 43%; /* Strong Cyan/Teal */
-    --sidebar-foreground: 140 80% 97%;
-    --sidebar-primary: 194 93% 37%;
-    --sidebar-primary-foreground: 140 80% 97%;
-    --sidebar-accent: 194 93% 47%;
-    --sidebar-accent-foreground: 140 80% 97%;
-    --sidebar-border: 188 95% 38%;
-    --sidebar-ring: 43 97% 56%;
+    --sidebar-background: 244 59% 50%; /* Deep Indigo */
+    --sidebar-foreground: 248 100% 98%;
+    --sidebar-primary: 327 82% 60%;
+    --sidebar-primary-foreground: 248 100% 98%;
+    --sidebar-accent: 244 59% 60%;
+    --sidebar-accent-foreground: 248 100% 98%;
+    --sidebar-border: 244 59% 45%;
+    --sidebar-ring: 327 82% 60%;
   }
 
   .dark {
