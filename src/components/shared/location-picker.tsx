@@ -176,7 +176,7 @@ export default function LocationPicker({ onLocationChange, initialPosition }: Lo
         type="button"
         size="icon"
         variant="secondary"
-        className="absolute bottom-4 right-4 h-10 w-10 shadow-md"
+        className="absolute bottom-4 left-4 h-10 w-10 shadow-md"
         onClick={handleMyLocationClick}
       >
         <LocateFixed className="h-5 w-5" />
