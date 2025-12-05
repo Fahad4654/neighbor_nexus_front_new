@@ -77,7 +77,7 @@ export function DataTable<TData, TValue>({
     <div className='flex flex-col h-full w-full'>
        <div className="flex-1 overflow-auto rounded-md border">
         <Table>
-          <TableHeader className="sticky top-0 bg-primary z-10 text-primary-foreground">
+          <TableHeader className="sticky top-0 z-10 bg-primary text-primary-foreground">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="border-b-0">
                 {headerGroup.headers.map((header) => {
