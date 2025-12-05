@@ -4,50 +4,50 @@
 
 @layer base {
   :root {
-    --background: 212 100% 97%; /* Very Pale Blue Tint */
-    --foreground: 224 59% 21%; /* Deep Navy */
+    --background: 182 83% 93%; /* Pale Aqua Tint */
+    --foreground: 222 46% 9%; /* Near Black/Navy */
 
     --card: 0 0% 100%; /* White */
-    --card-foreground: 224 59% 21%;
+    --card-foreground: 222 46% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 224 59% 21%;
+    --popover-foreground: 222 46% 9%;
 
-    --primary: 221 83% 53%; /* Strong Royal Blue */
+    --primary: 217 35% 37%; /* Darker Mid-Blue */
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 217 91% 60%; /* Medium Soft Blue */
-    --secondary-foreground: 224 59% 21%;
+    --secondary: 203 44% 73%; /* Muted Sky Blue */
+    --secondary-foreground: 222 46% 9%;
     
-    --muted: 212 100% 97%; /* Same as background */
-    --muted-foreground: 224 59% 31%;
+    --muted: 182 83% 96%; /* Lighter Pale Aqua Tint */
+    --muted-foreground: 222 46% 25%;
 
-    --accent: 217 91% 70%; /* Lighter version of Medium Soft Blue for hover */
-    --accent-foreground: 224 59% 21%;
+    --accent: 203 44% 80%; /* Lighter version of Muted Sky Blue for hover */
+    --accent-foreground: 222 46% 9%;
 
     --destructive: 0 84% 60%; 
     --destructive-foreground: 210 40% 98%;
     
-    --border: 214 10% 84%; /* Light Cool Gray */
-    --input: 214 10% 84%;
-    --ring: 221 83% 53%;
+    --border: 203 44% 85%; /* Lighter Muted Sky Blue for borders */
+    --input: 203 44% 85%;
+    --ring: 217 35% 37%;
 
     --radius: 0.5rem;
     
-    --chart-1: 221 83% 53%;
-    --chart-2: 217 91% 60%;
-    --chart-3: 217 91% 70%;
-    --chart-4: 221 83% 73%;
-    --chart-5: 217 91% 80%;
+    --chart-1: 217 35% 37%;
+    --chart-2: 203 44% 73%;
+    --chart-3: 45 93% 76%; /* A contrasting warm color for charts if needed */
+    --chart-4: 217 35% 57%;
+    --chart-5: 203 44% 63%;
 
     /* Sidebar Colors */
-    --sidebar-background: 217 91% 60%; /* Medium Soft Blue */
+    --sidebar-background: 205 33% 44%; /* Soft Deep Sea Blue */
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 210 40% 98%;
-    --sidebar-primary-foreground: 217 91% 60%;
-    --sidebar-accent: 217 91% 55%; /* Darker hover for sidebar */
+    --sidebar-primary-foreground: 205 33% 44%;
+    --sidebar-accent: 205 33% 39%; /* Darker hover for sidebar */
     --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 91% 55%;
+    --sidebar-border: 205 33% 39%;
     --sidebar-ring: 210 40% 98%;
   }
 
