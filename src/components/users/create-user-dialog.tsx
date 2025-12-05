@@ -106,7 +106,7 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
 
       toast({
         title: 'User Created',
-        description: `User @${values.username} has been successfully created.`,
+        description: `User ${values.username} has been successfully created.`,
       });
 
       form.reset();

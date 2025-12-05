@@ -123,7 +123,7 @@ export function EditUserDialog({ user, onUserUpdated }: EditUserDialogProps) {
 
       toast({
         title: 'User Updated',
-        description: `User @${user.username} has been successfully updated.`,
+        description: `User ${user.username} has been successfully updated.`,
       });
 
       onUserUpdated();
@@ -144,7 +144,7 @@ export function EditUserDialog({ user, onUserUpdated }: EditUserDialogProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[625px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit User: @{user.username}</DialogTitle>
+          <DialogTitle>Edit User: {user.username}</DialogTitle>
           <DialogDescription>
             Update the details for this user below.
           </DialogDescription>
