@@ -142,7 +142,6 @@ export default function ProfilePage() {
         });
     }
     setIsEditing(false);
-    window.location.reload();
   };
 
   const handleSave = async () => {
@@ -172,7 +171,6 @@ export default function ProfilePage() {
             description: "Your information has been saved successfully.",
         });
         setIsEditing(false);
-        window.location.reload();
     } catch(error: any) {
          toast({
             variant: "destructive",
