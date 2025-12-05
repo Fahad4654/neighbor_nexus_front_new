@@ -79,7 +79,7 @@ export function DataTable<TData, TValue>({
         <Table>
           <TableHeader className="sticky top-0 z-10 bg-primary text-primary-foreground">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="border-b-0">
+              <TableRow key={headerGroup.id} className="border-b-0 hover:bg-primary">
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} className="whitespace-nowrap text-primary-foreground">
@@ -167,9 +167,8 @@ export function DataTable<TData, TValue>({
             </Select>
         </div>
         <div>
-          {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
-          {Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, table.getFilteredRowModel().rows.length)} of{' '}
-          {table.getFilteredRowModel().rows.length}
+          Page {table.getState().pagination.pageIndex + 1} of{' '}
+          {table.getPageCount()}
         </div>
         <div className="flex items-center gap-2">
           <Button

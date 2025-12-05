@@ -122,7 +122,7 @@ const columns: ColumnDef<User>[] = [
 
 
 export default function UsersPage() {
-  const { api } = useAuth();
+  const { api, user } = useAuth();
   const { toast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -196,7 +196,10 @@ export default function UsersPage() {
   
   return (
     <div className="w-full h-full flex flex-col">
-        <h1 className="text-2xl font-bold mb-4">Users</h1>
+        <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold">Users</h1>
+            {user && user.isAdmin && <CreateUserDialog onUserCreated={() => fetchUsers(pageIndex, pageSize, sorting)} />}
+        </div>
         <div className="flex-1 w-full overflow-hidden">
             <DataTable
                 columns={columns}
