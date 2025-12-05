@@ -4,51 +4,51 @@
 
 @layer base {
   :root {
-    --background: 182 83% 93%; /* Pale Aqua Tint */
-    --foreground: 222 46% 9%; /* Near Black/Navy */
+    --background: 210 17% 98%; /* Minimalist Cool White */
+    --foreground: 210 12% 33%; /* Dark Cool Gray */
 
     --card: 0 0% 100%; /* White */
-    --card-foreground: 222 46% 9%;
+    --card-foreground: 210 12% 33%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 46% 9%;
+    --popover-foreground: 210 12% 33%;
 
-    --primary: 217 35% 37%; /* Darker Mid-Blue */
-    --primary-foreground: 210 40% 98%;
+    --primary: 205 21% 45%; /* Mid-Tone Slate */
+    --primary-foreground: 210 20% 98%;
 
-    --secondary: 203 44% 73%; /* Muted Sky Blue */
-    --secondary-foreground: 222 46% 9%;
+    --secondary: 210 27% 94%; /* Light Cool Grey for secondary elements */
+    --secondary-foreground: 210 12% 33%;
     
-    --muted: 182 83% 96%; /* Lighter Pale Aqua Tint */
-    --muted-foreground: 222 46% 25%;
+    --muted: 210 27% 96%; /* Lighter version of secondary */
+    --muted-foreground: 210 12% 43%;
 
-    --accent: 203 44% 80%; /* Lighter version of Muted Sky Blue for hover */
-    --accent-foreground: 222 46% 9%;
+    --accent: 210 27% 92%; /* Slightly darker for hover */
+    --accent-foreground: 210 12% 23%;
 
-    --destructive: 0 84% 60%; 
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%; 
+    --destructive-foreground: 0 0% 98%;
     
-    --border: 203 44% 85%; /* Lighter Muted Sky Blue for borders */
-    --input: 203 44% 85%;
-    --ring: 217 35% 37%;
+    --border: 210 27% 94%; /* Light Cool Grey */
+    --input: 210 27% 94%;
+    --ring: 205 21% 45%;
 
     --radius: 0.5rem;
     
-    --chart-1: 217 35% 37%;
-    --chart-2: 203 44% 73%;
-    --chart-3: 45 93% 76%; /* A contrasting warm color for charts if needed */
-    --chart-4: 217 35% 57%;
-    --chart-5: 203 44% 63%;
+    --chart-1: 205 21% 45%;
+    --chart-2: 205 21% 65%;
+    --chart-3: 205 21% 55%;
+    --chart-4: 205 21% 75%;
+    --chart-5: 205 21% 85%;
 
     /* Sidebar Colors */
-    --sidebar-background: 205 33% 44%; /* Soft Deep Sea Blue */
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 210 40% 98%;
-    --sidebar-primary-foreground: 205 33% 44%;
-    --sidebar-accent: 205 33% 39%; /* Darker hover for sidebar */
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 205 33% 39%;
-    --sidebar-ring: 210 40% 98%;
+    --sidebar-background: 200 24% 85%; /* Extremely Pale Blue-Grey */
+    --sidebar-foreground: 210 12% 33%;
+    --sidebar-primary: 210 12% 33%;
+    --sidebar-primary-foreground: 200 24% 85%;
+    --sidebar-accent: 200 24% 80%; /* Darker hover for sidebar */
+    --sidebar-accent-foreground: 210 12% 23%;
+    --sidebar-border: 200 24% 80%;
+    --sidebar-ring: 210 12% 33%;
   }
 
   .dark {
