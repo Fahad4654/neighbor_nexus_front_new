@@ -365,9 +365,9 @@ export default function ProfilePage() {
                     <p className="font-semibold text-sm">Bio</p>
                     {isEditing ? (
                         <>
-                          <Textarea id="bio" value={editableData.bio} onChange={handleInputChange} className="mt-1 text-sm min-h-[80px]" maxLength={200} />
+                          <Textarea id="bio" value={editableData.bio} onChange={handleInputChange} className="mt-1 text-sm min-h-[80px]" maxLength={100} />
                           <p className="text-xs text-muted-foreground text-right mt-1">
-                            {editableData.bio.length} / 200
+                            {editableData.bio.length} / 100
                           </p>
                         </>
                     ) : (
