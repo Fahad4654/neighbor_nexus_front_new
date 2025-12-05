@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import { format, parseISO } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,11 @@ import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+
+const LocationPicker = dynamic(
+  () => import('@/components/shared/location-picker'),
+  { ssr: false, loading: () => <Skeleton className="h-[200px] w-full" /> }
+);
 
 type User = {
     id: string;
@@ -52,6 +58,7 @@ type EditableProfile = {
     phoneNumber: string;
     address: string;
     bio: string;
+    location: { lat: number; lng: number; } | null;
 };
 
 // Helper function to add ordinal suffix to day
@@ -93,22 +100,29 @@ export default function ProfilePage() {
           throw new Error((data as any).message || (data as any).error || 'Failed to fetch profile data');
       }
       setProfileData(data);
+      const [lng, lat] = data.user.geo_location?.coordinates || [0, 0];
       setEditableData({
         firstname: data.user.firstname,
         lastname: data.user.lastname,
         phoneNumber: data.user.phoneNumber,
         address: data.profile.address,
         bio: data.profile.bio,
+        location: { lat, lng }
       });
 
       if (updateGlobalState) {
-        // Construct the full User object that matches the type in useAuth
-        const fullUserObject = {
-            ...(authUser as User), // Start with the existing auth user to preserve fields
-            ...data.user, // Overwrite with fresh user data
-            profile: data.profile, // Add the fresh profile data
+        // Re-construct the user object to match the useAuth type and update global state
+        const updatedAuthUser = {
+          ...authUser, // existing fields
+          ...data.user, // fresh user data
+          // Ensure coordinates are correctly mapped for the global state
+          geo_location: data.user.geo_location,
+          profile: {
+            ...authUser.profile, // existing profile fields
+            ...data.profile, // fresh profile data
+          },
         };
-        updateUser(fullUserObject);
+        updateUser(updatedAuthUser);
       }
 
     } catch (error: any) {
@@ -134,15 +148,21 @@ export default function ProfilePage() {
     const { id, value } = e.target;
     setEditableData(prev => prev ? { ...prev, [id]: value } : null);
   };
+
+  const handleLocationChange = (location: { lat: number; lng: number } | null) => {
+    setEditableData(prev => prev ? { ...prev, location } : null);
+  };
   
   const handleCancel = () => {
     if (profileData) {
+        const [lng, lat] = profileData.user.geo_location?.coordinates || [0, 0];
         setEditableData({
             firstname: profileData.user.firstname,
             lastname: profileData.user.lastname,
             phoneNumber: profileData.user.phoneNumber,
             address: profileData.profile.address,
             bio: profileData.profile.bio,
+            location: { lat, lng }
         });
     }
     setIsEditing(false);
@@ -160,7 +180,7 @@ export default function ProfilePage() {
     }
     
     try {
-        const { firstname, lastname, phoneNumber, bio, address } = editableData;
+        const { firstname, lastname, phoneNumber, bio, address, location } = editableData;
 
         // API call to update user details
         const userPromise = api.put(`${backendUrl}/users`, {
@@ -168,6 +188,7 @@ export default function ProfilePage() {
             firstname,
             lastname,
             phoneNumber,
+            geo_location: location, // Include updated location
             updatedBy: authUser.id
         });
 
@@ -313,7 +334,9 @@ export default function ProfilePage() {
   const { user, profile } = profileData;
   const rating = parseFloat(user.rating_avg);
   const fullName = `${user.firstname} ${user.lastname}`;
-  const coordinates = user.geo_location?.coordinates ? `[${user.geo_location.coordinates.join(', ')}]` : 'Not available';
+  const coordinates = editableData.location 
+    ? `[${editableData.location.lng.toFixed(4)}, ${editableData.location.lat.toFixed(4)}]` 
+    : 'Not available';
 
   const formattedDate = (dateString: string) => {
     try {
@@ -413,12 +436,18 @@ export default function ProfilePage() {
                 <Label htmlFor="address">Your Address</Label>
                 <Input id="address" value={editableData.address} onChange={handleInputChange} disabled={!isEditing} />
             </div>
-             <div className="space-y-2">
-                <Label htmlFor="geolocation">Geo Location (Coordinates)</Label>
-                <div className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-muted-foreground" />
-                    <Input id="geolocation" defaultValue={coordinates} disabled />
-                </div>
+            <div className="space-y-2">
+              <Label htmlFor="geolocation">{isEditing ? 'Update Your Location' : 'Geo Location (Coordinates)'}</Label>
+              {isEditing ? (
+                  <div className="h-[200px] rounded-md overflow-hidden border relative">
+                      <LocationPicker onLocationChange={handleLocationChange} />
+                  </div>
+              ) : (
+                  <div className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5 text-muted-foreground" />
+                      <Input id="geolocation" value={coordinates} disabled />
+                  </div>
+              )}
             </div>
           </CardContent>
           <CardFooter className="border-t px-6 py-4">
@@ -445,3 +474,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    
