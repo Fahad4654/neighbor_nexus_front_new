@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import type { ColumnDef, SortingState, PaginationState } from '@tanstack/react-table';
+import type { ColumnDef, SortingState, PaginationState, OnChangeFn } from '@tanstack/react-table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -70,6 +70,12 @@ export default function UsersPage() {
     }),
     [pageIndex, pageSize]
   );
+
+  const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
+    setSorting(updater);
+    // When sorting changes, reset to the first page
+    setPagination(prev => ({ ...prev, pageIndex: 0 }));
+  };
   
   const columns: ColumnDef<User>[] = useMemo(() => [
     {
@@ -223,7 +229,7 @@ export default function UsersPage() {
                 pagination={{ ...pagination, pageCount }}
                 onPaginationChange={setPagination}
                 sorting={sorting}
-                onSortingChange={setSorting}
+                onSortingChange={handleSortingChange}
                 totalRecords={totalUsers}
             />
         </div>
