@@ -182,8 +182,12 @@ export function DataTable<TData, TValue>({
                 </SelectContent>
             </Select>
         </div>
-        <div>
-          Showing {table.getRowModel().rows.length} of {totalRecords} records
+        <div className='flex items-center gap-4'>
+            <div>Page {pagination.pageIndex + 1} of {pagination.pageCount}</div>
+            <div>
+            Showing {table.getRowModel().rows.length > 0 ? (pagination.pageIndex * pagination.pageSize) + 1 : 0}-
+            {(pagination.pageIndex * pagination.pageSize) + table.getRowModel().rows.length} of {totalRecords} records
+            </div>
         </div>
         <div className="flex items-center gap-2">
           <Button
