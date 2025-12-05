@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 type User = {
     id: string;
@@ -50,6 +51,7 @@ type EditableProfile = {
     lastname: string;
     phoneNumber: string;
     address: string;
+    bio: string;
 };
 
 // Helper function to add ordinal suffix to day
@@ -96,6 +98,7 @@ export default function ProfilePage() {
         lastname: data.user.lastname,
         phoneNumber: data.user.phoneNumber,
         address: data.profile.address,
+        bio: data.profile.bio,
       });
 
       if (updateGlobalState) {
@@ -127,7 +130,7 @@ export default function ProfilePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authUser]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setEditableData(prev => prev ? { ...prev, [id]: value } : null);
   };
@@ -139,6 +142,7 @@ export default function ProfilePage() {
             lastname: profileData.user.lastname,
             phoneNumber: profileData.user.phoneNumber,
             address: profileData.profile.address,
+            bio: profileData.profile.bio,
         });
     }
     setIsEditing(false);
@@ -156,11 +160,28 @@ export default function ProfilePage() {
     }
     
     try {
-        const response = await api.put(`${backendUrl}/users/${authUser.id}`, editableData);
-        const result = await response.json();
+        const { firstname, lastname, phoneNumber, bio, address } = editableData;
 
-        if(!response.ok) {
-            throw new Error(result.message || result.error || "Failed to update profile.");
+        // API call to update user details
+        const userPromise = api.put(`${backendUrl}/users/${authUser.id}`, {
+            firstname,
+            lastname,
+            phoneNumber,
+        });
+
+        // API call to update profile details
+        const profilePromise = api.put(`${backendUrl}/profile`, {
+            userId: authUser.id,
+            bio,
+            address,
+        });
+
+        const [userResponse, profileResponse] = await Promise.all([userPromise, profilePromise]);
+
+        if(!userResponse.ok || !profileResponse.ok) {
+             const userResult = !userResponse.ok ? await userResponse.json() : null;
+             const profileResult = !profileResponse.ok ? await profileResponse.json() : null;
+             throw new Error(userResult?.message || profileResult?.message || "Failed to update profile.");
         }
         
         // Refetch profile data to show updated info, and update global state
@@ -340,7 +361,11 @@ export default function ProfilePage() {
                 </div>
                  <div className="text-center w-full mt-4">
                     <p className="font-semibold text-sm">Bio</p>
-                    <p className="text-muted-foreground text-sm italic">"{profile.bio}"</p>
+                    {isEditing ? (
+                        <Textarea id="bio" value={editableData.bio} onChange={handleInputChange} className="mt-1 text-sm min-h-[80px]" />
+                    ) : (
+                        <p className="text-muted-foreground text-sm italic">"{profile.bio}"</p>
+                    )}
                 </div>
                 <p className="text-muted-foreground mt-4 text-sm">Member since {formattedDate(user.createdAt)}</p>
             </CardContent>

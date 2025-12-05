@@ -72,6 +72,25 @@
         "content",
         "isRead"
       ]
+    },
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Stores additional, less frequently accessed user profile information.",
+      "type": "object",
+      "properties": {
+        "bio": {
+          "type": "string",
+          "description": "A short biography or description of the user."
+        },
+        "address": {
+          "type": "string",
+          "description": "The user's physical address."
+        },
+        "avatarUrl": {
+          "type": "string",
+          "description": "URL to the user's profile picture."
+        }
+      }
     }
   },
   "auth": {
