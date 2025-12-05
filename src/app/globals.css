@@ -4,51 +4,51 @@
 
 @layer base {
   :root {
-    --background: 210 100% 96%; /* Ice White/Lightest Azure Tint */
-    --foreground: 225 58% 21%; /* Deep Navy */
+    --background: 200 86% 98%; /* Near White with a faint blue tint */
+    --foreground: 204 29% 26%; /* Cool Navy */
 
-    --card: 210 100% 98%; /* Slightly lighter than background */
-    --card-foreground: 225 58% 21%;
+    --card: 200 86% 99%; /* Slightly lighter than background */
+    --card-foreground: 204 29% 26%;
 
-    --popover: 210 100% 96%;
-    --popover-foreground: 225 58% 21%;
+    --popover: 200 86% 98%;
+    --popover-foreground: 204 29% 26%;
 
-    --primary: 221 76% 48%; /* Dark Royal Blue */
+    --primary: 200 27% 45%; /* Deep Slate Blue */
     --primary-foreground: 210 100% 98%;
 
-    --secondary: 217 95% 68%; /* Soft Azure */
-    --secondary-foreground: 225 58% 21%;
+    --secondary: 34 94% 81%; /* Soft Peach/Apricot */
+    --secondary-foreground: 204 29% 26%;
     
-    --muted: 220 50% 95%; /* Light Slate */
-    --muted-foreground: 225 58% 45%;
+    --muted: 200 30% 96%; /* Lighter version of background for muted elements */
+    --muted-foreground: 204 29% 45%;
 
-    --accent: 217 95% 68%; /* Soft Azure */
-    --accent-foreground: 225 58% 21%;
+    --accent: 34 94% 81%; /* Soft Peach/Apricot */
+    --accent-foreground: 204 29% 26%;
 
     --destructive: 0 84% 60%; 
     --destructive-foreground: 210 40% 98%;
     
-    --border: 220 50% 90%;
-    --input: 220 50% 90%;
-    --ring: 221 76% 48%;
+    --border: 35 44% 82%; /* Pale Sand for borders */
+    --input: 35 44% 82%;
+    --ring: 200 27% 45%;
 
     --radius: 0.5rem;
     
-    --chart-1: 221 76% 48%;
-    --chart-2: 217 95% 68%;
-    --chart-3: 215 91% 60%;
-    --chart-4: 225 58% 21%;
-    --chart-5: 220 50% 95%;
+    --chart-1: 200 27% 45%;
+    --chart-2: 34 94% 81%;
+    --chart-3: 196 33% 66%;
+    --chart-4: 204 29% 26%;
+    --chart-5: 200 30% 96%;
 
     /* Sidebar Colors */
-    --sidebar-background: 214 91% 60%; /* Vibrant Azure */
+    --sidebar-background: 196 33% 66%; /* Muted Seafoam Blue */
     --sidebar-foreground: 210 100% 98%;
-    --sidebar-primary: 221 76% 48%;
+    --sidebar-primary: 200 27% 45%;
     --sidebar-primary-foreground: 210 100% 98%;
-    --sidebar-accent: 214 91% 70%;
-    --sidebar-accent-foreground: 210 100% 98%;
-    --sidebar-border: 214 91% 55%;
-    --sidebar-ring: 221 76% 48%;
+    --sidebar-accent: 196 33% 76%;
+    --sidebar-accent-foreground: 204 29% 16%;
+    --sidebar-border: 196 33% 61%;
+    --sidebar-ring: 200 27% 45%;
   }
 
   .dark {
