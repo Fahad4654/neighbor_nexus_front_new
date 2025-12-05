@@ -96,10 +96,13 @@ export default function ProfilePage() {
       });
 
       if (updateGlobalState) {
-        // We only want to update the global state when we explicitly ask for it
-        // This is to avoid overwriting the global state on every fetch
-        // For example, on initial load we want the global state to be fresh from the API.
-        updateUser(data.user);
+        // The API returns { user: {...}, profile: {...} }
+        // We need to merge these into the structure the `useAuth` hook expects
+        const fullUserObject = {
+            ...data.user,
+            profile: data.profile,
+        };
+        updateUser(fullUserObject);
       }
 
     } catch (error: any) {
