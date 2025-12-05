@@ -4,51 +4,51 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%; /* Crisp White */
-    --foreground: 0 0% 23%; /* Mid-Tone Charcoal */
+    --background: 210 17% 98%; /* Clean Off-White */
+    --foreground: 227 19% 24%; /* Dark Blue-Grey */
 
-    --card: 45 100% 94%; /* Soft Cream */
-    --card-foreground: 0 0% 23%;
+    --card: 0 0% 100%; /* White for cards to pop against off-white bg */
+    --card-foreground: 227 19% 24%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 23%;
+    --popover-foreground: 227 19% 24%;
 
-    --primary: 27 28% 57%; /* Muted Sand/Taupe */
-    --primary-foreground: 45 100% 96%; /* Very light cream for contrast */
+    --primary: 262 35% 51%; /* Deep Lavender */
+    --primary-foreground: 262 35% 96%; /* Light foreground for contrast */
 
-    --secondary: 45 100% 94%; /* Soft Cream */
-    --secondary-foreground: 0 0% 23%;
+    --secondary: 209 83% 87%; /* Pale Powder Blue */
+    --secondary-foreground: 227 19% 24%;
     
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 45 100% 94%; /* Soft Cream */
-    --accent-foreground: 0 0% 23%;
+    --accent: 209 83% 87%; /* Pale Powder Blue */
+    --accent-foreground: 227 19% 24%;
 
     --destructive: 0 84% 60%; 
     --destructive-foreground: 210 40% 98%;
     
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 27 28% 57%;
+    --ring: 262 35% 51%;
 
     --radius: 0.5rem;
     
-    --chart-1: 27 28% 57%;
-    --chart-2: 198 25% 67%;
-    --chart-3: 45 100% 94%;
-    --chart-4: 30 25% 75%;
-    --chart-5: 215 20% 65%;
+    --chart-1: 262 35% 51%;
+    --chart-2: 231 100% 86%;
+    --chart-3: 209 83% 87%;
+    --chart-4: 262 35% 71%;
+    --chart-5: 231 100% 76%;
 
     /* Sidebar Colors */
-    --sidebar-background: 198 25% 67%; /* Pastel Blue */
-    --sidebar-foreground: 0 0% 23%;
-    --sidebar-primary: 27 28% 57%;
-    --sidebar-primary-foreground: 45 100% 96%;
-    --sidebar-accent: 198 25% 77%; /* Lighter Pastel Blue for hover */
-    --sidebar-accent-foreground: 0 0% 15%;
-    --sidebar-border: 198 25% 62%;
-    --sidebar-ring: 27 28% 57%;
+    --sidebar-background: 231 100% 86%; /* Soft Periwinkle */
+    --sidebar-foreground: 227 19% 24%;
+    --sidebar-primary: 262 35% 51%;
+    --sidebar-primary-foreground: 262 35% 96%;
+    --sidebar-accent: 231 100% 90%; /* Lighter Periwinkle for hover */
+    --sidebar-accent-foreground: 227 19% 15%;
+    --sidebar-border: 231 100% 80%;
+    --sidebar-ring: 262 35% 51%;
   }
 
   .dark {
