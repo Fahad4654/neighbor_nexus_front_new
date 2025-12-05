@@ -103,7 +103,7 @@ export default function ProfilePage() {
 
       if (updateGlobalState) {
         // Construct the full User object that matches the type in useAuth
-        const fullUserObject: User = {
+        const fullUserObject = {
             ...(authUser as User), // Start with the existing auth user to preserve fields
             ...data.user, // Overwrite with fresh user data
             profile: data.profile, // Add the fresh profile data
@@ -163,7 +163,7 @@ export default function ProfilePage() {
         const { firstname, lastname, phoneNumber, bio, address } = editableData;
 
         // API call to update user details
-        const userPromise = api.put(`${backendUrl}/users/${authUser.id}`, {
+        const userPromise = api.put(`${backendUrl}/users`, {
             id: authUser.id,
             firstname,
             lastname,
@@ -440,5 +440,7 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    
 
     
