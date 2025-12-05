@@ -164,9 +164,11 @@ export default function ProfilePage() {
 
         // API call to update user details
         const userPromise = api.put(`${backendUrl}/users/${authUser.id}`, {
+            id: authUser.id,
             firstname,
             lastname,
             phoneNumber,
+            updatedBy: authUser.id
         });
 
         // API call to update profile details
@@ -410,7 +412,7 @@ export default function ProfilePage() {
                 <Label htmlFor="geolocation">Geo Location (Coordinates)</Label>
                 <div className="flex items-center gap-2">
                     <MapPin className="h-5 w-5 text-muted-foreground" />
-                    <Input id="geolocation" defaultValue={coordinates} disabled={!isEditing} />
+                    <Input id="geolocation" defaultValue={coordinates} disabled />
                 </div>
             </div>
           </CardContent>
@@ -438,3 +440,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    
