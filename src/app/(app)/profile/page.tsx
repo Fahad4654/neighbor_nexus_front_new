@@ -15,23 +15,28 @@ import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 
-type UserProfile = {
-    user: {
+type User = {
+    id: string;
+    username: string;
+    firstname: string;
+    lastname: string;
+    email: string;
+    phoneNumber: string;
+    isAdmin: boolean;
+    isVerified: boolean;
+    rating_avg: string;
+    geo_location: any;
+    createdAt: string;
+    updatedAt: string;
+    profile: {
         id: string;
-        username: string;
-        firstname: string;
-        lastname: string;
-        email: string;
-        phoneNumber: string;
-        isAdmin: boolean;
-        isVerified: boolean;
-        rating_avg: string;
-        createdAt: string;
-        geo_location: {
-            type: string;
-            coordinates: [number, number];
-        }
+        bio: string;
+        avatarUrl: string;
     };
+};
+
+type UserProfileResponse = {
+    user: Omit<User, 'profile' | 'geo_location' | 'updatedAt'> & { geo_location: { type: string; coordinates: [number, number]; }};
     profile: {
         id: string;
         bio: string;
@@ -61,7 +66,7 @@ const getDayWithOrdinal = (day: number) => {
 export default function ProfilePage() {
   const { user: authUser, api, updateUser } = useAuth();
   const { toast } = useToast();
-  const [profileData, setProfileData] = useState<UserProfile | null>(null);
+  const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
   const [editableData, setEditableData] = useState<EditableProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -71,8 +76,6 @@ export default function ProfilePage() {
   const fetchProfile = async (updateGlobalState = false) => {
     if (!authUser) return;
     
-    // We don't need to set loading to true for a refetch on save
-    // setIsLoading(true); 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     if (!backendUrl) {
         toast({ variant: "destructive", title: "Configuration Error" });
@@ -82,10 +85,10 @@ export default function ProfilePage() {
 
     try {
       const response = await api.get(`${backendUrl}/users/${authUser.id}`);
-      const data = await response.json();
+      const data: UserProfileResponse = await response.json();
 
       if (!response.ok) {
-          throw new Error(data.message || data.error || 'Failed to fetch profile data');
+          throw new Error((data as any).message || (data as any).error || 'Failed to fetch profile data');
       }
       setProfileData(data);
       setEditableData({
@@ -96,12 +99,11 @@ export default function ProfilePage() {
       });
 
       if (updateGlobalState) {
-        // The API returns { user: {...}, profile: {...} }
-        // We need to merge these into the structure the `useAuth` hook expects
-        const fullUserObject = {
-            ...authUser, // a user object that may be stale
-            ...data.user,
-            profile: data.profile,
+        // Construct the full User object that matches the type in useAuth
+        const fullUserObject: User = {
+            ...authUser, // Start with the existing auth user to preserve fields
+            ...data.user, // Overwrite with fresh user data
+            profile: data.profile, // Add the fresh profile data
         };
         updateUser(fullUserObject);
       }
@@ -411,5 +413,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-    

@@ -79,14 +79,15 @@ export const useAuth = () => {
         performLogout();
     }, [api, performLogout]);
 
-    const updateUser = useCallback((newUserData: Partial<User>) => {
-        setUser(prevUser => {
-            const updatedUser = prevUser ? { ...prevUser, ...newUserData } : null;
-            if (updatedUser) {
-                 localStorage.setItem('user', JSON.stringify(updatedUser));
-            }
-            return updatedUser;
-        });
+    const updateUser = useCallback((newUserData: User) => {
+        // First, update localStorage with the complete new user object.
+        localStorage.setItem('user', JSON.stringify(newUserData));
+        // Then, update the state by reading from localStorage again.
+        // This ensures a fresh object reference and triggers re-renders reliably.
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
     }, []);
 
 
