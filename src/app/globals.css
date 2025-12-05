@@ -4,50 +4,50 @@
 
 @layer base {
   :root {
-    --background: 36 27% 96%; /* Warm Off-White/Cream */
-    --foreground: 340 5% 21%; /* Dark Taupe/Soft Black */
+    --background: 140 80% 97%; /* Very Light Mint White */
+    --foreground: 215 19% 17%; /* Dark Slate */
 
-    --card: 36 27% 97%; /* Slightly lighter than background */
-    --card-foreground: 340 5% 21%;
+    --card: 140 80% 98%; /* Slightly lighter than background */
+    --card-foreground: 215 19% 17%;
 
-    --popover: 36 27% 96%;
-    --popover-foreground: 340 5% 21%;
+    --popover: 140 80% 97%;
+    --popover-foreground: 215 19% 17%;
 
-    --primary: 25 39% 44%; /* Deep Clay Brown */
-    --primary-foreground: 36 27% 96%;
+    --primary: 194 93% 37%; /* Darker Cyan */
+    --primary-foreground: 140 80% 97%;
 
-    --secondary: 38 46% 73%; /* Pale Sand */
-    --secondary-foreground: 340 5% 21%;
+    --secondary: 43 97% 56%; /* Deep Amber/Gold */
+    --secondary-foreground: 215 19% 17%;
     
-    --muted: 38 46% 85%;
-    --muted-foreground: 340 5% 35%;
+    --muted: 216 15% 90%; /* Light Slate */
+    --muted-foreground: 215 19% 45%;
 
-    --accent: 38 46% 73%; /* Pale Sand */
-    --accent-foreground: 340 5% 21%;
+    --accent: 43 97% 56%; /* Deep Amber/Gold */
+    --accent-foreground: 215 19% 17%;
 
     --destructive: 0 84% 60%; 
     --destructive-foreground: 210 40% 98%;
     
-    --border: 38 46% 80%; /* Pale Sand for borders */
-    --input: 38 46% 80%;
-    --ring: 25 39% 44%;
+    --border: 216 15% 85%;
+    --input: 216 15% 85%;
+    --ring: 194 93% 37%;
 
     --radius: 0.5rem;
     
-    --chart-1: 25 39% 44%;
-    --chart-2: 18 55% 47%;
-    --chart-3: 38 46% 73%;
-    --chart-4: 340 5% 21%;
-    --chart-5: 38 46% 85%;
+    --chart-1: 194 93% 37%;
+    --chart-2: 188 95% 43%;
+    --chart-3: 43 97% 56%;
+    --chart-4: 215 19% 17%;
+    --chart-5: 216 15% 90%;
 
-    --sidebar-background: 18 55% 47%; /* Muted Terracotta/Rust */
-    --sidebar-foreground: 36 27% 96%;
-    --sidebar-primary: 25 39% 44%;
-    --sidebar-primary-foreground: 36 27% 96%;
-    --sidebar-accent: 25 39% 54%;
-    --sidebar-accent-foreground: 36 27% 96%;
-    --sidebar-border: 18 55% 40%;
-    --sidebar-ring: 25 39% 44%;
+    --sidebar-background: 188 95% 43%; /* Strong Cyan/Teal */
+    --sidebar-foreground: 140 80% 97%;
+    --sidebar-primary: 194 93% 37%;
+    --sidebar-primary-foreground: 140 80% 97%;
+    --sidebar-accent: 194 93% 47%;
+    --sidebar-accent-foreground: 140 80% 97%;
+    --sidebar-border: 188 95% 38%;
+    --sidebar-ring: 43 97% 56%;
   }
 
   .dark {
