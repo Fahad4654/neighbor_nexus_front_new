@@ -79,6 +79,16 @@ export const useAuth = () => {
         performLogout();
     }, [api, performLogout]);
 
+    const updateUser = useCallback((newUserData: Partial<User>) => {
+        setUser(prevUser => {
+            const updatedUser = prevUser ? { ...prevUser, ...newUserData } : null;
+            if (updatedUser) {
+                 localStorage.setItem('user', JSON.stringify(updatedUser));
+            }
+            return updatedUser;
+        });
+    }, []);
 
-    return { user, accessToken, refreshToken, isLoading, logout, api };
+
+    return { user, accessToken, refreshToken, isLoading, logout, api, updateUser };
 };

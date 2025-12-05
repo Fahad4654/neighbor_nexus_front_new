@@ -59,7 +59,7 @@ const getDayWithOrdinal = (day: number) => {
 };
 
 export default function ProfilePage() {
-  const { user: authUser, api } = useAuth();
+  const { user: authUser, api, updateUser } = useAuth();
   const { toast } = useToast();
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [editableData, setEditableData] = useState<EditableProfile | null>(null);
@@ -68,7 +68,7 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const fetchProfile = async () => {
+  const fetchProfile = async (updateGlobalState = false) => {
     if (!authUser) return;
     
     // We don't need to set loading to true for a refetch on save
@@ -94,6 +94,14 @@ export default function ProfilePage() {
         phoneNumber: data.user.phoneNumber,
         address: data.profile.address,
       });
+
+      if (updateGlobalState) {
+        // We only want to update the global state when we explicitly ask for it
+        // This is to avoid overwriting the global state on every fetch
+        // For example, on initial load we want the global state to be fresh from the API.
+        updateUser(data.user);
+      }
+
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -149,8 +157,8 @@ export default function ProfilePage() {
             throw new Error(result.message || result.error || "Failed to update profile.");
         }
         
-        // Refetch profile data to show updated info
-        await fetchProfile();
+        // Refetch profile data to show updated info, and update global state
+        await fetchProfile(true);
         
         toast({
             title: "Profile Updated",
@@ -201,8 +209,8 @@ export default function ProfilePage() {
             description: "Your profile picture has been changed.",
         });
 
-        // Refetch profile to display the new avatar
-        await fetchProfile();
+        // Refetch profile to display the new avatar and update global state
+        await fetchProfile(true);
 
     } catch (error: any) {
         toast({
