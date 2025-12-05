@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { format, parseISO } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import StarRating from "@/components/shared/star-rating";
-import { Verified, MapPin, Edit, X, Save } from "lucide-react";
+import { Verified, MapPin, Edit, X, Save, Upload } from "lucide-react";
 import AuthenticatedImage from "@/components/shared/authenticated-image";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -66,11 +66,13 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchProfile = async () => {
     if (!authUser) return;
     
-    setIsLoading(true);
+    // We don't need to set loading to true for a refetch on save
+    // setIsLoading(true); 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     if (!backendUrl) {
         toast({ variant: "destructive", title: "Configuration Error" });
@@ -105,10 +107,11 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (authUser) {
+      setIsLoading(true);
       fetchProfile();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authUser, api]);
+  }, [authUser]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -146,7 +149,7 @@ export default function ProfilePage() {
             throw new Error(result.message || result.error || "Failed to update profile.");
         }
         
-        // Optimistically update UI or refetch
+        // Refetch profile data to show updated info
         await fetchProfile();
         
         toast({
@@ -163,7 +166,52 @@ export default function ProfilePage() {
     } finally {
         setIsSaving(false);
     }
-  }
+  };
+
+  const handleAvatarClick = () => {
+    if (isEditing) {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !authUser) return;
+
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl) {
+        toast({ variant: "destructive", title: "Configuration Error" });
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('userId', authUser.id);
+    formData.append('profile_pic', file);
+
+    try {
+        const response = await api.postFormData(`${backendUrl}/profile/upload-avatar`, formData);
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.message || result.error || 'Failed to upload avatar.');
+        }
+
+        toast({
+            title: "Avatar Updated",
+            description: "Your profile picture has been changed.",
+        });
+
+        // Refetch profile to display the new avatar
+        await fetchProfile();
+
+    } catch (error: any) {
+        toast({
+            variant: "destructive",
+            title: "Upload Failed",
+            description: error.message,
+        });
+    }
+  };
 
 
   if (isLoading || !profileData || !editableData) {
@@ -245,10 +293,24 @@ export default function ProfilePage() {
       <div className="lg:col-span-1">
         <Card>
             <CardContent className="pt-6 flex flex-col items-center justify-center text-center">
-                <Avatar className="h-24 w-24 mb-4">
-                    <AuthenticatedImage src={profile.avatarUrl} alt={fullName} />
-                    <AvatarFallback>{user.firstname.charAt(0)}{user.lastname.charAt(0)}</AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                    <Avatar className="h-24 w-24 mb-4" onClick={handleAvatarClick}>
+                        <AuthenticatedImage src={profile.avatarUrl} alt={fullName} />
+                        <AvatarFallback>{user.firstname.charAt(0)}{user.lastname.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                     {isEditing && (
+                        <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center cursor-pointer" onClick={handleAvatarClick}>
+                            <Upload className="text-white h-8 w-8" />
+                        </div>
+                    )}
+                </div>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept="image/*"
+                />
                 <CardTitle className="text-2xl font-headline">{fullName}</CardTitle>
                 <div className="flex items-center gap-2 mt-1">
                     <StarRating rating={rating} />

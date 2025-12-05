@@ -1,4 +1,5 @@
 
+
 const refreshToken = async (onLogout: () => void) => {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const oldRefreshToken = localStorage.getItem('refreshToken');
@@ -33,13 +34,19 @@ const refreshToken = async (onLogout: () => void) => {
     }
 };
 
-const customFetch = async (url: string, options: RequestInit = {}, onLogout: () => void) => {
+const customFetch = async (url: string, options: RequestInit = {}, onLogout: () => void, isFormData: boolean = false) => {
     let accessToken = localStorage.getItem('accessToken');
-    const headers = {
+    
+    const headers: HeadersInit = {
         ...options.headers,
         'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
     };
+
+    // Do not set Content-Type for FormData, the browser does it automatically with the boundary
+    if (!isFormData) {
+        headers['Content-Type'] = 'application/json';
+    }
+
 
     let response = await fetch(url, { ...options, headers });
 
@@ -47,11 +54,13 @@ const customFetch = async (url: string, options: RequestInit = {}, onLogout: () 
         const newAccessToken = await refreshToken(onLogout);
 
         if (newAccessToken) {
-            const newHeaders = {
+            const newHeaders: HeadersInit = {
                 ...options.headers,
                 'Authorization': `Bearer ${newAccessToken}`,
-                'Content-Type': 'application/json',
             };
+            if (!isFormData) {
+                newHeaders['Content-Type'] = 'application/json';
+            }
             // Retry the request with the new token
             response = await fetch(url, { ...options, headers: newHeaders });
         } else {
@@ -71,4 +80,5 @@ export const api = (onLogout: () => void) => ({
     post: (url: string, body: any, options: RequestInit = {}) => customFetch(url, { ...options, method: 'POST', body: JSON.stringify(body) }, onLogout),
     put: (url: string, body: any, options: RequestInit = {}) => customFetch(url, { ...options, method: 'PUT', body: JSON.stringify(body) }, onLogout),
     delete: (url: string, options: RequestInit = {}) => customFetch(url, { ...options, method: 'DELETE' }, onLogout),
+    postFormData: (url: string, formData: FormData, options: RequestInit = {}) => customFetch(url, { ...options, method: 'POST', body: formData }, onLogout, true),
 });
