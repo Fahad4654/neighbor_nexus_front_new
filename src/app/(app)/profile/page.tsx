@@ -2,17 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { format, parseISO } from 'date-fns';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import StarRating from "@/components/shared/star-rating";
-import { Verified, MapPin } from "lucide-react";
+import { Verified, MapPin, Edit, X, Save } from "lucide-react";
 import AuthenticatedImage from "@/components/shared/authenticated-image";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 type UserProfile = {
     user: {
@@ -39,6 +40,13 @@ type UserProfile = {
     };
 };
 
+type EditableProfile = {
+    firstname: string;
+    lastname: string;
+    phoneNumber: string;
+    address: string;
+};
+
 // Helper function to add ordinal suffix to day
 const getDayWithOrdinal = (day: number) => {
     if (day > 3 && day < 21) return `${day}th`;
@@ -54,46 +62,111 @@ export default function ProfilePage() {
   const { user: authUser, api } = useAuth();
   const { toast } = useToast();
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
+  const [editableData, setEditableData] = useState<EditableProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const fetchProfile = async () => {
+    if (!authUser) return;
+    
+    setIsLoading(true);
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl) {
+        toast({ variant: "destructive", title: "Configuration Error" });
+        setIsLoading(false);
+        return;
+    }
+
+    try {
+      const response = await api.get(`${backendUrl}/users/${authUser.id}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+          throw new Error(data.message || data.error || 'Failed to fetch profile data');
+      }
+      setProfileData(data);
+      setEditableData({
+        firstname: data.user.firstname,
+        lastname: data.user.lastname,
+        phoneNumber: data.user.phoneNumber,
+        address: data.profile.address,
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Failed to load profile",
+        description: error.message || "An unexpected error occurred.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (!authUser) return;
-      
-      setIsLoading(true);
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-      if (!backendUrl) {
-          toast({ variant: "destructive", title: "Configuration Error" });
-          setIsLoading(false);
-          return;
-      }
-
-      try {
-        const response = await api.get(`${backendUrl}/users/${authUser.id}`);
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || data.error || 'Failed to fetch profile data');
-        }
-        setProfileData(data);
-      } catch (error: any) {
-        toast({
-          variant: "destructive",
-          title: "Failed to load profile",
-          description: error.message || "An unexpected error occurred.",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     if (authUser) {
       fetchProfile();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authUser, api]);
 
-  if (isLoading || !profileData) {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setEditableData(prev => prev ? { ...prev, [id]: value } : null);
+  };
+  
+  const handleCancel = () => {
+    if (profileData) {
+        setEditableData({
+            firstname: profileData.user.firstname,
+            lastname: profileData.user.lastname,
+            phoneNumber: profileData.user.phoneNumber,
+            address: profileData.profile.address,
+        });
+    }
+    setIsEditing(false);
+  };
+
+  const handleSave = async () => {
+    if (!authUser || !editableData) return;
+    
+    setIsSaving(true);
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+     if (!backendUrl) {
+        toast({ variant: "destructive", title: "Configuration Error" });
+        setIsSaving(false);
+        return;
+    }
+    
+    try {
+        const response = await api.put(`${backendUrl}/users/${authUser.id}`, editableData);
+        const result = await response.json();
+
+        if(!response.ok) {
+            throw new Error(result.message || result.error || "Failed to update profile.");
+        }
+        
+        // Optimistically update UI or refetch
+        await fetchProfile();
+        
+        toast({
+            title: "Profile Updated",
+            description: "Your information has been saved successfully.",
+        });
+        setIsEditing(false);
+    } catch(error: any) {
+         toast({
+            variant: "destructive",
+            title: "Update Failed",
+            description: error.message || "An unexpected error occurred.",
+        });
+    } finally {
+        setIsSaving(false);
+    }
+  }
+
+
+  if (isLoading || !profileData || !editableData) {
     return (
       <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
         <div className="lg:col-span-1">
@@ -201,17 +274,19 @@ export default function ProfilePage() {
         <Card>
           <CardHeader>
             <CardTitle>Profile Information</CardTitle>
-            <CardDescription>Update your personal details here.</CardDescription>
+            <CardDescription>
+                {isEditing ? 'You can now edit your profile details below.' : 'View your personal details here.'}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                     <Label htmlFor="firstname">First Name</Label>
-                    <Input id="firstname" defaultValue={user.firstname} />
+                    <Input id="firstname" value={editableData.firstname} onChange={handleInputChange} disabled={!isEditing} />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="lastname">Last Name</Label>
-                    <Input id="lastname" defaultValue={user.lastname} />
+                    <Input id="lastname" value={editableData.lastname} onChange={handleInputChange} disabled={!isEditing} />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="username">Username</Label>
@@ -222,13 +297,13 @@ export default function ProfilePage() {
                     <Input id="email" type="email" defaultValue={user.email} disabled />
                 </div>
                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input id="phone" type="tel" defaultValue={user.phoneNumber} />
+                    <Label htmlFor="phoneNumber">Phone Number</Label>
+                    <Input id="phoneNumber" type="tel" value={editableData.phoneNumber} onChange={handleInputChange} disabled={!isEditing} />
                 </div>
             </div>
             <div className="space-y-2">
                 <Label htmlFor="address">Your Address</Label>
-                <Input id="address" defaultValue={profile.address} />
+                <Input id="address" value={editableData.address} onChange={handleInputChange} disabled={!isEditing} />
             </div>
              <div className="space-y-2">
                 <Label htmlFor="geolocation">Geo Location (Coordinates)</Label>
@@ -238,6 +313,25 @@ export default function ProfilePage() {
                 </div>
             </div>
           </CardContent>
+          <CardFooter className="border-t px-6 py-4">
+             <div className="flex justify-end gap-2 w-full">
+                {isEditing ? (
+                    <>
+                        <Button variant="outline" onClick={handleCancel}>
+                            <X className="mr-2" /> Cancel
+                        </Button>
+                        <Button onClick={handleSave} disabled={isSaving}>
+                            <Save className="mr-2" />
+                            {isSaving ? 'Saving...' : 'Save Changes'}
+                        </Button>
+                    </>
+                ) : (
+                    <Button onClick={() => setIsEditing(true)}>
+                        <Edit className="mr-2" /> Edit Profile
+                    </Button>
+                )}
+            </div>
+          </CardFooter>
         </Card>
       </div>
     </div>
