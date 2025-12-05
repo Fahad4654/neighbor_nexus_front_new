@@ -101,7 +101,7 @@ export default function ProfilePage() {
       if (updateGlobalState) {
         // Construct the full User object that matches the type in useAuth
         const fullUserObject: User = {
-            ...authUser, // Start with the existing auth user to preserve fields
+            ...(authUser as User), // Start with the existing auth user to preserve fields
             ...data.user, // Overwrite with fresh user data
             profile: data.profile, // Add the fresh profile data
         };
@@ -142,6 +142,7 @@ export default function ProfilePage() {
         });
     }
     setIsEditing(false);
+    window.location.reload();
   };
 
   const handleSave = async () => {
@@ -171,6 +172,7 @@ export default function ProfilePage() {
             description: "Your information has been saved successfully.",
         });
         setIsEditing(false);
+        window.location.reload();
     } catch(error: any) {
          toast({
             variant: "destructive",
@@ -385,7 +387,7 @@ export default function ProfilePage() {
                 <Label htmlFor="geolocation">Geo Location (Coordinates)</Label>
                 <div className="flex items-center gap-2">
                     <MapPin className="h-5 w-5 text-muted-foreground" />
-                    <Input id="geolocation" defaultValue={coordinates} disabled />
+                    <Input id="geolocation" defaultValue={coordinates} disabled={!isEditing} />
                 </div>
             </div>
           </CardContent>
