@@ -167,7 +167,11 @@ export function DataTable<TData, TValue>({
             <Select
                 value={`${table.getState().pagination.pageSize}`}
                 onValueChange={(value) => {
-                    table.setPageSize(Number(value))
+                    onPaginationChange((prevState: any) => ({
+                        ...prevState,
+                        pageIndex: 0,
+                        pageSize: Number(value),
+                    }));
                 }}
                 >
                 <SelectTrigger className="h-8 w-[70px]">
