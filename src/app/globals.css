@@ -4,50 +4,50 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%; /* Crisp White */
-    --foreground: 242 46% 35%; /* Deep Indigo */
+    --background: 36 27% 96%; /* Warm Off-White/Cream */
+    --foreground: 340 5% 21%; /* Dark Taupe/Soft Black */
 
-    --card: 240 25% 98%; /* Slightly off-white for cards */
-    --card-foreground: 242 46% 35%;
+    --card: 36 27% 97%; /* Slightly lighter than background */
+    --card-foreground: 340 5% 21%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 242 46% 35%;
+    --popover: 36 27% 96%;
+    --popover-foreground: 340 5% 21%;
 
-    --primary: 243 78% 59%; /* Electric Indigo */
-    --primary-foreground: 0 0% 100%;
+    --primary: 25 39% 44%; /* Deep Clay Brown */
+    --primary-foreground: 36 27% 96%;
 
-    --secondary: 47 96% 77%; /* Soft Butter Yellow */
-    --secondary-foreground: 242 46% 35%;
+    --secondary: 38 46% 73%; /* Pale Sand */
+    --secondary-foreground: 340 5% 21%;
     
-    --muted: 220 13% 91%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 38 46% 85%;
+    --muted-foreground: 340 5% 35%;
 
-    --accent: 251 94% 84%; /* Pale Violet */
-    --accent-foreground: 242 46% 35%;
+    --accent: 38 46% 73%; /* Pale Sand */
+    --accent-foreground: 340 5% 21%;
 
     --destructive: 0 84% 60%; 
     --destructive-foreground: 210 40% 98%;
     
-    --border: 220 13% 85%;
-    --input: 220 13% 85%;
-    --ring: 243 78% 59%; /* Electric Indigo */
+    --border: 38 46% 80%; /* Pale Sand for borders */
+    --input: 38 46% 80%;
+    --ring: 25 39% 44%;
 
     --radius: 0.5rem;
     
-    --chart-1: 243 78% 59%;
-    --chart-2: 251 94% 84%;
-    --chart-3: 228 95% 82%;
-    --chart-4: 47 96% 77%;
-    --chart-5: 242 46% 35%;
+    --chart-1: 25 39% 44%;
+    --chart-2: 18 55% 47%;
+    --chart-3: 38 46% 73%;
+    --chart-4: 340 5% 21%;
+    --chart-5: 38 46% 85%;
 
-    --sidebar-background: 228 95% 82%; /* Soft Periwinkle */
-    --sidebar-foreground: 242 46% 35%;
-    --sidebar-primary: 243 78% 59%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 251 94% 84%; /* Pale Violet */
-    --sidebar-accent-foreground: 242 46% 35%;
-    --sidebar-border: 228 95% 75%;
-    --sidebar-ring: 243 78% 59%;
+    --sidebar-background: 18 55% 47%; /* Muted Terracotta/Rust */
+    --sidebar-foreground: 36 27% 96%;
+    --sidebar-primary: 25 39% 44%;
+    --sidebar-primary-foreground: 36 27% 96%;
+    --sidebar-accent: 25 39% 54%;
+    --sidebar-accent-foreground: 36 27% 96%;
+    --sidebar-border: 18 55% 40%;
+    --sidebar-ring: 25 39% 44%;
   }
 
   .dark {
