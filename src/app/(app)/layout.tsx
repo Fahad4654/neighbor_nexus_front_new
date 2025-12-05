@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 function Header({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: boolean; }) {
   const { user, logout } = useAuth();
@@ -85,7 +86,7 @@ function Header({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: bo
   );
 }
 
-function Navbar() {
+function Navbar({ navOpen }: { navOpen: boolean }) {
   const pathname = usePathname();
   const navLinks = [
     { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -97,33 +98,56 @@ function Navbar() {
   ];
 
   return (
-    <nav className="flex flex-col p-4 space-y-2 bg-sidebar text-sidebar-foreground h-full">
-      {navLinks.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          className={cn(
-            'flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-            pathname.startsWith(link.href) &&
-              'bg-sidebar-accent text-sidebar-accent-foreground'
-          )}
-        >
-          <link.icon className="h-4 w-4" />
-          {link.label}
-        </Link>
-      ))}
-       <div className="flex-grow"></div>
-       <Link
-          href="/profile"
-          className={cn(
-            'flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-            pathname.startsWith('/profile') && 'bg-sidebar-accent text-sidebar-accent-foreground'
-          )}
-        >
-          <Settings className="h-4 w-4" />
-          Settings
-        </Link>
-    </nav>
+    <TooltipProvider delayDuration={0}>
+        <nav className="flex flex-col p-2 space-y-2 bg-sidebar text-sidebar-foreground h-full">
+        {navLinks.map((link) => {
+            const isActive = pathname.startsWith(link.href);
+            return (
+            <Tooltip key={link.href}>
+                <TooltipTrigger asChild>
+                <Link
+                    href={link.href}
+                    className={cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                    isActive && 'bg-sidebar-accent text-sidebar-accent-foreground',
+                    !navOpen && "justify-center"
+                    )}
+                >
+                    <link.icon className="h-5 w-5 shrink-0" />
+                    <span className={cn('overflow-hidden transition-all', navOpen ? 'w-full' : 'w-0')}>{link.label}</span>
+                </Link>
+                </TooltipTrigger>
+                {!navOpen && (
+                    <TooltipContent side="right" className="bg-sidebar text-sidebar-foreground border-sidebar-border">
+                        <p>{link.label}</p>
+                    </TooltipContent>
+                )}
+            </Tooltip>
+            );
+        })}
+        <div className="flex-grow"></div>
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <Link
+                    href="/profile"
+                    className={cn(
+                        'flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                        pathname.startsWith('/profile') && 'bg-sidebar-accent text-sidebar-accent-foreground',
+                        !navOpen && "justify-center"
+                    )}
+                    >
+                    <Settings className="h-5 w-5 shrink-0" />
+                    <span className={cn('overflow-hidden transition-all', navOpen ? 'w-full' : 'w-0')}>Settings</span>
+                </Link>
+            </TooltipTrigger>
+            {!navOpen && (
+                <TooltipContent side="right" className="bg-sidebar text-sidebar-foreground border-sidebar-border">
+                    <p>Settings</p>
+                </TooltipContent>
+            )}
+        </Tooltip>
+        </nav>
+    </TooltipProvider>
   );
 }
 
@@ -166,10 +190,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <aside
           className={cn(
             'shrink-0 h-full overflow-y-auto bg-sidebar transition-all duration-300 ease-in-out',
-            navOpen ? 'w-64' : 'w-0'
+            navOpen ? 'w-64' : 'w-20'
           )}
         >
-          <Navbar />
+          <Navbar navOpen={navOpen} />
         </aside>
 
         {/* Main Content */}
