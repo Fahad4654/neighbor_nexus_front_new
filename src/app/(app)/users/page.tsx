@@ -43,7 +43,43 @@ const getInitials = (firstname: string, lastname: string) => {
     return `${firstname?.charAt(0) ?? ''}${lastname?.charAt(0) ?? ''}`.toUpperCase();
 };
 
-const columns: ColumnDef<User>[] = [
+export default function UsersPage() {
+  const { api, user } = useAuth();
+  const { toast } = useToast();
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'createdAt', desc: true },
+  ]);
+
+  const [{ pageIndex, pageSize }, setPagination] =
+    useState<PaginationState>({
+      pageIndex: 0,
+      pageSize: 10,
+    });
+  
+  const [pageCount, setPageCount] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
+
+  const pagination = useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+    }),
+    [pageIndex, pageSize]
+  );
+  
+  const columns: ColumnDef<User>[] = useMemo(() => [
+    {
+        id: 'sl',
+        header: 'SL',
+        cell: ({ row }) => (
+            <span>{pageIndex * pageSize + row.index + 1}</span>
+        ),
+        enableSorting: false,
+    },
     {
         accessorKey: 'username',
         header: 'Username',
@@ -120,36 +156,7 @@ const columns: ColumnDef<User>[] = [
         ),
         enableSorting: false,
     },
-];
-
-
-export default function UsersPage() {
-  const { api, user } = useAuth();
-  const { toast } = useToast();
-  const [users, setUsers] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: 'createdAt', desc: true },
-  ]);
-
-  const [{ pageIndex, pageSize }, setPagination] =
-    useState<PaginationState>({
-      pageIndex: 0,
-      pageSize: 10,
-    });
-  
-  const [pageCount, setPageCount] = useState(0);
-  const [totalUsers, setTotalUsers] = useState(0);
-
-  const pagination = useMemo(
-    () => ({
-      pageIndex,
-      pageSize,
-    }),
-    [pageIndex, pageSize]
-  );
+], [pageIndex, pageSize]);
   
   const fetchUsers = useCallback(async (page: number, size: number, sort: SortingState) => {
     setIsLoading(true);
