@@ -99,6 +99,7 @@ export default function ProfilePage() {
         // The API returns { user: {...}, profile: {...} }
         // We need to merge these into the structure the `useAuth` hook expects
         const fullUserObject = {
+            ...authUser, // a user object that may be stale
             ...data.user,
             profile: data.profile,
         };
@@ -410,3 +411,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    
