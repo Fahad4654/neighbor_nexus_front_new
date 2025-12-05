@@ -22,8 +22,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, ArrowUpDown } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { cn } from '@/lib/utils';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -85,10 +86,23 @@ export function DataTable<TData, TValue>({
                     <TableHead key={header.id} className="whitespace-nowrap text-primary-foreground">
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                        : (
+                            <div
+                                className={cn(
+                                    'flex items-center gap-2',
+                                    header.column.getCanSort() && 'cursor-pointer select-none'
+                                )}
+                                onClick={header.column.getToggleSortingHandler()}
+                                >
+                                {flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                )}
+                                {header.column.getCanSort() && (
+                                    <ArrowUpDown className="h-3 w-3" />
+                                )}
+                            </div>
+                        )}
                     </TableHead>
                   );
                 })}

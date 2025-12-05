@@ -72,6 +72,7 @@ const columns: ColumnDef<User>[] = [
     {
         accessorKey: 'phoneNumber',
         header: 'Phone',
+        enableSorting: false,
     },
     {
         accessorKey: 'geo_location',
@@ -117,6 +118,7 @@ const columns: ColumnDef<User>[] = [
         cell: ({ row }) => (
              <Button variant="outline" size="sm">Edit</Button>
         ),
+        enableSorting: false,
     },
 ];
 
