@@ -30,7 +30,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 
-function Header() {
+function Header({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: boolean; }) {
   const { user, logout } = useAuth();
 
   const getInitials = (firstname?: string, lastname?: string) => {
@@ -44,11 +44,24 @@ function Header() {
   };
 
   return (
-    <div className="flex w-full items-center justify-end px-4">
+    <div className="flex w-full h-full items-center justify-between px-4">
+        <div className="flex items-center gap-4">
+            <button onClick={onToggleNav} className="rounded-md p-1.5 hover:bg-sidebar-accent">
+                {navOpen ? <CloseIcon /> : <MenuIcon />}
+            </button>
+            <div className="hidden md:block">
+                <AppLogo />
+            </div>
+        </div>
+
+        <div className="md:hidden">
+            <AppLogo />
+        </div>
+      
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="flex items-center gap-2 text-sidebar-foreground hover:text-sidebar-foreground">
-            <span>Welcome {user?.firstname}</span>
+            <span className='hidden sm:inline'>Welcome {user?.firstname}</span>
             <Avatar className="h-8 w-8">
               <AuthenticatedImage src={user?.profile?.avatarUrl} alt={user?.username} />
               <AvatarFallback>
@@ -85,11 +98,6 @@ function Navbar() {
 
   return (
     <nav className="flex flex-col p-4 space-y-2 bg-sidebar text-sidebar-foreground h-full">
-      <div className="px-2 pb-4">
-        <Link href="/dashboard" className="flex items-center gap-2 text-sidebar-foreground">
-           <AppLogo />
-        </Link>
-      </div>
       {navLinks.map((link) => (
         <Link
           key={link.href}
@@ -150,12 +158,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen w-full flex-col overflow-hidden bg-background">
       {/* Header */}
       <header className="flex h-16 shrink-0 items-center bg-sidebar text-sidebar-foreground shadow-md z-10">
-        <div className="flex items-center gap-2 px-4">
-          <button onClick={toggleNav} className="rounded-md p-1.5 hover:bg-sidebar-accent">
-            {navOpen ? <CloseIcon /> : <MenuIcon />}
-          </button>
-        </div>
-        <Header />
+        <Header onToggleNav={toggleNav} navOpen={navOpen} />
       </header>
 
       <div className="flex flex-1 overflow-hidden">
