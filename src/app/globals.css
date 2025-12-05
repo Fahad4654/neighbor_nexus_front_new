@@ -4,39 +4,50 @@
 
 @layer base {
   :root {
-    --background: 220 13% 96%; /* #F3F4F6 */
+    --background: 0 0% 100%; /* #FFFFFF */
     --foreground: 220 13% 18%; /* #1F2937 */
-    --card: 220 13% 96%;
+
+    --card: 0 0% 100%;
     --card-foreground: 220 13% 18%;
-    --popover: 220 13% 96%;
-    --popover-foreground: 220 13% 18%;
-    --primary: 25 95% 53%; /* #F97316 */
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220, 13%, 18%;
+
+    --primary: 206 70% 48%; /* #3282B8 Clear Sky Blue */
     --primary-foreground: 210 40% 98%;
-    --secondary: 172 81% 41%; /* #14B8A6 */
+
+    --secondary: 206 70% 48%; /* #3282B8 Clear Sky Blue */
     --secondary-foreground: 210 40% 98%;
-    --muted: 220 9% 91%;
-    --muted-foreground: 220 9% 45%;
-    --accent: 220 9% 91%;
-    --accent-foreground: 220 13% 18%;
-    --destructive: 0 84% 60%;
+    
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 207 72% 92%; /* #BBE1FA Pale Ice Blue */
+    --accent-foreground: 206 70% 26%; /* Darker blue text */
+
+    --destructive: 9 100% 71%; /* #FF7E67 Soft Salmon */
     --destructive-foreground: 210 40% 98%;
-    --border: 220 13% 89%;
-    --input: 220 13% 89%;
-    --ring: 25 95% 53%;
+    
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 206 70% 48%;
+
     --radius: 0.5rem;
-    --chart-1: 25 95% 53%;
-    --chart-2: 172 81% 41%;
-    --chart-3: 221 83% 53%;
+    
+    --chart-1: 206 70% 48%;
+    --chart-2: 207 72% 92%;
+    --chart-3: 9 100% 71%;
     --chart-4: 280 70% 60%;
     --chart-5: 340 75% 55%;
-    --sidebar-background: 221 83% 53%; /* #2563EB */
+
+    --sidebar-background: 207 79% 26%; /* #0F4C75 Deep Ocean Blue */
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 210 40% 98%;
-    --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 221 83% 48%; /* Darker blue */
+    --sidebar-primary-foreground: 207 79% 26%;
+    --sidebar-accent: 207 79% 21%; /* Darker Deep Ocean Blue */
     --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 221 83% 48%;
-    --sidebar-ring: 25 95% 53%;
+    --sidebar-border: 207 79% 21%;
+    --sidebar-ring: 206 70% 48%;
   }
 
   .dark {
