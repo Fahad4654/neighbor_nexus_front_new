@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import type { ColumnDef, SortingState, PaginationState } from '@tanstack/react-table';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import AuthenticatedImage from "@/components/shared/authenticated-image";
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { CreateUserDialog } from '@/components/users/create-user-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { DataTable } from '@/components/shared/data-table';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type UserProfile = {
   id: string;
@@ -42,12 +42,104 @@ type User = {
   profile: UserProfile | null;
 };
 
-type PaginationState = {
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
+const formatCoordinates = (geo?: { coordinates: [number, number] }) => {
+    if (!geo || !geo.coordinates) return 'N/A';
+    // Assuming coordinates are [longitude, latitude]
+    const longitude = geo.coordinates[0];
+    const latitude = geo.coordinates[1];
+    return (
+      <div className='text-xs'>
+        <div>Lat: {latitude.toFixed(4)}</div>
+        <div>Lon: {longitude.toFixed(4)}</div>
+      </div>
+    );
 };
+
+const getInitials = (firstname: string, lastname: string) => {
+    return `${firstname?.charAt(0) ?? ''}${lastname?.charAt(0) ?? ''}`.toUpperCase();
+};
+
+const columns: ColumnDef<User>[] = [
+    {
+        accessorKey: 'username',
+        header: 'Username',
+        cell: ({ row }) => (
+            <div className="flex items-center gap-3">
+              <Avatar>
+                <AuthenticatedImage src={row.original.profile?.avatarUrl} alt={`${row.original.firstname} ${row.original.lastname}`} />
+                <AvatarFallback>{getInitials(row.original.firstname, row.original.lastname)}</AvatarFallback>
+              </Avatar>
+              <div className="font-medium">{row.original.username}</div>
+            </div>
+        )
+    },
+    {
+        accessorKey: 'firstname',
+        header: 'Full Name',
+        cell: ({row}) => `${row.original.firstname} ${row.original.lastname}`
+    },
+    {
+        accessorKey: 'email',
+        header: 'Email',
+    },
+    {
+        accessorKey: 'phoneNumber',
+        header: 'Phone',
+    },
+    {
+        accessorKey: 'isVerified',
+        header: 'Verified',
+        cell: ({ row }) => (
+             <Badge variant={row.original.isVerified ? 'default' : 'secondary'}>
+                {row.original.isVerified ? <CheckCircle className="h-4 w-4 mr-1" /> : <XCircle className="h-4 w-4 mr-1" />}
+                {row.original.isVerified ? 'Verified' : 'Unverified'}
+            </Badge>
+        )
+    },
+    {
+        accessorKey: 'isAdmin',
+        header: 'Admin',
+        cell: ({ row }) => (
+             <Badge variant={row.original.isAdmin ? 'default' : 'secondary'}>
+                {row.original.isAdmin ? 'Admin' : 'User'}
+            </Badge>
+        )
+    },
+    {
+        accessorKey: 'rating_avg',
+        header: 'Rating',
+        cell: ({row}) => parseFloat(row.original.rating_avg).toFixed(1)
+    },
+    {
+        accessorKey: 'geo_location',
+        header: 'Location',
+        cell: ({row}) => formatCoordinates(row.original.geo_location),
+        enableSorting: false,
+    },
+    {
+        accessorKey: 'createdAt',
+        header: 'Created',
+        cell: ({row}) => new Date(row.original.createdAt).toLocaleDateString()
+    },
+     {
+        id: 'actions',
+        cell: ({ row }) => (
+             <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                <Button aria-haspopup="true" size="icon" variant="ghost">
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">Toggle menu</span>
+                </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                <DropdownMenuItem>View Profile</DropdownMenuItem>
+                <DropdownMenuItem>Message</DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        ),
+    },
+];
+
 
 export default function UsersPage() {
   const { api, user: authUser } = useAuth();
@@ -55,16 +147,28 @@ export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sortColumn, setSortColumn] = useState('createdAt');
-  const [sortDirection, setSortDirection] = useState<'ASC' | 'DESC'>('DESC');
-  const [pagination, setPagination] = useState<PaginationState>({
-    total: 0,
-    page: 1,
-    pageSize: 10,
-    totalPages: 1,
-  });
 
-  const fetchUsers = useCallback(async (page: number, order: string, asc: 'ASC' | 'DESC') => {
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'createdAt', desc: true },
+  ]);
+
+  const [{ pageIndex, pageSize }, setPagination] =
+    useState<PaginationState>({
+      pageIndex: 0,
+      pageSize: 10,
+    });
+  
+  const [pageCount, setPageCount] = useState(0);
+
+  const pagination = useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+    }),
+    [pageIndex, pageSize]
+  );
+  
+  const fetchUsers = useCallback(async (page: number, size: number, sort: SortingState) => {
     setIsLoading(true);
     setError(null);
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -75,11 +179,14 @@ export default function UsersPage() {
     }
 
     try {
+      const sortColumn = sort[0]?.id || 'createdAt';
+      const sortDirection = sort[0]?.desc ? 'DESC' : 'ASC';
+
       const response = await api.post(`${backendUrl}/users/all`, {
-        order: order,
-        asc: asc,
-        page: page,
-        pageSize: 10,
+        order: sortColumn,
+        asc: sortDirection,
+        page: page + 1, // API is 1-based, tanstack-table is 0-based
+        pageSize: size,
       });
 
       const result = await response.json();
@@ -89,7 +196,8 @@ export default function UsersPage() {
       }
       
       setUsers(result.usersList?.data || []);
-      setPagination(result.usersList?.pagination || { total: 0, page: 1, pageSize: 10, totalPages: 1 });
+      setPageCount(result.usersList?.pagination?.totalPages || 0);
+
     } catch (err: any) {
       setError(err.message);
       toast({
@@ -103,32 +211,9 @@ export default function UsersPage() {
   }, [api, toast]);
 
   useEffect(() => {
-    fetchUsers(pagination.page, sortColumn, sortDirection);
-  }, [fetchUsers, pagination.page, sortColumn, sortDirection]);
+    fetchUsers(pageIndex, pageSize, sorting);
+  }, [fetchUsers, pageIndex, pageSize, sorting]);
   
-  const getInitials = (firstname: string, lastname: string) => {
-    return `${firstname?.charAt(0) ?? ''}${lastname?.charAt(0) ?? ''}`.toUpperCase();
-  };
-
-  const formatCoordinates = (geo?: { coordinates: [number, number] }) => {
-    if (!geo || !geo.coordinates) return 'N/A';
-    // Assuming coordinates are [longitude, latitude]
-    const longitude = geo.coordinates[0];
-    const latitude = geo.coordinates[1];
-    return (
-      <div>
-        <div>Latitude: {latitude.toFixed(4)}</div>
-        <div>Longitude: {longitude.toFixed(4)}</div>
-      </div>
-    );
-  };
-
-  const handlePageChange = (newPage: number) => {
-    if (newPage > 0 && newPage <= pagination.totalPages) {
-      setPagination(prev => ({ ...prev, page: newPage }));
-    }
-  };
-
   return (
     <Card className="flex flex-col h-full w-full">
       <CardHeader>
@@ -138,157 +223,25 @@ export default function UsersPage() {
                 <CardDescription>Manage the users in your nexus.</CardDescription>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-                <div className="grid gap-2">
-                    <Label htmlFor="sort-column" className="sr-only">Sort by</Label>
-                     <Select value={sortColumn} onValueChange={setSortColumn}>
-                        <SelectTrigger id="sort-column" className="w-full sm:w-[150px]">
-                            <SelectValue placeholder="Sort by" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="createdAt">Date Created</SelectItem>
-                            <SelectItem value="username">Username</SelectItem>
-                            <SelectItem value="firstname">First Name</SelectItem>
-                            <SelectItem value="lastname">Last Name</SelectItem>
-                            <SelectItem value="email">Email</SelectItem>
-                            <SelectItem value="isAdmin">Admin Status</SelectItem>
-                            <SelectItem value="isVerified">Verification Status</SelectItem>
-                            <SelectItem value="rating_avg">Rating</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                 <div className="grid gap-2">
-                    <Label htmlFor="sort-direction" className="sr-only">Sort direction</Label>
-                    <Select value={sortDirection} onValueChange={(value) => setSortDirection(value as 'ASC' | 'DESC')}>
-                        <SelectTrigger id="sort-direction" className="w-full sm:w-[150px]">
-                            <SelectValue placeholder="Sort direction" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="DESC">Descending</SelectItem>
-                            <SelectItem value="ASC">Ascending</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                {authUser?.isAdmin && <CreateUserDialog onUserCreated={() => fetchUsers(1, sortColumn, sortDirection)} />}
+                 {authUser?.isAdmin && <CreateUserDialog onUserCreated={() => fetchUsers(pageIndex, pageSize, sorting)} />}
             </div>
         </div>
       </CardHeader>
-      <CardContent className="p-0 flex-1 overflow-auto">
-        {isLoading ? (
-          <div className="p-4 space-y-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-4 p-2">
-                <Skeleton className="h-10 w-10 rounded-full" />
-                <div className="flex-1 space-y-1">
-                  <Skeleton className="h-4 w-1/4" />
-                  <Skeleton className="h-3 w-1/2" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : error ? (
-            <Alert variant="destructive" className="m-4">
-              <UsersIcon className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-        ) : users.length === 0 ? (
-             <Alert className="m-4">
-                <UsersIcon className="h-4 w-4" />
-                <AlertTitle>No Users Found</AlertTitle>
-                <AlertDescription>There are no users to display at this time.</AlertDescription>
-            </Alert>
-        ) : (
-          <Table>
-            <TableHeader className="sticky top-0 bg-card z-10">
-              <TableRow>
-                <TableHead>No.</TableHead>
-                <TableHead>Username</TableHead>
-                <TableHead>Full Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Verified</TableHead>
-                <TableHead>Admin</TableHead>
-                <TableHead>Rating</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user, index) => (
-                <TableRow key={user.id}>
-                  <TableCell>{(pagination.page - 1) * pagination.pageSize + index + 1}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AuthenticatedImage src={user.profile?.avatarUrl} alt={`${user.firstname} ${user.lastname}`} />
-                        <AvatarFallback>{getInitials(user.firstname, user.lastname)}</AvatarFallback>
-                      </Avatar>
-                      <div className="font-medium">{user.username}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{user.firstname} {user.lastname}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.phoneNumber}</TableCell>
-                  <TableCell>
-                    <Badge variant={user.isVerified ? 'default' : 'secondary'}>
-                      {user.isVerified ? <CheckCircle className="h-4 w-4 mr-1" /> : <XCircle className="h-4 w-4 mr-1" />}
-                      {user.isVerified ? 'Verified' : 'Unverified'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                      <Badge variant={user.isAdmin ? 'default' : 'secondary'}>
-                          {user.isAdmin ? 'Admin' : 'User'}
-                      </Badge>
-                  </TableCell>
-                  <TableCell>{parseFloat(user.rating_avg).toFixed(1)}</TableCell>
-                  <TableCell>{formatCoordinates(user.geo_location)}</TableCell>
-                  <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button aria-haspopup="true" size="icon" variant="ghost">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View Profile</DropdownMenuItem>
-                        <DropdownMenuItem>Message</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
+      <CardContent className="p-4 flex-1 overflow-auto">
+         <DataTable
+            columns={columns}
+            data={users}
+            isLoading={isLoading}
+            error={error}
+            NoDataIcon={UsersIcon}
+            noDataTitle="No Users Found"
+            noDataDescription="There are no users to display at this time."
+            pagination={{ ...pagination, pageCount }}
+            onPaginationChange={setPagination}
+            sorting={sorting}
+            onSortingChange={setSorting}
+         />
       </CardContent>
-       <CardFooter className="flex items-center justify-between pt-4 border-t">
-        <div className="text-sm text-muted-foreground">
-          Page {pagination.page} of {pagination.totalPages}
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handlePageChange(pagination.page - 1)}
-            disabled={pagination.page <= 1}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handlePageChange(pagination.page + 1)}
-            disabled={pagination.page >= pagination.totalPages}
-          >
-            Next
-          </Button>
-        </div>
-      </CardFooter>
     </Card>
   );
 }
