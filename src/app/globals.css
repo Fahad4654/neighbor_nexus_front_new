@@ -4,95 +4,95 @@
 
 @layer base {
   :root {
-    --background: 208 38% 90%; /* Lighter version of Light Background for cards */
-    --foreground: 205 18% 36%; /* Deep Neutral for text */
+    --background: 240 21% 87%; /* #d4d4e2 - Lighter than Pale Lavender-Gray for main bg */
+    --foreground: 261 10% 26%; /* #3D394C - Dark Purple-Gray */
 
-    --card: 208 38% 93%; /* Lighter version of Light Background for cards */
-    --card-foreground: 205 18% 36%;
+    --card: 240 21% 95%; /* #f0f0f5 - Very light for cards */
+    --card-foreground: 261 10% 26%;
 
-    --popover: 208 38% 93%;
-    --popover-foreground: 205 18% 36%;
+    --popover: 240 21% 95%;
+    --popover-foreground: 261 10% 26%;
 
-    --primary: 208 73% 44%; /* Darker version of new primary for buttons */
-    --primary-foreground: 0 0% 100%;
+    --primary: 259 23% 37%; /* #594D74 - Deep Indigo-Plum */
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 208 38% 66%; /* Medium Accent */
-    --secondary-foreground: 205 18% 20%;
+    --secondary: 242 11% 60%; /* #8C8BA8 - Muted Dusty Lilac */
+    --secondary-foreground: 261 10% 20%;
     
-    --muted: 208 38% 83%; /* Light Background */
-    --muted-foreground: 205 18% 45%;
+    --muted: 240 21% 85%; /* #D0D0E0 - Pale Lavender-Gray */
+    --muted-foreground: 261 10% 40%;
 
-    --accent: 208 83% 84%; /* Lighter version of new primary for accents */
-    --accent-foreground: 205 18% 20%;
+    --accent: 240 21% 90%; /* Lighter version of Pale Lavender-Gray */
+    --accent-foreground: 261 10% 15%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
     
-    --border: 208 38% 80%;
-    --input: 208 38% 80%;
-    --ring: 208 83% 74%; /* New primary for ring */
+    --border: 240 21% 80%;
+    --input: 240 21% 80%;
+    --ring: 259 23% 37%; /* Deep Indigo-Plum */
 
-    --chart-1: 208 83% 64%;
-    --chart-2: 208 83% 74%;
-    --chart-3: 205 18% 36%;
-    --chart-4: 208 83% 84%;
-    --chart-5: 208 38% 83%;
+    --chart-1: 259 23% 37%;
+    --chart-2: 242 11% 60%;
+    --chart-3: 261 10% 26%;
+    --chart-4: 240 21% 85%;
+    --chart-5: 240 21% 90%;
 
     /* Sidebar Colors */
-    --sidebar-background: 208 83% 74%; /* New primary */
+    --sidebar-background: 242 11% 60%; /* #8C8BA8 - Muted Dusty Lilac */
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 0 0% 100%;
-    --sidebar-primary-foreground: 208 83% 54%;
-    --sidebar-accent: 208 83% 80%; 
+    --sidebar-primary-foreground: 242 11% 40%;
+    --sidebar-accent: 242 11% 70%; 
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 208 83% 80%;
-    --sidebar-ring: 208 83% 74%;
+    --sidebar-border: 242 11% 70%;
+    --sidebar-ring: 242 11% 60%;
   }
 
   .dark {
-    --background: 205 18% 15%;
-    --foreground: 208 38% 90%;
+    --background: 261 10% 15%;
+    --foreground: 240 21% 90%;
 
-    --card: 205 18% 20%; 
-    --card-foreground: 208 38% 90%;
+    --card: 261 10% 20%; 
+    --card-foreground: 240 21% 90%;
     
-    --popover: 205 18% 15%;
-    --popover-foreground: 208 38% 90%;
+    --popover: 261 10% 15%;
+    --popover-foreground: 240 21% 90%;
     
-    --primary: 208 83% 74%; /* New primary */
-    --primary-foreground: 205 18% 10%;
+    --primary: 242 11% 75%; /* Lighter Dusty Lilac */
+    --primary-foreground: 261 10% 10%;
     
-    --secondary: 208 20% 53%;
+    --secondary: 242 20% 53%;
     --secondary-foreground: 0 0% 100%;
     
-    --muted: 205 18% 30%;
-    --muted-foreground: 208 38% 80%;
+    --muted: 261 10% 30%;
+    --muted-foreground: 240 21% 80%;
     
-    --accent: 205 18% 40%;
-    --accent-foreground: 208 38% 98%;
+    --accent: 261 10% 40%;
+    --accent-foreground: 240 21% 98%;
 
     --destructive: 0 63% 51%;
     --destructive-foreground: 0 0% 98%;
     
-    --border: 205 18% 30%; 
-    --input: 205 18% 30%;
-    --ring: 208 83% 74%;
+    --border: 261 10% 30%; 
+    --input: 261 10% 30%;
+    --ring: 242 11% 75%;
 
-    --chart-1: 208 83% 64%;
-    --chart-2: 208 83% 74%;
-    --chart-3: 208 38% 80%;
-    --chart-4: 205 18% 50%;
-    --chart-5: 205 18% 30%;
+    --chart-1: 242 11% 60%;
+    --chart-2: 242 11% 75%;
+    --chart-3: 240 21% 80%;
+    --chart-4: 261 10% 50%;
+    --chart-5: 261 10% 30%;
 
     /* Sidebar Colors */
-    --sidebar-background: 208 83% 74%; /* New primary */
-    --sidebar-foreground: 205 18% 10%;
-    --sidebar-primary: 205 18% 10%;
-    --sidebar-primary-foreground: 208 83% 74%;
-    --sidebar-accent: 208 83% 80%;
-    --sidebar-accent-foreground: 205 18% 10%;
-    --sidebar-border: 208 83% 80%;
-    --sidebar-ring: 208 83% 74%;
+    --sidebar-background: 242 11% 60%; /* #8C8BA8 - Muted Dusty Lilac */
+    --sidebar-foreground: 261 10% 10%;
+    --sidebar-primary: 261 10% 10%;
+    --sidebar-primary-foreground: 242 11% 75%;
+    --sidebar-accent: 242 11% 70%;
+    --sidebar-accent-foreground: 261 10% 10%;
+    --sidebar-border: 242 11% 70%;
+    --sidebar-ring: 242 11% 60%;
   }
 }
 
