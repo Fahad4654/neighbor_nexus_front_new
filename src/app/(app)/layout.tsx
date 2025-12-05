@@ -45,44 +45,40 @@ function Header({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: bo
   };
 
   return (
-    <div className="flex w-full h-full items-center justify-between px-4">
+    <header className="flex h-16 shrink-0 items-center bg-sidebar text-sidebar-foreground shadow-md z-10 px-4">
         <div className="flex items-center gap-4">
+            <AppLogo />
             <button onClick={onToggleNav} className="rounded-md p-1.5 hover:bg-sidebar-accent">
                 {navOpen ? <CloseIcon /> : <MenuIcon />}
             </button>
-            <div className="hidden md:block">
-                <AppLogo />
-            </div>
         </div>
 
-        <div className="md:hidden">
-            <AppLogo />
+        <div className="ml-auto">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center gap-2 text-sidebar-foreground hover:text-sidebar-foreground">
+                <span className='hidden sm:inline'>Welcome {user?.firstname}</span>
+                <Avatar className="h-8 w-8">
+                  <AuthenticatedImage src={user?.profile?.avatarUrl} alt={user?.username} />
+                  <AvatarFallback>
+                    {getInitials(user?.firstname, user?.lastname)}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => (window.location.href = '/profile')}>
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="flex items-center gap-2 text-sidebar-foreground hover:text-sidebar-foreground">
-            <span className='hidden sm:inline'>Welcome {user?.firstname}</span>
-            <Avatar className="h-8 w-8">
-              <AuthenticatedImage src={user?.profile?.avatarUrl} alt={user?.username} />
-              <AvatarFallback>
-                {getInitials(user?.firstname, user?.lastname)}
-              </AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => (window.location.href = '/profile')}>
-            Profile
-          </DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+    </header>
   );
 }
 
@@ -151,7 +147,6 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [navOpen, setNavOpen] = useState(true);
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const { user, isLoading } = useAuth();
   const router = useRouter();
 
@@ -179,9 +174,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-background">
       {/* Header */}
-      <header className="flex h-16 shrink-0 items-center bg-sidebar text-sidebar-foreground shadow-md z-10">
-        <Header onToggleNav={toggleNav} navOpen={navOpen} />
-      </header>
+      <Header onToggleNav={toggleNav} navOpen={navOpen} />
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
