@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { LucideIcon } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -76,12 +77,12 @@ export function DataTable<TData, TValue>({
     <div className='flex flex-col h-full w-full'>
        <div className="flex-1 overflow-auto rounded-md border">
         <Table>
-          <TableHeader className="sticky top-0 bg-card z-10">
+          <TableHeader className="sticky top-0 bg-primary z-10 text-primary-foreground">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="border-b-0">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="whitespace-nowrap">
+                    <TableHead key={header.id} className="whitespace-nowrap text-primary-foreground">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -118,6 +119,7 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
+                  className="even:bg-muted/50"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="whitespace-nowrap">
@@ -143,10 +145,31 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
        </div>
-      <div className="flex items-center justify-between pt-4">
-        <div className="text-sm text-muted-foreground">
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
+      <div className="flex items-center justify-between pt-4 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2">
+            <span>Rows per page:</span>
+            <Select
+                value={`${table.getState().pagination.pageSize}`}
+                onValueChange={(value) => {
+                    table.setPageSize(Number(value))
+                }}
+                >
+                <SelectTrigger className="h-8 w-[70px]">
+                    <SelectValue placeholder={table.getState().pagination.pageSize} />
+                </SelectTrigger>
+                <SelectContent side="top">
+                    {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+                    <SelectItem key={pageSize} value={`${pageSize}`}>
+                        {pageSize}
+                    </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        </div>
+        <div>
+          {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
+          {Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, table.getFilteredRowModel().rows.length)} of{' '}
+          {table.getFilteredRowModel().rows.length}
         </div>
         <div className="flex items-center gap-2">
           <Button

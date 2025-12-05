@@ -7,13 +7,10 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, CheckCircle, XCircle, Users as UsersIcon } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import AuthenticatedImage from "@/components/shared/authenticated-image";
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { CreateUserDialog } from '@/components/users/create-user-dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 import { DataTable } from '@/components/shared/data-table';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -42,19 +39,6 @@ type User = {
   profile: UserProfile | null;
 };
 
-const formatCoordinates = (geo?: { coordinates: [number, number] }) => {
-    if (!geo || !geo.coordinates) return 'N/A';
-    // Assuming coordinates are [longitude, latitude]
-    const longitude = geo.coordinates[0];
-    const latitude = geo.coordinates[1];
-    return (
-      <div className='text-xs'>
-        <div>Lat: {latitude.toFixed(4)}</div>
-        <div>Lon: {longitude.toFixed(4)}</div>
-      </div>
-    );
-};
-
 const getInitials = (firstname: string, lastname: string) => {
     return `${firstname?.charAt(0) ?? ''}${lastname?.charAt(0) ?? ''}`.toUpperCase();
 };
@@ -65,7 +49,7 @@ const columns: ColumnDef<User>[] = [
         header: 'Username',
         cell: ({ row }) => (
             <div className="flex items-center gap-3">
-              <Avatar>
+              <Avatar className="h-8 w-8">
                 <AuthenticatedImage src={row.original.profile?.avatarUrl} alt={`${row.original.firstname} ${row.original.lastname}`} />
                 <AvatarFallback>{getInitials(row.original.firstname, row.original.lastname)}</AvatarFallback>
               </Avatar>
@@ -75,8 +59,11 @@ const columns: ColumnDef<User>[] = [
     },
     {
         accessorKey: 'firstname',
-        header: 'Full Name',
-        cell: ({row}) => `${row.original.firstname} ${row.original.lastname}`
+        header: 'First Name',
+    },
+     {
+        accessorKey: 'lastname',
+        header: 'Last Name',
     },
     {
         accessorKey: 'email',
@@ -87,34 +74,37 @@ const columns: ColumnDef<User>[] = [
         header: 'Phone',
     },
     {
-        accessorKey: 'isVerified',
-        header: 'Verified',
-        cell: ({ row }) => (
-             <Badge variant={row.original.isVerified ? 'default' : 'secondary'}>
-                {row.original.isVerified ? <CheckCircle className="h-4 w-4 mr-1" /> : <XCircle className="h-4 w-4 mr-1" />}
-                {row.original.isVerified ? 'Verified' : 'Unverified'}
-            </Badge>
-        )
-    },
-    {
-        accessorKey: 'isAdmin',
-        header: 'Admin',
-        cell: ({ row }) => (
-             <Badge variant={row.original.isAdmin ? 'default' : 'secondary'}>
-                {row.original.isAdmin ? 'Admin' : 'User'}
-            </Badge>
-        )
+        accessorKey: 'geo_location',
+        header: 'Location',
+        cell: ({row}) => {
+            if (!row.original.geo_location?.coordinates) return 'N/A';
+            // Placeholder for city/state lookup
+            return "New York, NY";
+        },
+        enableSorting: false,
     },
     {
         accessorKey: 'rating_avg',
         header: 'Rating',
-        cell: ({row}) => parseFloat(row.original.rating_avg).toFixed(1)
+        cell: ({row}) => `${parseFloat(row.original.rating_avg).toFixed(1)}/5`
+    },
+     {
+        accessorKey: 'isAdmin',
+        header: 'Admin',
+        cell: ({ row }) => (
+             <Badge variant={row.original.isAdmin ? 'default' : 'secondary'} className={row.original.isAdmin ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-500 hover:bg-gray-600'}>
+                {row.original.isAdmin ? 'Yes' : 'No'}
+            </Badge>
+        )
     },
     {
-        accessorKey: 'geo_location',
-        header: 'Location',
-        cell: ({row}) => formatCoordinates(row.original.geo_location),
-        enableSorting: false,
+        accessorKey: 'isVerified',
+        header: 'Verified',
+        cell: ({ row }) => (
+             <Badge variant={row.original.isVerified ? 'default' : 'destructive'} className={row.original.isVerified ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}>
+                {row.original.isVerified ? 'Yes' : 'No'}
+            </Badge>
+        )
     },
     {
         accessorKey: 'createdAt',
@@ -123,26 +113,16 @@ const columns: ColumnDef<User>[] = [
     },
      {
         id: 'actions',
+        header: 'Actions',
         cell: ({ row }) => (
-             <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                <Button aria-haspopup="true" size="icon" variant="ghost">
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">Toggle menu</span>
-                </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                <DropdownMenuItem>View Profile</DropdownMenuItem>
-                <DropdownMenuItem>Message</DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
+             <Button variant="outline" size="sm">Edit</Button>
         ),
     },
 ];
 
 
 export default function UsersPage() {
-  const { api, user: authUser } = useAuth();
+  const { api } = useAuth();
   const { toast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -215,33 +195,23 @@ export default function UsersPage() {
   }, [fetchUsers, pageIndex, pageSize, sorting]);
   
   return (
-    <Card className="flex flex-col h-full w-full">
-      <CardHeader>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-                <CardTitle>Users</CardTitle>
-                <CardDescription>Manage the users in your nexus.</CardDescription>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-                 {authUser?.isAdmin && <CreateUserDialog onUserCreated={() => fetchUsers(pageIndex, pageSize, sorting)} />}
-            </div>
+    <div className="w-full h-full flex flex-col">
+        <h1 className="text-2xl font-bold mb-4">Users</h1>
+        <div className="flex-1 w-full overflow-hidden">
+            <DataTable
+                columns={columns}
+                data={users}
+                isLoading={isLoading}
+                error={error}
+                NoDataIcon={UsersIcon}
+                noDataTitle="No Users Found"
+                noDataDescription="There are no users to display at this time."
+                pagination={{ ...pagination, pageCount }}
+                onPaginationChange={setPagination}
+                sorting={sorting}
+                onSortingChange={setSorting}
+            />
         </div>
-      </CardHeader>
-      <CardContent className="p-4 flex-1 overflow-auto">
-         <DataTable
-            columns={columns}
-            data={users}
-            isLoading={isLoading}
-            error={error}
-            NoDataIcon={UsersIcon}
-            noDataTitle="No Users Found"
-            noDataDescription="There are no users to display at this time."
-            pagination={{ ...pagination, pageCount }}
-            onPaginationChange={setPagination}
-            sorting={sorting}
-            onSortingChange={setSorting}
-         />
-      </CardContent>
-    </Card>
+    </div>
   );
 }
