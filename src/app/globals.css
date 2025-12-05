@@ -14,7 +14,7 @@
     --popover-foreground: 213 27% 18%;
 
     --primary: 212 58% 23%; /* #1D3557 - Deep Classic Navy */
-    --primary-foreground: 212 20% 98%;
+    --primary-foreground: 210 20% 98%; /* Corrected: Light color for contrast */
 
     --secondary: 181 50% 41%; /* #38A3A5 - Deep Teal */
     --secondary-foreground: 181 20% 98%;
