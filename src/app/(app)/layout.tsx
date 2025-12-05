@@ -59,7 +59,7 @@ function Header({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: bo
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AuthenticatedImage src={user?.profile?.avatarUrl} alt={user?.username} />
+                  <AuthenticatedImage src={user?.profile?.avatarUrl} alt={user?.username} key={user?.profile?.avatarUrl} />
                   <AvatarFallback>
                     {getInitials(user?.firstname, user?.lastname)}
                   </AvatarFallback>
