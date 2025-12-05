@@ -47,10 +47,10 @@ function Header({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: bo
   return (
     <header className="flex h-16 shrink-0 items-center bg-sidebar text-sidebar-foreground shadow-md z-10 px-4">
         <div className="flex items-center gap-4">
+            <AppLogo />
             <button onClick={onToggleNav} className="rounded-md p-1.5 hover:bg-sidebar-accent">
                 {navOpen ? <CloseIcon /> : <MenuIcon />}
             </button>
-            <AppLogo />
         </div>
 
         <div className="ml-auto">
