@@ -4,51 +4,51 @@
 
 @layer base {
   :root {
-    --background: 210 17% 98%; /* Clean Off-White */
-    --foreground: 227 19% 24%; /* Dark Blue-Grey */
+    --background: 212 100% 97%; /* Very Pale Blue Tint */
+    --foreground: 224 59% 21%; /* Deep Navy */
 
-    --card: 0 0% 100%; /* White for cards to pop against off-white bg */
-    --card-foreground: 227 19% 24%;
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 224 59% 21%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 227 19% 24%;
+    --popover-foreground: 224 59% 21%;
 
-    --primary: 262 35% 51%; /* Deep Lavender */
-    --primary-foreground: 262 35% 96%; /* Light foreground for contrast */
+    --primary: 221 83% 53%; /* Strong Royal Blue */
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 209 83% 87%; /* Pale Powder Blue */
-    --secondary-foreground: 227 19% 24%;
+    --secondary: 217 91% 60%; /* Medium Soft Blue */
+    --secondary-foreground: 224 59% 21%;
     
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 212 100% 97%; /* Same as background */
+    --muted-foreground: 224 59% 31%;
 
-    --accent: 209 83% 87%; /* Pale Powder Blue */
-    --accent-foreground: 227 19% 24%;
+    --accent: 217 91% 70%; /* Lighter version of Medium Soft Blue for hover */
+    --accent-foreground: 224 59% 21%;
 
     --destructive: 0 84% 60%; 
     --destructive-foreground: 210 40% 98%;
     
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 262 35% 51%;
+    --border: 214 10% 84%; /* Light Cool Gray */
+    --input: 214 10% 84%;
+    --ring: 221 83% 53%;
 
     --radius: 0.5rem;
     
-    --chart-1: 262 35% 51%;
-    --chart-2: 231 100% 86%;
-    --chart-3: 209 83% 87%;
-    --chart-4: 262 35% 71%;
-    --chart-5: 231 100% 76%;
+    --chart-1: 221 83% 53%;
+    --chart-2: 217 91% 60%;
+    --chart-3: 217 91% 70%;
+    --chart-4: 221 83% 73%;
+    --chart-5: 217 91% 80%;
 
     /* Sidebar Colors */
-    --sidebar-background: 231 100% 86%; /* Soft Periwinkle */
-    --sidebar-foreground: 227 19% 24%;
-    --sidebar-primary: 262 35% 51%;
-    --sidebar-primary-foreground: 262 35% 96%;
-    --sidebar-accent: 231 100% 90%; /* Lighter Periwinkle for hover */
-    --sidebar-accent-foreground: 227 19% 15%;
-    --sidebar-border: 231 100% 80%;
-    --sidebar-ring: 262 35% 51%;
+    --sidebar-background: 217 91% 60%; /* Medium Soft Blue */
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 210 40% 98%;
+    --sidebar-primary-foreground: 217 91% 60%;
+    --sidebar-accent: 217 91% 55%; /* Darker hover for sidebar */
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 91% 55%;
+    --sidebar-ring: 210 40% 98%;
   }
 
   .dark {
