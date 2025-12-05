@@ -4,51 +4,51 @@
 
 @layer base {
   :root {
-    --background: 200 86% 98%; /* Near White with a faint blue tint */
-    --foreground: 204 29% 26%; /* Cool Navy */
+    --background: 0 0% 100%; /* Crisp White */
+    --foreground: 0 0% 23%; /* Mid-Tone Charcoal */
 
-    --card: 200 86% 99%; /* Slightly lighter than background */
-    --card-foreground: 204 29% 26%;
+    --card: 45 100% 94%; /* Soft Cream */
+    --card-foreground: 0 0% 23%;
 
-    --popover: 200 86% 98%;
-    --popover-foreground: 204 29% 26%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 23%;
 
-    --primary: 200 27% 45%; /* Deep Slate Blue */
-    --primary-foreground: 210 100% 98%;
+    --primary: 27 28% 57%; /* Muted Sand/Taupe */
+    --primary-foreground: 45 100% 96%; /* Very light cream for contrast */
 
-    --secondary: 34 94% 81%; /* Soft Peach/Apricot */
-    --secondary-foreground: 204 29% 26%;
+    --secondary: 45 100% 94%; /* Soft Cream */
+    --secondary-foreground: 0 0% 23%;
     
-    --muted: 200 30% 96%; /* Lighter version of background for muted elements */
-    --muted-foreground: 204 29% 45%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 34 94% 81%; /* Soft Peach/Apricot */
-    --accent-foreground: 204 29% 26%;
+    --accent: 45 100% 94%; /* Soft Cream */
+    --accent-foreground: 0 0% 23%;
 
     --destructive: 0 84% 60%; 
     --destructive-foreground: 210 40% 98%;
     
-    --border: 35 44% 82%; /* Pale Sand for borders */
-    --input: 35 44% 82%;
-    --ring: 200 27% 45%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 27 28% 57%;
 
     --radius: 0.5rem;
     
-    --chart-1: 200 27% 45%;
-    --chart-2: 34 94% 81%;
-    --chart-3: 196 33% 66%;
-    --chart-4: 204 29% 26%;
-    --chart-5: 200 30% 96%;
+    --chart-1: 27 28% 57%;
+    --chart-2: 198 25% 67%;
+    --chart-3: 45 100% 94%;
+    --chart-4: 30 25% 75%;
+    --chart-5: 215 20% 65%;
 
     /* Sidebar Colors */
-    --sidebar-background: 196 33% 66%; /* Muted Seafoam Blue */
-    --sidebar-foreground: 210 100% 98%;
-    --sidebar-primary: 200 27% 45%;
-    --sidebar-primary-foreground: 210 100% 98%;
-    --sidebar-accent: 196 33% 76%;
-    --sidebar-accent-foreground: 204 29% 16%;
-    --sidebar-border: 196 33% 61%;
-    --sidebar-ring: 200 27% 45%;
+    --sidebar-background: 198 25% 67%; /* Pastel Blue */
+    --sidebar-foreground: 0 0% 23%;
+    --sidebar-primary: 27 28% 57%;
+    --sidebar-primary-foreground: 45 100% 96%;
+    --sidebar-accent: 198 25% 77%; /* Lighter Pastel Blue for hover */
+    --sidebar-accent-foreground: 0 0% 15%;
+    --sidebar-border: 198 25% 62%;
+    --sidebar-ring: 27 28% 57%;
   }
 
   .dark {
