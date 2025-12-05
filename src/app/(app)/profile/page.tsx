@@ -371,7 +371,7 @@ export default function ProfilePage() {
                           </p>
                         </>
                     ) : (
-                        <p className="text-muted-foreground text-sm italic">"{profile.bio}"</p>
+                        <p className="text-muted-foreground text-sm italic break-words">"{profile.bio}"</p>
                     )}
                 </div>
                 <p className="text-muted-foreground mt-4 text-sm">Member since {formattedDate(user.createdAt)}</p>
