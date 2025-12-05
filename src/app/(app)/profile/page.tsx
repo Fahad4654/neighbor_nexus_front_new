@@ -215,11 +215,11 @@ export default function ProfilePage() {
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="username">Username</Label>
-                    <Input id="username" defaultValue={user.username} />
+                    <Input id="username" defaultValue={user.username} disabled />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" defaultValue={user.email} />
+                    <Input id="email" type="email" defaultValue={user.email} disabled />
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="phone">Phone Number</Label>
