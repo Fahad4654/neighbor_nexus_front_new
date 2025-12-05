@@ -108,13 +108,13 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
                 <Link
                     href={link.href}
                     className={cn(
-                    'flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                    'flex items-center gap-3 rounded-lg px-3 py-2 transition-colors duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                     isActive && 'bg-sidebar-accent text-sidebar-accent-foreground',
                     !navOpen && "justify-center"
                     )}
                 >
                     <link.icon className="h-5 w-5 shrink-0" />
-                    <span className={cn('overflow-hidden transition-all', navOpen ? 'w-full' : 'w-0')}>{link.label}</span>
+                    <span className={cn('overflow-hidden transition-all duration-200', navOpen ? 'w-full ml-0' : 'w-0 -ml-3')}>{link.label}</span>
                 </Link>
                 </TooltipTrigger>
                 {!navOpen && (
@@ -131,13 +131,13 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
                 <Link
                     href="/profile"
                     className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                        'flex items-center gap-3 rounded-lg px-3 py-2 transition-colors duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                         pathname.startsWith('/profile') && 'bg-sidebar-accent text-sidebar-accent-foreground',
                         !navOpen && "justify-center"
                     )}
                     >
                     <Settings className="h-5 w-5 shrink-0" />
-                    <span className={cn('overflow-hidden transition-all', navOpen ? 'w-full' : 'w-0')}>Settings</span>
+                    <span className={cn('overflow-hidden transition-all duration-200', navOpen ? 'w-full ml-0' : 'w-0 -ml-3')}>Settings</span>
                 </Link>
             </TooltipTrigger>
             {!navOpen && (
