@@ -47,10 +47,10 @@ function Header({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: bo
   return (
     <header className="flex h-16 shrink-0 items-center bg-sidebar text-sidebar-foreground shadow-md z-10 px-4">
         <div className="flex items-center gap-4">
-            <AppLogo />
             <button onClick={onToggleNav} className="rounded-md p-1.5 hover:bg-sidebar-accent">
                 {navOpen ? <CloseIcon /> : <MenuIcon />}
             </button>
+            <AppLogo />
         </div>
 
         <div className="ml-auto">
@@ -181,7 +181,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <aside
           className={cn(
             'shrink-0 h-full overflow-y-auto bg-sidebar transition-all duration-300 ease-in-out',
-            navOpen ? 'w-64' : 'w-20'
+            navOpen ? 'w-56' : 'w-20'
           )}
         >
           <Navbar navOpen={navOpen} />
