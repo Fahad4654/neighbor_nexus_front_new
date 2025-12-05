@@ -5,13 +5,14 @@ import Image, { type ImageProps } from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from '@/components/ui/skeleton';
 
-interface AuthenticatedImageProps extends Omit<ImageProps, 'src' | 'width' | 'height'> {
+interface AuthenticatedImageProps extends Omit<ImageProps, 'src' | 'width' | 'height' | 'alt'> {
   src: string | null | undefined;
+  alt?: string;
   width?: number;
   height?: number;
 }
 
-const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt, width, height, ...props }) => {
+const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', width, height, ...props }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { accessToken } = useAuth();
