@@ -22,10 +22,11 @@ const libraries: ('places')[] = ['places'];
 
 interface LocationPickerProps {
   onLocationChange: (location: { lat: number; lng: number } | null) => void;
+  initialPosition?: { lat: number; lng: number } | null;
 }
 
-export default function LocationPicker({ onLocationChange }: LocationPickerProps) {
-  const [position, setPosition] = useState<{ lat: number; lng: number } | null>(defaultCenter);
+export default function LocationPicker({ onLocationChange, initialPosition }: LocationPickerProps) {
+  const [position, setPosition] = useState<{ lat: number; lng: number } | null>(initialPosition || defaultCenter);
   const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const { toast } = useToast();
@@ -37,13 +38,27 @@ export default function LocationPicker({ onLocationChange }: LocationPickerProps
   });
 
   useEffect(() => {
-    // Pass the default location up on initial load.
-    // This should only run once when the component mounts.
-    if (defaultCenter) {
-      onLocationChange(defaultCenter);
+    // Pass the initial location up on mount
+    if (initialPosition) {
+        setPosition(initialPosition);
+        onLocationChange(initialPosition);
+    } else {
+        onLocationChange(defaultCenter);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // When the initialPosition prop changes (e.g., from parent state), update our internal state
+  useEffect(() => {
+      if (initialPosition && (initialPosition.lat !== position?.lat || initialPosition.lng !== position?.lng)) {
+          setPosition(initialPosition);
+           if (mapRef.current) {
+            mapRef.current.panTo(initialPosition);
+          }
+      }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPosition]);
+
 
   const handleMapClick = (event: google.maps.MapMouseEvent) => {
     if (event.latLng) {

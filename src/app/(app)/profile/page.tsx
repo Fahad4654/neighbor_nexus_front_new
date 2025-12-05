@@ -355,7 +355,7 @@ export default function ProfilePage() {
             <CardContent className="pt-6 flex flex-col items-center justify-center text-center">
                 <div className="relative">
                     <Avatar className="h-24 w-24 mb-4" onClick={handleAvatarClick}>
-                        <AuthenticatedImage src={profile.avatarUrl} alt={fullName} />
+                        <AuthenticatedImage src={profile.avatarUrl} alt={fullName} key={profile.avatarUrl} />
                         <AvatarFallback>{user.firstname.charAt(0)}{user.lastname.charAt(0)}</AvatarFallback>
                     </Avatar>
                      {isEditing && (
@@ -440,7 +440,7 @@ export default function ProfilePage() {
               <Label htmlFor="geolocation">{isEditing ? 'Update Your Location' : 'Geo Location (Coordinates)'}</Label>
               {isEditing ? (
                   <div className="h-[200px] rounded-md overflow-hidden border relative">
-                      <LocationPicker onLocationChange={handleLocationChange} />
+                      <LocationPicker onLocationChange={handleLocationChange} initialPosition={editableData.location} />
                   </div>
               ) : (
                   <div className="flex items-center gap-2">
@@ -474,5 +474,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-    
