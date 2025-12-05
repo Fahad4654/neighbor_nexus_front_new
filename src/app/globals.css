@@ -4,50 +4,51 @@
 
 @layer base {
   :root {
-    --background: 248 100% 98%; /* Pale Lavender White */
-    --foreground: 244 49% 20%; /* Darker Indigo */
+    --background: 210 100% 96%; /* Ice White/Lightest Azure Tint */
+    --foreground: 225 58% 21%; /* Deep Navy */
 
-    --card: 248 100% 99%; /* Slightly lighter than background */
-    --card-foreground: 244 49% 20%;
+    --card: 210 100% 98%; /* Slightly lighter than background */
+    --card-foreground: 225 58% 21%;
 
-    --popover: 248 100% 98%;
-    --popover-foreground: 244 49% 20%;
+    --popover: 210 100% 96%;
+    --popover-foreground: 225 58% 21%;
 
-    --primary: 327 82% 60%; /* Hot Pink */
-    --primary-foreground: 248 100% 98%;
+    --primary: 221 76% 48%; /* Dark Royal Blue */
+    --primary-foreground: 210 100% 98%;
 
-    --secondary: 259 90% 66%; /* Vivid Violet */
-    --secondary-foreground: 244 49% 20%;
+    --secondary: 217 95% 68%; /* Soft Azure */
+    --secondary-foreground: 225 58% 21%;
     
-    --muted: 244 49% 95%; /* Light Slate */
-    --muted-foreground: 244 49% 55%;
+    --muted: 220 50% 95%; /* Light Slate */
+    --muted-foreground: 225 58% 45%;
 
-    --accent: 259 90% 66%; /* Vivid Violet */
-    --accent-foreground: 244 49% 20%;
+    --accent: 217 95% 68%; /* Soft Azure */
+    --accent-foreground: 225 58% 21%;
 
     --destructive: 0 84% 60%; 
     --destructive-foreground: 210 40% 98%;
     
-    --border: 244 49% 90%;
-    --input: 244 49% 90%;
-    --ring: 327 82% 60%;
+    --border: 220 50% 90%;
+    --input: 220 50% 90%;
+    --ring: 221 76% 48%;
 
     --radius: 0.5rem;
     
-    --chart-1: 327 82% 60%;
-    --chart-2: 259 90% 66%;
-    --chart-3: 244 59% 50%;
-    --chart-4: 244 49% 20%;
-    --chart-5: 244 49% 95%;
+    --chart-1: 221 76% 48%;
+    --chart-2: 217 95% 68%;
+    --chart-3: 215 91% 60%;
+    --chart-4: 225 58% 21%;
+    --chart-5: 220 50% 95%;
 
-    --sidebar-background: 244 59% 50%; /* Deep Indigo */
-    --sidebar-foreground: 248 100% 98%;
-    --sidebar-primary: 327 82% 60%;
-    --sidebar-primary-foreground: 248 100% 98%;
-    --sidebar-accent: 244 59% 60%;
-    --sidebar-accent-foreground: 248 100% 98%;
-    --sidebar-border: 244 59% 45%;
-    --sidebar-ring: 327 82% 60%;
+    /* Sidebar Colors */
+    --sidebar-background: 214 91% 60%; /* Vibrant Azure */
+    --sidebar-foreground: 210 100% 98%;
+    --sidebar-primary: 221 76% 48%;
+    --sidebar-primary-foreground: 210 100% 98%;
+    --sidebar-accent: 214 91% 70%;
+    --sidebar-accent-foreground: 210 100% 98%;
+    --sidebar-border: 214 91% 55%;
+    --sidebar-ring: 221 76% 48%;
   }
 
   .dark {
