@@ -4,91 +4,91 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%; /* #FFFFFF - Pure White */
-    --foreground: 221 65% 25%; /* Darker shade of Deep Blue for text */
+    --background: 210 14% 97%; /* #F7F8F9 - Light Gray */
+    --foreground: 208 17% 33%; /* #475662 - Mid-Muted Slate */
 
     --card: 0 0% 100%; /* #FFFFFF - Pure White for cards */
-    --card-foreground: 221 65% 25%;
+    --card-foreground: 208 17% 33%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 221 65% 25%;
+    --popover-foreground: 208 17% 33%;
 
-    --primary: 221 65% 33%; /* #1E3A8A - Deep Blue */
-    --primary-foreground: 0 0% 100%; /* White text on primary */
+    --primary: 209 25% 52%; /* #6486A5 - Mid-Muted Blue */
+    --primary-foreground: 210 20% 98%; /* Lighter color for text on primary */
 
-    --secondary: 221 65% 50%; /* A slightly lighter blue for secondary elements */
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 141 9% 60%; /* #91A39B - Mid-Muted Sage */
+    --secondary-foreground: 208 17% 25%; /* Darker text for secondary buttons */
 
-    --muted: 221 65% 95%; /* Very light blue for muted backgrounds */
-    --muted-foreground: 221 40% 45%; /* A mid-tone blue for muted text */
+    --muted: 210 14% 92%; /* A slightly darker shade of the background */
+    --muted-foreground: 208 17% 45%; /* A mid-tone slate for muted text */
     
-    --accent: 221 65% 90%; /* Light blue for accents and hovers */
-    --accent-foreground: 221 65% 33%;
+    --accent: 210 14% 88%; /* A darker accent for hovers */
+    --accent-foreground: 208 17% 25%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 221 65% 85%; /* Light blue for borders, from 50% opacity */
-    --input: 221 65% 85%;
-    --ring: 221 65% 33%;
+    --border: 209 25% 85%; /* Lighter version of primary for borders */
+    --input: 209 25% 88%;
+    --ring: 209 25% 52%;
 
-    --chart-1: 221 65% 33%;
-    --chart-2: 221 65% 50%;
-    --chart-3: 221 65% 25%;
-    --chart-4: 221 65% 60%;
-    --chart-5: 221 65% 70%;
+    --chart-1: 209 25% 52%;
+    --chart-2: 141 9% 60%;
+    --chart-3: 209 25% 42%;
+    --chart-4: 141 9% 50%;
+    --chart-5: 209 25% 62%;
 
     /* Sidebar Colors */
-    --sidebar-background: 221 65% 33%; /* #1E3A8A - Deep Blue */
+    --sidebar-background: 209 25% 52%; /* #6486A5 - Mid-Muted Blue */
     --sidebar-foreground: 0 0% 98%; /* White text */
-    --sidebar-accent: 221 65% 43%; /* Slightly lighter blue for hover */
+    --sidebar-accent: 209 25% 62%; /* Slightly lighter blue for hover */
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 221 65% 38%;
-    --sidebar-ring: 221 65% 33%;
+    --sidebar-border: 209 25% 58%;
+    --sidebar-ring: 209 25% 52%;
   }
 
   .dark {
-    --background: 221 30% 10%; /* Dark blue-gray background */
-    --foreground: 221 30% 90%;
+    --background: 208 17% 10%; /* Dark slate background */
+    --foreground: 210 14% 90%;
 
-    --card: 221 30% 15%;
-    --card-foreground: 221 30% 90%;
+    --card: 208 17% 15%;
+    --card-foreground: 210 14% 90%;
 
-    --popover: 221 30% 10%;
-    --popover-foreground: 221 30% 90%;
+    --popover: 208 17% 10%;
+    --popover-foreground: 210 14% 90%;
 
-    --primary: 221 65% 60%; /* Lighter blue for dark mode */
-    --primary-foreground: 221 65% 10%;
+    --primary: 209 25% 62%; /* Lighter blue for dark mode */
+    --primary-foreground: 209 25% 10%;
 
-    --secondary: 221 65% 45%;
-    --secondary-foreground: 221 30% 90%;
+    --secondary: 141 9% 70%; /* Lighter sage for dark mode */
+    --secondary-foreground: 141 9% 15%;
 
-    --muted: 221 30% 20%;
-    --muted-foreground: 221 30% 65%;
+    --muted: 208 17% 20%;
+    --muted-foreground: 210 14% 65%;
     
-    --accent: 221 30% 25%;
-    --accent-foreground: 221 30% 90%;
+    --accent: 208 17% 25%;
+    --accent-foreground: 210 14% 90%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 221 30% 30%;
-    --input: 221 30% 30%;
-    --ring: 221 65% 60%;
+    --border: 208 17% 30%;
+    --input: 208 17% 30%;
+    --ring: 209 25% 62%;
 
-    --chart-1: 221 65% 60%;
-    --chart-2: 221 65% 50%;
-    --chart-3: 221 30% 90%;
-    --chart-4: 221 65% 70%;
-    --chart-5: 221 65% 80%;
+    --chart-1: 209 25% 62%;
+    --chart-2: 141 9% 70%;
+    --chart-3: 210 14% 90%;
+    --chart-4: 209 25% 72%;
+    --chart-5: 141 9% 80%;
 
     /* Sidebar Colors */
-    --sidebar-background: 221 65% 28%;
+    --sidebar-background: 209 25% 42%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-accent: 221 65% 34%;
+    --sidebar-accent: 209 25% 52%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 221 65% 32%;
-    --sidebar-ring: 221 65% 28%;
+    --sidebar-border: 209 25% 48%;
+    --sidebar-ring: 209 25% 42%;
   }
 }
 
