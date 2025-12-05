@@ -39,7 +39,7 @@ export default function LocationPicker({ onLocationChange, initialPosition }: Lo
 
   useEffect(() => {
     // Pass the initial location up on mount
-    if (initialPosition) {
+    if (initialPosition && (initialPosition.lat !== 0 && initialPosition.lng !== 0)) {
         setPosition(initialPosition);
         onLocationChange(initialPosition);
     } else {
@@ -51,9 +51,11 @@ export default function LocationPicker({ onLocationChange, initialPosition }: Lo
   // When the initialPosition prop changes (e.g., from parent state), update our internal state
   useEffect(() => {
       if (initialPosition && (initialPosition.lat !== position?.lat || initialPosition.lng !== position?.lng)) {
-          setPosition(initialPosition);
-           if (mapRef.current) {
-            mapRef.current.panTo(initialPosition);
+          if (initialPosition.lat !== 0 && initialPosition.lng !== 0) {
+            setPosition(initialPosition);
+            if (mapRef.current) {
+                mapRef.current.panTo(initialPosition);
+            }
           }
       }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -147,7 +149,7 @@ export default function LocationPicker({ onLocationChange, initialPosition }: Lo
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={position || defaultCenter}
-        zoom={position ? 13 : 11}
+        zoom={position && position.lat !== 0 ? 13 : 11}
         onClick={handleMapClick}
         onLoad={(map) => { mapRef.current = map; }}
         options={{
@@ -156,7 +158,7 @@ export default function LocationPicker({ onLocationChange, initialPosition }: Lo
             fullscreenControl: false,
         }}
       >
-        {position && <Marker position={position} />}
+        {position && (position.lat !== 0 || position.lng !== 0) && <Marker position={position} />}
       </GoogleMap>
       <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[90%] sm:w-[70%] md:w-[50%]">
           <Autocomplete

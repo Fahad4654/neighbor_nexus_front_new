@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 const LocationPicker = dynamic(
   () => import('@/components/shared/location-picker'),
-  { ssr: false, loading: () => <Skeleton className="h-[200px] w-full" /> }
+  { ssr: false, loading: () => <Skeleton className="h-[400px] w-full" /> }
 );
 
 type User = {
@@ -439,7 +439,7 @@ export default function ProfilePage() {
             <div className="space-y-2">
               <Label htmlFor="geolocation">{isEditing ? 'Update Your Location' : 'Geo Location (Coordinates)'}</Label>
               {isEditing ? (
-                  <div className="h-[200px] rounded-md overflow-hidden border relative">
+                  <div className="h-[400px] rounded-md overflow-hidden border relative">
                       <LocationPicker onLocationChange={handleLocationChange} initialPosition={editableData.location} />
                   </div>
               ) : (
