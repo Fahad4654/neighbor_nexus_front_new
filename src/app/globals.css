@@ -4,91 +4,91 @@
 
 @layer base {
   :root {
-    --background: 213 27% 94%; /* #EBEFF3 - Light Cool Gray/Periwinkle Tint */
-    --foreground: 212 25% 23%; /* #2D3A4B - Darker Slate */
+    --background: 240 14% 99%; /* #FBFBFC */
+    --foreground: 213 29% 18%; /* #222E3C */
 
-    --card: 215 25% 85%; /* Slightly lighter than secondary for better card contrast */
-    --card-foreground: 212 25% 23%;
+    --card: 0 0% 100%; /* #FFFFFF - Cleaner white for cards */
+    --card-foreground: 213 29% 18%;
 
-    --popover: 215 25% 85%;
-    --popover-foreground: 212 25% 23%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 213 29% 18%;
 
-    --primary: 213 25% 31%; /* #3A4B62 - Deep Blue-Slate */
+    --primary: 212 52% 23%; /* #1D3557 - Deep Classic Navy */
     --primary-foreground: 210 30% 98%;
 
-    --secondary: 215 25% 73%; /* #A8B8CC - Mid-Tone Cool Gray */
-    --secondary-foreground: 213 25% 21%;
+    --secondary: 181 50% 31%; /* #38A3A5 - Deep Teal */
+    --secondary-foreground: 180 30% 96%;
 
-    --muted: 213 27% 90%;
-    --muted-foreground: 212 25% 40%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
     
-    --accent: 215 25% 90%;
-    --accent-foreground: 212 25% 15%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 212 52% 23%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 215 25% 83%;
-    --input: 215 25% 83%;
-    --ring: 215 25% 73%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 212 52% 23%;
 
-    --chart-1: 213 25% 31%;
-    --chart-2: 215 25% 73%;
-    --chart-3: 212 25% 23%;
-    --chart-4: 213 25% 51%;
-    --chart-5: 215 25% 83%;
+    --chart-1: 212 52% 23%; /* Deep Classic Navy */
+    --chart-2: 181 50% 31%; /* Deep Teal */
+    --chart-3: 213 29% 18%; /* Dark Blue-Gray Text */
+    --chart-4: 212 52% 43%; /* Lighter Navy */
+    --chart-5: 181 50% 51%; /* Lighter Teal */
 
     /* Sidebar Colors */
-    --sidebar-background: 215 25% 73%; /* #A8B8CC - Mid-Tone Cool Gray */
-    --sidebar-foreground: 213 25% 21%;
-    --sidebar-accent: 215 25% 83%;
-    --sidebar-accent-foreground: 213 25% 15%;
-    --sidebar-border: 215 25% 68%;
-    --sidebar-ring: 215 25% 73%;
+    --sidebar-background: 212 52% 23%; /* #1D3557 - Deep Classic Navy */
+    --sidebar-foreground: 0 0% 98%; /* White text on navy */
+    --sidebar-accent: 212 52% 33%; /* Slightly lighter navy for hover */
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 212 52% 28%;
+    --sidebar-ring: 212 52% 23%;
   }
 
   .dark {
-    --background: 212 25% 15%;
-    --foreground: 213 27% 90%;
+    --background: 213 29% 12%; /* Darker version of text color */
+    --foreground: 210 40% 96.1%;
 
-    --card: 212 25% 20%;
-    --card-foreground: 213 27% 90%;
+    --card: 213 29% 16%;
+    --card-foreground: 210 40% 96.1%;
 
-    --popover: 212 25% 15%;
-    --popover-foreground: 213 27% 90%;
+    --popover: 213 29% 12%;
+    --popover-foreground: 210 40% 96.1%;
 
-    --primary: 215 25% 73%; /* #A8B8CC */
-    --primary-foreground: 213 25% 11%;
+    --primary: 181 50% 65%; /* Lighter Teal for dark mode primary */
+    --primary-foreground: 181 50% 15%;
 
-    --secondary: 213 25% 31%; /* #3A4B62 */
-    --secondary-foreground: 213 27% 94%;
+    --secondary: 212 52% 60%; /* Lighter Navy for dark mode secondary */
+    --secondary-foreground: 212 50% 10%;
 
-    --muted: 212 25% 25%;
-    --muted-foreground: 213 27% 70%;
+    --muted: 213 29% 20%;
+    --muted-foreground: 210 40% 70%;
     
-    --accent: 212 25% 28%;
-    --accent-foreground: 213 27% 94%;
+    --accent: 213 29% 24%;
+    --accent-foreground: 210 40% 96.1%;
 
-    --destructive: 0 63% 51%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 212 25% 25%;
-    --input: 212 25% 25%;
-    --ring: 215 25% 73%;
+    --border: 213 29% 22%;
+    --input: 213 29% 22%;
+    --ring: 181 50% 65%;
 
-    --chart-1: 215 25% 73%;
-    --chart-2: 213 25% 31%;
-    --chart-3: 213 27% 90%;
-    --chart-4: 213 25% 51%;
-    --chart-5: 212 25% 20%;
+    --chart-1: 181 50% 65%;
+    --chart-2: 212 52% 60%;
+    --chart-3: 210 40% 96.1%;
+    --chart-4: 181 50% 45%;
+    --chart-5: 212 52% 40%;
 
     /* Sidebar Colors */
-    --sidebar-background: 215 25% 73%;
-    --sidebar-foreground: 213 25% 11%;
-    --sidebar-accent: 215 25% 83%;
-    --sidebar-accent-foreground: 213 25% 9%;
-    --sidebar-border: 215 25% 68%;
-    --sidebar-ring: 215 25% 73%;
+    --sidebar-background: 212 52% 23%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-accent: 212 52% 33%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 212 52% 28%;
+    --sidebar-ring: 212 52% 23%;
   }
 }
 
