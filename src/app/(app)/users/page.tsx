@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { CreateUserDialog } from '@/components/users/create-user-dialog';
 import { DataTable } from '@/components/shared/data-table';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EditUserDialog } from '@/components/users/edit-user-dialog';
 
 type UserProfile = {
   id: string;
@@ -21,7 +22,7 @@ type UserProfile = {
   address: string;
 };
 
-type User = {
+export type User = {
   id: string;
   username: string;
   firstname: string;
@@ -70,13 +71,56 @@ export default function UsersPage() {
     }),
     [pageIndex, pageSize]
   );
+  
+  const fetchUsers = useCallback(async (page: number, size: number, sort: SortingState) => {
+    setIsLoading(true);
+    setError(null);
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl) {
+      setError("Backend URL is not configured.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const sortColumn = sort[0]?.id || 'createdAt';
+      const sortDirection = sort[0]?.desc ? 'DESC' : 'ASC';
+
+      const response = await api.post(`${backendUrl}/users/all`, {
+        order: sortColumn,
+        asc: sortDirection,
+        page: page + 1, // API is 1-based, tanstack-table is 0-based
+        pageSize: size,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || result.error || 'Failed to fetch users.');
+      }
+      
+      setUsers(result.usersList?.data || []);
+      setPageCount(result.usersList?.pagination?.totalPages || 0);
+      setTotalUsers(result.usersList?.pagination?.total || 0);
+
+    } catch (err: any) {
+      setError(err.message);
+      toast({
+        variant: 'destructive',
+        title: 'Error fetching users',
+        description: err.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [api, toast]);
+
 
   const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
     setSorting(updater);
-    // When sorting changes, reset to the first page
     setPagination(prev => ({ ...prev, pageIndex: 0 }));
   };
-  
+
   const columns: ColumnDef<User>[] = useMemo(() => [
     {
         id: 'sl',
@@ -158,55 +202,15 @@ export default function UsersPage() {
         id: 'actions',
         header: 'Actions',
         cell: ({ row }) => (
-             <Button variant="outline" size="sm">Edit</Button>
+             <EditUserDialog 
+                user={row.original} 
+                onUserUpdated={() => fetchUsers(pageIndex, pageSize, sorting)} 
+            />
         ),
         enableSorting: false,
     },
-], [pageIndex, pageSize]);
+], [pageIndex, pageSize, fetchUsers, sorting]);
   
-  const fetchUsers = useCallback(async (page: number, size: number, sort: SortingState) => {
-    setIsLoading(true);
-    setError(null);
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-    if (!backendUrl) {
-      setError("Backend URL is not configured.");
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const sortColumn = sort[0]?.id || 'createdAt';
-      const sortDirection = sort[0]?.desc ? 'DESC' : 'ASC';
-
-      const response = await api.post(`${backendUrl}/users/all`, {
-        order: sortColumn,
-        asc: sortDirection,
-        page: page + 1, // API is 1-based, tanstack-table is 0-based
-        pageSize: size,
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || result.error || 'Failed to fetch users.');
-      }
-      
-      setUsers(result.usersList?.data || []);
-      setPageCount(result.usersList?.pagination?.totalPages || 0);
-      setTotalUsers(result.usersList?.pagination?.total || 0);
-
-    } catch (err: any) {
-      setError(err.message);
-      toast({
-        variant: 'destructive',
-        title: 'Error fetching users',
-        description: err.message,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [api, toast]);
-
   useEffect(() => {
     fetchUsers(pageIndex, pageSize, sorting);
   }, [fetchUsers, pageIndex, pageSize, sorting]);
