@@ -53,11 +53,11 @@ function Header({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: bo
             </button>
         </div>
 
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
+          <span className='hidden sm:inline text-sidebar-foreground'>Welcome {user?.firstname}</span>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2 text-sidebar-foreground hover:text-sidebar-foreground">
-                <span className='hidden sm:inline'>Welcome {user?.firstname}</span>
+              <Button variant="ghost" size="icon" className="rounded-full">
                 <Avatar className="h-8 w-8">
                   <AuthenticatedImage src={user?.profile?.avatarUrl} alt={user?.username} />
                   <AvatarFallback>
