@@ -141,6 +141,7 @@ export default function UsersPage() {
     });
   
   const [pageCount, setPageCount] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
 
   const pagination = useMemo(
     () => ({
@@ -179,6 +180,7 @@ export default function UsersPage() {
       
       setUsers(result.usersList?.data || []);
       setPageCount(result.usersList?.pagination?.totalPages || 0);
+      setTotalUsers(result.usersList?.pagination?.total || 0);
 
     } catch (err: any) {
       setError(err.message);
@@ -199,7 +201,7 @@ export default function UsersPage() {
   return (
     <div className="w-full h-full flex flex-col">
         <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold">Users</h1>
+            <h1 className="text-2xl font-bold">Users ({totalUsers})</h1>
             {user && user.isAdmin && <CreateUserDialog onUserCreated={() => fetchUsers(pageIndex, pageSize, sorting)} />}
         </div>
         <div className="flex-1 w-full overflow-hidden">
@@ -215,6 +217,7 @@ export default function UsersPage() {
                 onPaginationChange={setPagination}
                 sorting={sorting}
                 onSortingChange={setSorting}
+                totalRecords={totalUsers}
             />
         </div>
     </div>

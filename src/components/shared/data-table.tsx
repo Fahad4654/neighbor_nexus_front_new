@@ -42,6 +42,7 @@ interface DataTableProps<TData, TValue> {
   onPaginationChange: (updater: any) => void;
   sorting: SortingState;
   onSortingChange: (updater: any) => void;
+  totalRecords: number;
 }
 
 export function DataTable<TData, TValue>({
@@ -56,6 +57,7 @@ export function DataTable<TData, TValue>({
   onPaginationChange,
   sorting,
   onSortingChange,
+  totalRecords,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -181,8 +183,7 @@ export function DataTable<TData, TValue>({
             </Select>
         </div>
         <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
+          Showing {table.getRowModel().rows.length} of {totalRecords} records
         </div>
         <div className="flex items-center gap-2">
           <Button
