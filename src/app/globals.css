@@ -4,91 +4,91 @@
 
 @layer base {
   :root {
-    --background: 240 14% 99%; /* #FBFBFC - Clean White */
-    --foreground: 213 29% 18%; /* #222E3C - Dark Blue-Gray */
+    --background: 220 67% 99%; /* #FBFCFE - Coolest White */
+    --foreground: 200 30% 24%; /* #2B404D - Dark Text */
 
     --card: 0 0% 100%; /* #FFFFFF - Cleaner white for cards */
-    --card-foreground: 213 29% 18%;
+    --card-foreground: 200 30% 24%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 213 29% 18%;
+    --popover-foreground: 200 30% 24%;
 
-    --primary: 212 52% 45%; /* #4E729D - Lighter Classic Navy */
-    --primary-foreground: 210 30% 98%;
+    --primary: 196 33% 34%; /* #3A6372 - Slightly Teal/Green-Blue */
+    --primary-foreground: 196 30% 98%;
 
-    --secondary: 181 50% 31%; /* #38A3A5 - Deep Teal */
-    --secondary-foreground: 180 30% 96%;
+    --secondary: 217 33% 38%; /* #425A82 - Slightly Violet/Navy-Blue */
+    --secondary-foreground: 217 30% 96%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
     
     --accent: 210 40% 96.1%;
-    --accent-foreground: 212 52% 45%;
+    --accent-foreground: 196 33% 34%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 212 52% 45%;
+    --ring: 196 33% 34%;
 
-    --chart-1: 212 52% 45%; /* Lighter Classic Navy */
-    --chart-2: 181 50% 31%; /* Deep Teal */
-    --chart-3: 213 29% 18%; /* Dark Blue-Gray Text */
-    --chart-4: 212 52% 55%; /* Even Lighter Navy */
-    --chart-5: 181 50% 51%; /* Lighter Teal */
+    --chart-1: 196 33% 34%; /* Slightly Teal/Green-Blue */
+    --chart-2: 217 33% 38%; /* Slightly Violet/Navy-Blue */
+    --chart-3: 200 30% 24%; /* Dark Text */
+    --chart-4: 196 33% 44%; /* Lighter Teal/Green-Blue */
+    --chart-5: 217 33% 48%; /* Lighter Violet/Navy-Blue */
 
     /* Sidebar Colors */
-    --sidebar-background: 212 52% 45%; /* #4E729D - Lighter Classic Navy */
-    --sidebar-foreground: 0 0% 98%; /* White text on navy */
-    --sidebar-accent: 212 52% 55%; /* Slightly lighter navy for hover */
+    --sidebar-background: 196 33% 34%; /* #3A6372 - Slightly Teal/Green-Blue */
+    --sidebar-foreground: 0 0% 98%; /* White text */
+    --sidebar-accent: 196 33% 40%; /* Slightly lighter for hover */
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 212 52% 50%;
-    --sidebar-ring: 212 52% 45%;
+    --sidebar-border: 196 33% 38%;
+    --sidebar-ring: 196 33% 34%;
   }
 
   .dark {
-    --background: 213 29% 12%; /* Darker version of text color */
+    --background: 200 30% 12%; 
     --foreground: 210 40% 96.1%;
 
-    --card: 213 29% 16%;
+    --card: 200 30% 16%;
     --card-foreground: 210 40% 96.1%;
 
-    --popover: 213 29% 12%;
+    --popover: 200 30% 12%;
     --popover-foreground: 210 40% 96.1%;
 
-    --primary: 181 50% 65%; /* Lighter Teal for dark mode primary */
-    --primary-foreground: 181 50% 15%;
+    --primary: 196 33% 64%; /* Lighter Teal for dark mode */
+    --primary-foreground: 196 33% 10%;
 
-    --secondary: 212 52% 60%; /* Lighter Navy for dark mode secondary */
-    --secondary-foreground: 212 50% 10%;
+    --secondary: 217 33% 68%; /* Lighter Violet for dark mode */
+    --secondary-foreground: 217 33% 12%;
 
-    --muted: 213 29% 20%;
+    --muted: 200 30% 20%;
     --muted-foreground: 210 40% 70%;
     
-    --accent: 213 29% 24%;
+    --accent: 200 30% 24%;
     --accent-foreground: 210 40% 96.1%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 213 29% 22%;
-    --input: 213 29% 22%;
-    --ring: 181 50% 65%;
+    --border: 200 30% 22%;
+    --input: 200 30% 22%;
+    --ring: 196 33% 64%;
 
-    --chart-1: 181 50% 65%;
-    --chart-2: 212 52% 60%;
+    --chart-1: 196 33% 64%;
+    --chart-2: 217 33% 68%;
     --chart-3: 210 40% 96.1%;
-    --chart-4: 181 50% 45%;
-    --chart-5: 212 52% 40%;
+    --chart-4: 196 33% 44%;
+    --chart-5: 217 33% 48%;
 
     /* Sidebar Colors */
-    --sidebar-background: 212 52% 30%;
+    --sidebar-background: 196 33% 28%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-accent: 212 52% 40%;
+    --sidebar-accent: 196 33% 34%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 212 52% 35%;
-    --sidebar-ring: 212 52% 30%;
+    --sidebar-border: 196 33% 32%;
+    --sidebar-ring: 196 33% 28%;
   }
 }
 
