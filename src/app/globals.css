@@ -13,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 213 29% 18%;
 
-    --primary: 212 52% 23%; /* #1D3557 - Deep Classic Navy */
+    --primary: 212 52% 30%; /* #2B4972 - Lighter Classic Navy */
     --primary-foreground: 210 30% 98%;
 
     --secondary: 181 50% 31%; /* #38A3A5 - Deep Teal */
@@ -23,28 +23,28 @@
     --muted-foreground: 215.4 16.3% 46.9%;
     
     --accent: 210 40% 96.1%;
-    --accent-foreground: 212 52% 23%;
+    --accent-foreground: 212 52% 30%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 212 52% 23%;
+    --ring: 212 52% 30%;
 
-    --chart-1: 212 52% 23%; /* Deep Classic Navy */
+    --chart-1: 212 52% 30%; /* Lighter Classic Navy */
     --chart-2: 181 50% 31%; /* Deep Teal */
     --chart-3: 213 29% 18%; /* Dark Blue-Gray Text */
     --chart-4: 212 52% 43%; /* Lighter Navy */
     --chart-5: 181 50% 51%; /* Lighter Teal */
 
     /* Sidebar Colors */
-    --sidebar-background: 212 52% 23%; /* #1D3557 - Deep Classic Navy */
+    --sidebar-background: 212 52% 30%; /* #2B4972 - Lighter Classic Navy */
     --sidebar-foreground: 0 0% 98%; /* White text on navy */
-    --sidebar-accent: 212 52% 33%; /* Slightly lighter navy for hover */
+    --sidebar-accent: 212 52% 40%; /* Slightly lighter navy for hover */
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 212 52% 28%;
-    --sidebar-ring: 212 52% 23%;
+    --sidebar-border: 212 52% 35%;
+    --sidebar-ring: 212 52% 30%;
   }
 
   .dark {
@@ -83,12 +83,12 @@
     --chart-5: 212 52% 40%;
 
     /* Sidebar Colors */
-    --sidebar-background: 212 52% 23%;
+    --sidebar-background: 212 52% 30%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-accent: 212 52% 33%;
+    --sidebar-accent: 212 52% 40%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 212 52% 28%;
-    --sidebar-ring: 212 52% 23%;
+    --sidebar-border: 212 52% 35%;
+    --sidebar-ring: 212 52% 30%;
   }
 }
 
