@@ -135,7 +135,7 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
                     )}
                     >
                     <Settings className="h-5 w-5 shrink-0" />
-                    <span className={cn('overflow-hidden transition-all duration-200', navOpen ? 'w-full' : 'w-0')}>{link.label}</span>
+                    <span className={cn('overflow-hidden transition-all duration-200', navOpen ? 'w-full' : 'w-0')}>Settings</span>
                 </Link>
             </TooltipTrigger>
             {!navOpen && (
