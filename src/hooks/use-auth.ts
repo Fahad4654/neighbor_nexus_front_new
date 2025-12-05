@@ -45,8 +45,9 @@ export const useAuth = () => {
         // Pass performLogout instead of a function that would cause a re-render
         return apiFactory(performLogout);
     }, [performLogout]);
-
-    useEffect(() => {
+    
+    // Function to load user data from localStorage and update state
+    const loadUserFromStorage = useCallback(() => {
         try {
             const storedUser = localStorage.getItem('user');
             const storedAccessToken = localStorage.getItem('accessToken');
@@ -56,13 +57,35 @@ export const useAuth = () => {
                 setUser(JSON.parse(storedUser));
                 setAccessToken(storedAccessToken);
                 setRefreshToken(storedRefreshToken);
+            } else {
+                // If any item is missing, clear all auth data
+                performLogout();
             }
         } catch (error) {
             console.error("Failed to parse auth data from localStorage", error);
+            performLogout();
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [performLogout]);
+
+    useEffect(() => {
+        // Initial load
+        loadUserFromStorage();
+
+        // Listen for storage changes from other tabs
+        const handleStorageChange = (event: StorageEvent) => {
+            if (event.key === 'user' || event.key === 'accessToken' || event.key === 'refreshToken') {
+                loadUserFromStorage();
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, [loadUserFromStorage]);
     
     const logout = useCallback(async () => {
         const currentRefreshToken = localStorage.getItem('refreshToken');
@@ -80,14 +103,16 @@ export const useAuth = () => {
     }, [api, performLogout]);
 
     const updateUser = useCallback((newUserData: User) => {
-        // First, update localStorage with the complete new user object.
+        // Update localStorage
         localStorage.setItem('user', JSON.stringify(newUserData));
-        // Then, update the state by reading from localStorage again.
-        // This ensures a fresh object reference and triggers re-renders reliably.
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
+        // Manually update state for the current tab
+        setUser(newUserData);
+        // Dispatch a storage event so other tabs (and our own listener) can react.
+        // This standardizes the update mechanism.
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: 'user',
+            newValue: JSON.stringify(newUserData)
+        }));
     }, []);
 
 
