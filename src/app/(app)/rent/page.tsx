@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense, useMemo } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import AuthenticatedImage from '@/components/shared/authenticated-image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Wrench, MapPin } from 'lucide-react';
+import { Wrench, MapPin, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 type ToolImage = {
   id: string;
@@ -119,6 +120,7 @@ function RentPageComponent() {
   const [rentListings, setRentListings] = useState<Tool[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   
   const fetchRentListings = useCallback(async () => {
     if (!user) return;
@@ -159,18 +161,39 @@ function RentPageComponent() {
     }
   }, [fetchRentListings, user]);
 
+  const filteredListings = useMemo(() => {
+    if (!searchQuery) {
+      return rentListings;
+    }
+    return rentListings.filter(listing => 
+      listing.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [rentListings, searchQuery]);
+
   return (
     <div className="space-y-4">
-        <div>
-            <h1 className="text-2xl font-bold">Rent from Your Nexus</h1>
-            <p className="text-muted-foreground">Browse tools and skills shared by others in your community, sorted by proximity.</p>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+                <h1 className="text-2xl font-bold">Rent from Your Nexus</h1>
+                <p className="text-muted-foreground">Browse tools and skills shared by others in your community, sorted by proximity.</p>
+            </div>
+            <div className="relative w-full sm:max-w-xs">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input 
+                    type="search"
+                    placeholder="Search for tools or skills..." 
+                    className="pl-8 w-full"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
         </div>
          <ListingsGrid 
-            listings={rentListings}
+            listings={filteredListings}
             isLoading={isLoading}
             error={error}
             noDataTitle="Nothing to Rent Nearby"
-            noDataDescription="There are currently no items available for rent from other users near you."
+            noDataDescription={searchQuery ? "No items match your search." : "There are currently no items available for rent from other users near you."}
           />
     </div>
   );
