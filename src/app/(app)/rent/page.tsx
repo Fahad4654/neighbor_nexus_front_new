@@ -134,10 +134,12 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
 
 const SORT_OPTIONS = {
     distance: [{ column: 'distance', order: 'ASC' }],
-    availability: [{ column: 'is_available', order: 'DESC' }],
-    price_asc: [{ column: 'daily_price', order: 'ASC' }],
-    price_desc: [{ column: 'daily_price', order: 'DESC' }],
+    availability: [{ column: 'is_available', order: 'DESC' }, { column: 'distance', order: 'ASC' }],
+    price_asc: [{ column: 'daily_price', order: 'ASC' }, { column: 'distance', order: 'ASC' }],
+    price_desc: [{ column: 'daily_price', order: 'DESC' }, { column: 'distance', order: 'ASC' }],
 };
+
+type SortOptionKey = keyof typeof SORT_OPTIONS;
 
 function RentPageComponent() {
   const { api, user } = useAuth();
@@ -149,7 +151,7 @@ function RentPageComponent() {
   // State for filters
   const [searchQuery, setSearchQuery] = useState('');
   const [distanceFilter, setDistanceFilter] = useState<number>(50); // Default to 50km
-  const [sortOption, setSortOption] = useState<keyof typeof SORT_OPTIONS>('distance');
+  const [sortOption, setSortOption] = useState<SortOptionKey>('distance');
   
   // Debounce search query
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
@@ -172,7 +174,9 @@ function RentPageComponent() {
         if (debouncedSearchQuery) {
             params.append('search', debouncedSearchQuery);
         }
-        params.append('sort', JSON.stringify(SORT_OPTIONS[sortOption]));
+        
+        const sortCriteria = SORT_OPTIONS[sortOption];
+        params.append('sort', JSON.stringify(sortCriteria));
         
         const response = await api.get(`${backendUrl}/tools/gooleNearby/${user.id}?${params.toString()}`);
         const result = await response.json();
@@ -235,7 +239,7 @@ function RentPageComponent() {
             </div>
             <div className="md:col-span-1 space-y-2">
                 <Label htmlFor="sort">Sort By</Label>
-                 <Select value={sortOption} onValueChange={(value: keyof typeof SORT_OPTIONS) => setSortOption(value)}>
+                 <Select value={sortOption} onValueChange={(value: SortOptionKey) => setSortOption(value)}>
                     <SelectTrigger id="sort" className="w-full">
                         <SelectValue placeholder="Sort by..." />
                     </SelectTrigger>
