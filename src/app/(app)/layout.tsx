@@ -97,7 +97,6 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
   if (user?.isAdmin) {
     navLinks = [
       { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-      { href: '/home', icon: Home, label: 'Home' },
       ...baseNavLinks,
     ];
     if (user?.isAdmin) {
