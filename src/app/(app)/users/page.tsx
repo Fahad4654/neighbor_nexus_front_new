@@ -167,9 +167,10 @@ export default function UsersPage() {
         accessorKey: 'geo_location',
         header: 'Location',
         cell: ({row}) => {
-            if (!row.original.geo_location?.coordinates) return 'N/A';
-            // Placeholder for city/state lookup
-            return "New York, NY";
+            const coords = row.original.geo_location?.coordinates;
+            if (!coords) return 'N/A';
+            const [lng, lat] = coords;
+            return `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
         },
         enableSorting: false,
     },
