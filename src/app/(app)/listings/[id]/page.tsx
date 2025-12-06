@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'next/navigation';
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -103,8 +104,9 @@ const ListingDetailSkeleton = () => (
 );
 
 
-export default function ListingDetailPage({ params }: { params: { id: string } }) {
-  const { id: listingId } = params;
+export default function ListingDetailPage() {
+  const params = useParams();
+  const listingId = params.id as string;
   const { api } = useAuth();
   const { toast } = useToast();
   const [listing, setListing] = useState<ListingData | null>(null);
