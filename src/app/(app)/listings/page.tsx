@@ -80,8 +80,7 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
     return (
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {listings.map((listing) => (
-            <Link href={`/listings/${listing.listing_id}`} key={listing.listing_id}>
-              <Card className="overflow-hidden h-full flex flex-col hover:shadow-lg transition-shadow">
+              <Card key={listing.listing_id} className="overflow-hidden h-full flex flex-col">
                 <CardHeader className="p-0">
                   <div className="relative aspect-video">
                     <AuthenticatedImage
@@ -99,7 +98,6 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
                   </CardDescription>
                 </CardContent>
               </Card>
-            </Link>
           ))}
         </div>
     );
