@@ -104,7 +104,8 @@ const ListingDetailSkeleton = () => (
 
 
 export default function ListingDetailPage({ params }: { params: { id: string } }) {
-  const { api, user: authUser } = useAuth();
+  const { id: listingId } = params;
+  const { api } = useAuth();
   const { toast } = useToast();
   const [listing, setListing] = useState<ListingData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -121,7 +122,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
     }
     
     try {
-        const response = await api.get(`${backendUrl}/tools/${params.id}`);
+        const response = await api.get(`${backendUrl}/tools/${listingId}`);
         const result = await response.json();
 
         if(!response.ok){
@@ -140,16 +141,16 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
     } finally {
         setIsLoading(false);
     }
-  }, [api, params.id, toast]);
+  }, [api, listingId, toast]);
 
   useEffect(() => {
-    if (params.id) {
+    if (listingId) {
         fetchListing();
     } else {
         setError("No listing ID provided.");
         setIsLoading(false);
     }
-  }, [params.id, fetchListing]);
+  }, [listingId, fetchListing]);
 
   const getPrimaryImage = (images: ToolImage[]) => {
     if (!images || images.length === 0) {
