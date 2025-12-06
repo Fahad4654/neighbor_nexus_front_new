@@ -70,7 +70,7 @@ export default function LoginPage() {
       if (data.user?.isAdmin) {
         router.push('/dashboard');
       } else {
-        router.push('/nexus');
+        router.push('/home');
       }
 
     } catch (error: any) {

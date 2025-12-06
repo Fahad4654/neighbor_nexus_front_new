@@ -97,7 +97,7 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
   if (user?.isAdmin) {
     navLinks = [
       { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-      { href: '/nexus', icon: Home, label: 'Home' },
+      { href: '/home', icon: Home, label: 'Home' },
       ...baseNavLinks,
     ];
     if (user?.isAdmin) {
@@ -105,7 +105,7 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
     }
   } else {
     navLinks = [
-      { href: '/nexus', icon: Home, label: 'Home' },
+      { href: '/home', icon: Home, label: 'Home' },
       ...baseNavLinks,
     ];
   }

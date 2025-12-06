@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import AuthenticatedImage from "@/components/shared/authenticated-image";
 
 const nexusUsers = users.filter(u => u.nexus === 'Oakwood');
 
-export default function NexusPage() {
+export default function HomePage() {
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="lg:col-span-2 space-y-6">

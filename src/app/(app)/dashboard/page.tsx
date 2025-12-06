@@ -35,7 +35,7 @@ export default function DashboardPage() {
                 You do not have permission to view this page. Please contact an administrator if you believe this is an error.
                 <div className="mt-4">
                     <Button asChild>
-                        <Link href="/nexus">Go to Home</Link>
+                        <Link href="/home">Go to Home</Link>
                     </Button>
                 </div>
             </AlertDescription>
