@@ -207,7 +207,7 @@ export default function UsersPage() {
         id: 'actions',
         header: 'Actions',
         cell: ({ row }) => (
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2">
                 <EditUserDialog 
                     user={row.original} 
                     onUserUpdated={() => fetchUsers(pageIndex, pageSize, sorting)} 
