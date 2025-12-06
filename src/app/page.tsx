@@ -67,7 +67,12 @@ export default function LoginPage() {
         description: "Welcome back!",
       });
 
-      router.push('/dashboard');
+      if (data.user?.isAdmin) {
+        router.push('/dashboard');
+      } else {
+        router.push('/nexus');
+      }
+
     } catch (error: any) {
       console.error("Sign in error:", error);
       toast({

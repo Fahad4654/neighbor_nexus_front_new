@@ -86,16 +86,28 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
   const pathname = usePathname();
   const { user } = useAuth();
 
-  const allNavLinks = [
-    { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { href: '/nexus', icon: Home, label: 'Nexus' },
+  const baseNavLinks = [
     { href: '/listings', icon: FolderKanban, label: 'Listings' },
     { href: '/transactions', icon: History, label: 'Transactions' },
     { href: '/chat', icon: MessageSquare, label: 'Messages' },
-    { href: '/users', icon: Users, label: 'Users', adminOnly: true },
   ];
 
-  const navLinks = allNavLinks.filter(link => !link.adminOnly || (link.adminOnly && user?.isAdmin));
+  let navLinks = [];
+
+  if (user?.isAdmin) {
+    navLinks = [
+      { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+      { href: '/nexus', icon: Home, label: 'Nexus' },
+      ...baseNavLinks,
+      { href: '/users', icon: Users, label: 'Users' },
+    ];
+  } else {
+    navLinks = [
+      { href: '/nexus', icon: Home, label: 'Home' },
+      ...baseNavLinks,
+    ];
+  }
+
 
   return (
     <TooltipProvider delayDuration={0}>
