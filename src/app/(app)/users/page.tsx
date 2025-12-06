@@ -170,7 +170,12 @@ export default function UsersPage() {
             const coords = row.original.geo_location?.coordinates;
             if (!coords) return 'N/A';
             const [lng, lat] = coords;
-            return `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
+            return (
+              <div>
+                <div>Lat: {lat.toFixed(4)}</div>
+                <div>Lng: {lng.toFixed(4)}</div>
+              </div>
+            );
         },
         enableSorting: false,
     },
