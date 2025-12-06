@@ -180,10 +180,10 @@ export default function UsersPage() {
     },
      {
         accessorKey: 'isAdmin',
-        header: 'Admin',
+        header: 'Role',
         cell: ({ row }) => (
              <Badge variant={row.original.isAdmin ? 'default' : 'secondary'} className={row.original.isAdmin ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-500 hover:bg-gray-600'}>
-                {row.original.isAdmin ? 'Yes' : 'No'}
+                {row.original.isAdmin ? 'Admin' : 'User'}
             </Badge>
         )
     },
