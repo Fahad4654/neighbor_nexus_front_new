@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, CheckCircle, XCircle, Users as UsersIcon, ArrowUpDown } from "lucide-react";
+import { MoreHorizontal, CheckCircle, XCircle, Users as UsersIcon, ArrowUpDown, Terminal } from "lucide-react";
 import AuthenticatedImage from "@/components/shared/authenticated-image";
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
@@ -16,6 +16,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EditUserDialog } from '@/components/users/edit-user-dialog';
 import { DeleteUserDialog } from '@/components/users/delete-user-dialog';
 import { cn } from '@/lib/utils';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Link from 'next/link';
 
 type UserProfile = {
   id: string;
@@ -47,7 +49,7 @@ const getInitials = (firstname: string, lastname: string) => {
 };
 
 export default function UsersPage() {
-  const { api, user } = useAuth();
+  const { api, user, isLoading: isAuthLoading } = useAuth();
   const { toast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -228,8 +230,35 @@ export default function UsersPage() {
 ], [pageIndex, pageSize, fetchUsers, sorting]);
   
   useEffect(() => {
-    fetchUsers(pageIndex, pageSize, sorting);
-  }, [fetchUsers, pageIndex, pageSize, sorting]);
+    if (user?.isAdmin) {
+        fetchUsers(pageIndex, pageSize, sorting);
+    }
+  }, [fetchUsers, pageIndex, pageSize, sorting, user?.isAdmin]);
+
+  if (isAuthLoading) {
+      return (
+          <div className="flex items-center justify-center h-full">
+              <p>Loading...</p>
+          </div>
+      )
+  }
+
+  if (!user?.isAdmin) {
+      return (
+         <Alert variant="destructive">
+            <Terminal className="h-4 w-4" />
+            <AlertTitle>Access Denied</AlertTitle>
+            <AlertDescription>
+                You do not have permission to view this page. Please contact an administrator if you believe this is an error.
+                <div className="mt-4">
+                    <Button asChild>
+                        <Link href="/dashboard">Go to Dashboard</Link>
+                    </Button>
+                </div>
+            </AlertDescription>
+         </Alert>
+      )
+  }
   
   return (
     <div className="w-full h-full flex flex-col">

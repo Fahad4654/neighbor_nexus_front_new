@@ -84,14 +84,18 @@ function Header({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: bo
 
 function Navbar({ navOpen }: { navOpen: boolean }) {
   const pathname = usePathname();
-  const navLinks = [
+  const { user } = useAuth();
+
+  const allNavLinks = [
     { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { href: '/nexus', icon: Home, label: 'Nexus' },
     { href: '/listings', icon: FolderKanban, label: 'Listings' },
     { href: '/transactions', icon: History, label: 'Transactions' },
     { href: '/chat', icon: MessageSquare, label: 'Messages' },
-    { href: '/users', icon: Users, label: 'Users' },
+    { href: '/users', icon: Users, label: 'Users', adminOnly: true },
   ];
+
+  const navLinks = allNavLinks.filter(link => !link.adminOnly || (link.adminOnly && user?.isAdmin));
 
   return (
     <TooltipProvider delayDuration={0}>
