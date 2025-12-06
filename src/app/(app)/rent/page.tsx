@@ -13,6 +13,7 @@ import { Wrench, MapPin, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type ToolImage = {
   id: string;
@@ -30,6 +31,20 @@ export type Tool = {
   distanceMeters?: number;
   distanceText?: string;
 };
+
+// Custom hook for debouncing
+function useDebounce(value: string, delay: number) {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+    return debouncedValue;
+}
 
 function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescription }: { listings: Tool[], isLoading: boolean, error: string | null, noDataTitle: string, noDataDescription: string }) {
     
@@ -117,15 +132,28 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
     );
 }
 
+const SORT_OPTIONS = {
+    distance: [{ column: 'distance', order: 'ASC' }],
+    availability: [{ column: 'is_available', order: 'DESC' }],
+    price_asc: [{ column: 'daily_price', order: 'ASC' }],
+    price_desc: [{ column: 'daily_price', order: 'DESC' }],
+};
+
 function RentPageComponent() {
   const { api, user } = useAuth();
   const { toast } = useToast();
   const [rentListings, setRentListings] = useState<Tool[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // State for filters
   const [searchQuery, setSearchQuery] = useState('');
   const [distanceFilter, setDistanceFilter] = useState<number>(50); // Default to 50km
+  const [sortOption, setSortOption] = useState<keyof typeof SORT_OPTIONS>('distance');
   
+  // Debounce search query
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
   const fetchRentListings = useCallback(async () => {
     if (!user) return;
     
@@ -139,14 +167,21 @@ function RentPageComponent() {
     }
 
     try {
-      const response = await api.get(`${backendUrl}/tools/gooleNearby/${user.id}`);
-      const result = await response.json();
+        const params = new URLSearchParams();
+        params.append('maxDistance', (distanceFilter * 1000).toString());
+        if (debouncedSearchQuery) {
+            params.append('search', debouncedSearchQuery);
+        }
+        params.append('sort', JSON.stringify(SORT_OPTIONS[sortOption]));
+        
+        const response = await api.get(`${backendUrl}/tools/gooleNearby/${user.id}?${params.toString()}`);
+        const result = await response.json();
       
-      if (!response.ok) {
-        throw new Error(result.message || result.error || `Failed to fetch nearby listings.`);
-      }
+        if (!response.ok) {
+            throw new Error(result.message || result.error || `Failed to fetch nearby listings.`);
+        }
       
-      setRentListings(result.data || []);
+        setRentListings(result.data || []);
     } catch (err: any)      {
       setError(err.message);
       toast({
@@ -157,24 +192,13 @@ function RentPageComponent() {
     } finally {
       setIsLoading(false);
     }
-  }, [api, toast, user]);
+  }, [api, toast, user, debouncedSearchQuery, distanceFilter, sortOption]);
 
   useEffect(() => {
     if (user) {
         fetchRentListings();
     }
   }, [fetchRentListings, user]);
-
-  const filteredListings = useMemo(() => {
-    const distanceInMeters = distanceFilter * 1000;
-    return rentListings
-      .filter(listing => 
-        listing.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-      .filter(listing => 
-        listing.distanceMeters !== undefined && listing.distanceMeters <= distanceInMeters
-      );
-  }, [rentListings, searchQuery, distanceFilter]);
 
   return (
     <div className="space-y-6">
@@ -183,8 +207,8 @@ function RentPageComponent() {
           <p className="text-muted-foreground">Browse tools and skills shared by others in your community.</p>
       </div>
       <Card>
-        <CardContent className="pt-6 flex flex-col md:flex-row gap-6">
-            <div className="flex-1 space-y-2">
+        <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-1 space-y-2">
                 <Label htmlFor="search">Search</Label>
                 <div className="relative">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -198,7 +222,7 @@ function RentPageComponent() {
                     />
                 </div>
             </div>
-            <div className="flex-1 space-y-2">
+            <div className="md:col-span-1 space-y-2">
                 <Label htmlFor="distance">Distance (up to {distanceFilter} km)</Label>
                 <Slider
                     id="distance"
@@ -209,11 +233,25 @@ function RentPageComponent() {
                     onValueChange={(value) => setDistanceFilter(value[0])}
                 />
             </div>
+            <div className="md:col-span-1 space-y-2">
+                <Label htmlFor="sort">Sort By</Label>
+                 <Select value={sortOption} onValueChange={(value: keyof typeof SORT_OPTIONS) => setSortOption(value)}>
+                    <SelectTrigger id="sort" className="w-full">
+                        <SelectValue placeholder="Sort by..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="distance">Distance: Closest</SelectItem>
+                        <SelectItem value="availability">Availability</SelectItem>
+                        <SelectItem value="price_asc">Price: Low to High</SelectItem>
+                        <SelectItem value="price_desc">Price: High to Low</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
         </CardContent>
       </Card>
 
       <ListingsGrid 
-          listings={filteredListings}
+          listings={rentListings}
           isLoading={isLoading}
           error={error}
           noDataTitle="Nothing to Rent Nearby"
