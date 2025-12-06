@@ -8,12 +8,40 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { users, listings, transactions } from "@/lib/data";
 import { useAuth } from "@/hooks/use-auth";
+import Link from "next/link";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
-import { Activity, Users, DollarSign, Ratio } from "lucide-react";
+import { Activity, Users, DollarSign, Ratio, Terminal } from "lucide-react";
 
 export default function DashboardPage() {
     const recentTransactions = transactions.slice(0, 5);
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
+
+    if (isLoading) {
+      return (
+          <div className="flex items-center justify-center h-full">
+              <p>Loading...</p>
+          </div>
+      )
+    }
+
+    if (!user?.isAdmin) {
+      return (
+         <Alert variant="destructive">
+            <Terminal className="h-4 w-4" />
+            <AlertTitle>Access Denied</AlertTitle>
+            <AlertDescription>
+                You do not have permission to view this page. Please contact an administrator if you believe this is an error.
+                <div className="mt-4">
+                    <Button asChild>
+                        <Link href="/nexus">Go to Home</Link>
+                    </Button>
+                </div>
+            </AlertDescription>
+         </Alert>
+      )
+  }
 
   return (
     <div className="flex-1 space-y-4">
