@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/use-auth';
@@ -11,7 +10,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import AuthenticatedImage from '@/components/shared/authenticated-image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Wrench } from 'lucide-react';
-import { CreateListingDialog } from '@/components/listings/create-listing-dialog';
 
 type ToolImage = {
   id: string;
@@ -41,7 +39,7 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
     if (isLoading) {
         return (
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {Array.from({ length: 4 }).map((_, index) => (
+                {Array.from({ length: 8 }).map((_, index) => (
                     <Card key={index} className="overflow-hidden h-full flex flex-col">
                         <CardHeader className="p-0">
                             <Skeleton className="aspect-video w-full" />
@@ -105,14 +103,14 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
     );
 }
 
-function ListingsPageComponent() {
+function RentPageComponent() {
   const { api, user } = useAuth();
   const { toast } = useToast();
-  const [myListings, setMyListings] = useState<Tool[]>([]);
+  const [rentListings, setRentListings] = useState<Tool[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const fetchMyListings = useCallback(async () => {
+  
+  const fetchRentListings = useCallback(async () => {
     if (!user) return;
     
     setIsLoading(true);
@@ -129,23 +127,24 @@ function ListingsPageComponent() {
         order: 'createdAt',
         asc: 'DESC',
         page: 1,
-        pageSize: 10,
-        owner_id: user.id
+        pageSize: 20, // Fetch more for rent page
+        not_owner_id: user.id
       };
       
       const response = await api.post(`${backendUrl}/tools/all`, payload);
+
       const result = await response.json();
       
       if (!response.ok) {
-        throw new Error(result.message || result.error || `Failed to fetch your listings.`);
+        throw new Error(result.message || result.error || `Failed to fetch rentable listings.`);
       }
       
-      setMyListings(result.data || []);
-    } catch (err: any) {
+      setRentListings(result.data || []);
+    } catch (err: any)      {
       setError(err.message);
       toast({
         variant: 'destructive',
-        title: `Error fetching your listings`,
+        title: `Error fetching rentable listings`,
         description: err.message,
       });
     } finally {
@@ -155,38 +154,31 @@ function ListingsPageComponent() {
 
   useEffect(() => {
     if (user) {
-        fetchMyListings();
+        fetchRentListings();
     }
-  }, [fetchMyListings, user]);
-  
-  const handleListingCreated = () => {
-    fetchMyListings();
-  }
+  }, [fetchRentListings, user]);
 
   return (
-     <div className="space-y-4">
-       <div className="flex items-center justify-between gap-4">
-            <div>
-                <h1 className="text-2xl font-bold">My Listings</h1>
-                <p className="text-muted-foreground">Manage your tools and skills available for rent.</p>
-            </div>
-            {user && !user.isAdmin && <CreateListingDialog onListingCreated={handleListingCreated} />}
+    <div className="space-y-4">
+        <div>
+            <h1 className="text-2xl font-bold">Rent from Your Nexus</h1>
+            <p className="text-muted-foreground">Browse tools and skills shared by others in your community.</p>
         </div>
-        <ListingsGrid 
-            listings={myListings}
+         <ListingsGrid 
+            listings={rentListings}
             isLoading={isLoading}
             error={error}
-            noDataTitle="No Listings Found"
-            noDataDescription="You haven't created any listings yet. Get started by adding a new tool or skill!"
-        />
+            noDataTitle="Nothing to Rent"
+            noDataDescription="There are currently no items available for rent from other users in your nexus."
+          />
     </div>
   );
 }
 
-export default function ListingsPage() {
+export default function RentPage() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <ListingsPageComponent />
+            <RentPageComponent />
         </Suspense>
     );
 }
