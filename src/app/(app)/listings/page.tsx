@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/use-auth';
@@ -106,15 +107,17 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
     );
 }
 
-export default function ListingsPage() {
+function ListingsPageComponent() {
   const { api, user } = useAuth();
   const { toast } = useToast();
+  const searchParams = useSearchParams();
   const [myListings, setMyListings] = useState<Tool[]>([]);
   const [rentListings, setRentListings] = useState<Tool[]>([]);
   const [isMyListingsLoading, setIsMyListingsLoading] = useState(true);
   const [isRentListingsLoading, setIsRentListingsLoading] = useState(true);
   const [myListingsError, setMyListingsError] = useState<string | null>(null);
   const [rentListingsError, setRentListingsError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'my-listings');
 
   const fetchListings = useCallback(async (type: 'my' | 'rent') => {
     if (!user) return;
@@ -173,13 +176,20 @@ export default function ListingsPage() {
         fetchListings('rent');
     }
   }, [fetchListings, user]);
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) {
+        setActiveTab(tab);
+    }
+  }, [searchParams]);
   
   const handleListingCreated = () => {
     fetchListings('my');
   }
 
   return (
-    <Tabs defaultValue="my-listings" className="space-y-4">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
        <div className="flex items-center justify-between gap-4">
          <TabsList>
             <TabsTrigger value="my-listings">My Listings</TabsTrigger>
@@ -208,4 +218,12 @@ export default function ListingsPage() {
       </TabsContent>
     </Tabs>
   );
+}
+
+export default function ListingsPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <ListingsPageComponent />
+        </Suspense>
+    );
 }

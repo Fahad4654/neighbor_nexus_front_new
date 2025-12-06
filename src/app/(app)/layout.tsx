@@ -12,6 +12,7 @@ import {
   History,
   FolderKanban,
   Settings,
+  ShoppingCart,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { useAuth } from '@/hooks/use-auth';
@@ -87,7 +88,8 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
   const { user } = useAuth();
 
   const baseNavLinks = [
-    { href: '/listings', icon: FolderKanban, label: 'Listings' },
+    { href: '/listings?tab=rent', icon: ShoppingCart, label: 'Rent' },
+    { href: '/listings', icon: FolderKanban, label: 'My Listings' },
     { href: '/transactions', icon: History, label: 'Transactions' },
     { href: '/chat', icon: MessageSquare, label: 'Messages' },
   ];
@@ -98,10 +100,8 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
     navLinks = [
       { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
       ...baseNavLinks,
+      { href: '/users', icon: Users, label: 'Users' },
     ];
-    if (user?.isAdmin) {
-      navLinks.push({ href: '/users', icon: Users, label: 'Users' });
-    }
   } else {
     navLinks = [
       { href: '/home', icon: Home, label: 'Home' },
