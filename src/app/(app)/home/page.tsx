@@ -1,15 +1,36 @@
+'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { users } from "@/lib/data";
 import { Users, Wrench } from "lucide-react";
 import AuthenticatedImage from "@/components/shared/authenticated-image";
+import { useAuth } from '@/hooks/use-auth';
 
 const nexusUsers = users.filter(u => u.nexus === 'Oakwood');
 
 export default function HomePage() {
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && user?.isAdmin) {
+      router.replace('/dashboard');
+    }
+  }, [user, isLoading, router]);
+
+  if (isLoading || user?.isAdmin) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="lg:col-span-2 space-y-6">
