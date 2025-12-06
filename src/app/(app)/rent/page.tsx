@@ -11,6 +11,8 @@ import AuthenticatedImage from '@/components/shared/authenticated-image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Wrench, MapPin, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
 
 type ToolImage = {
   id: string;
@@ -25,6 +27,7 @@ export type Tool = {
   daily_price: string;
   images: ToolImage[] | null; // Can be null
   owner_id: string;
+  distanceMeters?: number;
   distanceText?: string;
 };
 
@@ -121,6 +124,7 @@ function RentPageComponent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [distanceFilter, setDistanceFilter] = useState<number>(50); // Default to 50km
   
   const fetchRentListings = useCallback(async () => {
     if (!user) return;
@@ -162,39 +166,59 @@ function RentPageComponent() {
   }, [fetchRentListings, user]);
 
   const filteredListings = useMemo(() => {
-    if (!searchQuery) {
-      return rentListings;
-    }
-    return rentListings.filter(listing => 
-      listing.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [rentListings, searchQuery]);
+    const distanceInMeters = distanceFilter * 1000;
+    return rentListings
+      .filter(listing => 
+        listing.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .filter(listing => 
+        listing.distanceMeters !== undefined && listing.distanceMeters <= distanceInMeters
+      );
+  }, [rentListings, searchQuery, distanceFilter]);
 
   return (
-    <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-                <h1 className="text-2xl font-bold">Rent from Your Nexus</h1>
-                <p className="text-muted-foreground">Browse tools and skills shared by others in your community, sorted by proximity.</p>
+    <div className="space-y-6">
+      <div>
+          <h1 className="text-2xl font-bold">Rent from Your Nexus</h1>
+          <p className="text-muted-foreground">Browse tools and skills shared by others in your community.</p>
+      </div>
+      <Card>
+        <CardContent className="pt-6 flex flex-col md:flex-row gap-6">
+            <div className="flex-1 space-y-2">
+                <Label htmlFor="search">Search</Label>
+                <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                        id="search"
+                        type="search"
+                        placeholder="Search for tools or skills..." 
+                        className="pl-8 w-full"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
             </div>
-            <div className="relative w-full sm:max-w-xs">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                    type="search"
-                    placeholder="Search for tools or skills..." 
-                    className="pl-8 w-full"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+            <div className="flex-1 space-y-2">
+                <Label htmlFor="distance">Distance (up to {distanceFilter} km)</Label>
+                <Slider
+                    id="distance"
+                    min={1}
+                    max={100}
+                    step={1}
+                    value={[distanceFilter]}
+                    onValueChange={(value) => setDistanceFilter(value[0])}
                 />
             </div>
-        </div>
-         <ListingsGrid 
-            listings={filteredListings}
-            isLoading={isLoading}
-            error={error}
-            noDataTitle="Nothing to Rent Nearby"
-            noDataDescription={searchQuery ? "No items match your search." : "There are currently no items available for rent from other users near you."}
-          />
+        </CardContent>
+      </Card>
+
+      <ListingsGrid 
+          listings={filteredListings}
+          isLoading={isLoading}
+          error={error}
+          noDataTitle="Nothing to Rent Nearby"
+          noDataDescription={searchQuery || distanceFilter < 100 ? "No items match your filters." : "There are currently no items available for rent from other users near you."}
+      />
     </div>
   );
 }
