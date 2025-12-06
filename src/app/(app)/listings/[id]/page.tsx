@@ -107,7 +107,7 @@ const ListingDetailSkeleton = () => (
 export default function ListingDetailPage() {
   const params = useParams();
   const listingId = params.id as string;
-  const { api } = useAuth();
+  const { api, user: authUser } = useAuth();
   const { toast } = useToast();
   const [listing, setListing] = useState<ListingData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -192,6 +192,8 @@ export default function ListingDetailPage() {
     return 'U';
   };
   
+  const isOwner = authUser?.id === listing.owner_id;
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
@@ -215,18 +217,20 @@ export default function ListingDetailPage() {
         </div>
 
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-                <CardTitle className="text-2xl font-bold text-primary">BDT {parseFloat(listing.daily_price).toFixed(2)}<span className="text-sm font-normal text-muted-foreground"> / day</span></CardTitle>
-                <CardDescription>Hourly: BDT {parseFloat(listing.hourly_price).toFixed(2)}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button size="lg" className="w-full" disabled={!listing.is_available}>
-                {listing.is_available ? `Request to ${listing.listing_type === 'Tool' ? 'Rent' : 'Book'}` : 'Currently Unavailable'}
-                </Button>
-              <Button size="lg" variant="outline" className="w-full">Message Owner</Button>
-            </CardContent>
-          </Card>
+          {!isOwner && (
+            <Card>
+              <CardHeader>
+                  <CardTitle className="text-2xl font-bold text-primary">BDT {parseFloat(listing.daily_price).toFixed(2)}<span className="text-sm font-normal text-muted-foreground"> / day</span></CardTitle>
+                  <CardDescription>Hourly: BDT {parseFloat(listing.hourly_price).toFixed(2)}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button size="lg" className="w-full" disabled={!listing.is_available}>
+                  {listing.is_available ? `Request to ${listing.listing_type === 'Tool' ? 'Rent' : 'Book'}` : 'Currently Unavailable'}
+                  </Button>
+                <Button size="lg" variant="outline" className="w-full">Message Owner</Button>
+              </CardContent>
+            </Card>
+          )}
           {owner && (
             <Card>
               <CardHeader>
