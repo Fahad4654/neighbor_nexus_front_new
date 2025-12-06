@@ -14,6 +14,7 @@ import { CreateUserDialog } from '@/components/users/create-user-dialog';
 import { DataTable } from '@/components/shared/data-table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EditUserDialog } from '@/components/users/edit-user-dialog';
+import { DeleteUserDialog } from '@/components/users/delete-user-dialog';
 
 type UserProfile = {
   id: string;
@@ -202,10 +203,16 @@ export default function UsersPage() {
         id: 'actions',
         header: 'Actions',
         cell: ({ row }) => (
-             <EditUserDialog 
-                user={row.original} 
-                onUserUpdated={() => fetchUsers(pageIndex, pageSize, sorting)} 
-            />
+            <div className="flex gap-2">
+                <EditUserDialog 
+                    user={row.original} 
+                    onUserUpdated={() => fetchUsers(pageIndex, pageSize, sorting)} 
+                />
+                <DeleteUserDialog
+                    user={row.original}
+                    onUserDeleted={() => fetchUsers(pageIndex, pageSize, sorting)}
+                />
+            </div>
         ),
         enableSorting: false,
     },

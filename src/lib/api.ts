@@ -43,7 +43,7 @@ const customFetch = async (url: string, options: RequestInit = {}, onLogout: () 
     };
 
     // Do not set Content-Type for FormData, the browser does it automatically with the boundary
-    if (!isFormData) {
+    if (!isFormData && (options.method === 'POST' || options.method === 'PUT' || options.method === 'DELETE')) {
         headers['Content-Type'] = 'application/json';
     }
 
@@ -58,7 +58,7 @@ const customFetch = async (url: string, options: RequestInit = {}, onLogout: () 
                 ...options.headers,
                 'Authorization': `Bearer ${newAccessToken}`,
             };
-            if (!isFormData) {
+            if (!isFormData && (options.method === 'POST' || options.method === 'PUT' || options.method === 'DELETE')) {
                 newHeaders['Content-Type'] = 'application/json';
             }
             // Retry the request with the new token
@@ -79,6 +79,6 @@ export const api = (onLogout: () => void) => ({
     get: (url: string, options: RequestInit = {}) => customFetch(url, { ...options, method: 'GET' }, onLogout),
     post: (url: string, body: any, options: RequestInit = {}) => customFetch(url, { ...options, method: 'POST', body: JSON.stringify(body) }, onLogout),
     put: (url: string, body: any, options: RequestInit = {}) => customFetch(url, { ...options, method: 'PUT', body: JSON.stringify(body) }, onLogout),
-    delete: (url: string, options: RequestInit = {}) => customFetch(url, { ...options, method: 'DELETE' }, onLogout),
+    delete: (url: string, body: any, options: RequestInit = {}) => customFetch(url, { ...options, method: 'DELETE', body: JSON.stringify(body) }, onLogout),
     postFormData: (url: string, formData: FormData, options: RequestInit = {}) => customFetch(url, { ...options, method: 'POST', body: formData }, onLogout, true),
 });
