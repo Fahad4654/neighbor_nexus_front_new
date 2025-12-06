@@ -252,7 +252,7 @@ export default function UsersPage() {
                 You do not have permission to view this page. Please contact an administrator if you believe this is an error.
                 <div className="mt-4">
                     <Button asChild>
-                        <Link href="/dashboard">Go to Dashboard</Link>
+                        <Link href="/nexus">Go to Home</Link>
                     </Button>
                 </div>
             </AlertDescription>
