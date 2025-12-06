@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, CheckCircle, XCircle, Users as UsersIcon } from "lucide-react";
+import { MoreHorizontal, CheckCircle, XCircle, Users as UsersIcon, ArrowUpDown } from "lucide-react";
 import AuthenticatedImage from "@/components/shared/authenticated-image";
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
@@ -15,6 +15,7 @@ import { DataTable } from '@/components/shared/data-table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EditUserDialog } from '@/components/users/edit-user-dialog';
 import { DeleteUserDialog } from '@/components/users/delete-user-dialog';
+import { cn } from '@/lib/utils';
 
 type UserProfile = {
   id: string;
@@ -118,7 +119,8 @@ export default function UsersPage() {
 
 
   const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
-    setSorting(updater);
+    const newSorting = typeof updater === 'function' ? updater(sorting) : updater;
+    setSorting(newSorting);
     setPagination(prev => ({ ...prev, pageIndex: 0 }));
   };
 
@@ -189,7 +191,8 @@ export default function UsersPage() {
         accessorKey: 'isVerified',
         header: 'Verified',
         cell: ({ row }) => (
-             <Badge variant={row.original.isVerified ? 'default' : 'destructive'} className={row.original.isVerified ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}>
+             <Badge variant={row.original.isVerified ? 'default' : 'destructive'} className={cn(row.original.isVerified ? 'bg-blue-500 hover:bg-blue-600' : 'bg-red-500 hover:bg-red-600', 'gap-1')}>
+                {row.original.isVerified ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
                 {row.original.isVerified ? 'Verified' : 'Not Verified'}
             </Badge>
         )
