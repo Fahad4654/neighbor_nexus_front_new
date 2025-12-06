@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import AuthenticatedImage from '@/components/shared/authenticated-image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Wrench } from 'lucide-react';
+import { Wrench, MapPin } from 'lucide-react';
 
 type ToolImage = {
   id: string;
@@ -22,15 +22,16 @@ export type Tool = {
   title: string;
   listing_type: 'Tool' | 'Skill';
   daily_price: string;
-  images: ToolImage[];
+  images: ToolImage[] | null; // Can be null
   owner_id: string;
+  distanceText?: string;
 };
 
 function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescription }: { listings: Tool[], isLoading: boolean, error: string | null, noDataTitle: string, noDataDescription: string }) {
     
-    const getPrimaryImage = (images: ToolImage[]) => {
+    const getPrimaryImage = (images: ToolImage[] | null) => {
         if (!images || images.length === 0) {
-            return '/media/tools/default.png';
+            return '/media/tools/default.png'; // A default placeholder
         }
         const primary = images.find(img => img.is_primary);
         return primary ? primary.image_url : images[0].image_url;
@@ -47,7 +48,9 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
                         <CardContent className="p-4 flex flex-col flex-grow">
                             <Skeleton className="h-5 w-1/4 mb-2" />
                             <Skeleton className="h-6 w-3/4 mb-2" />
-                            <Skeleton className="h-7 w-1/2 mt-auto" />
+                            <div className="flex-grow" />
+                            <Skeleton className="h-5 w-1/3 mt-2" />
+                            <Skeleton className="h-7 w-1/2 mt-2" />
                         </CardContent>
                     </Card>
                 ))}
@@ -92,7 +95,14 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
                 <CardContent className="p-4 flex flex-col flex-grow">
                   <Badge variant={listing.listing_type === 'Tool' ? 'secondary' : 'default'} className="w-fit mb-2">{listing.listing_type}</Badge>
                   <CardTitle className="text-lg font-headline mb-1">{listing.title}</CardTitle>
-                  <CardDescription className="text-base font-bold text-primary flex-grow mt-auto">
+                  <div className="flex-grow" />
+                   {listing.distanceText && (
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground mt-2">
+                        <MapPin className="h-4 w-4" />
+                        <span>{listing.distanceText} away</span>
+                    </div>
+                  )}
+                  <CardDescription className="text-base font-bold text-primary mt-1">
                     BDT {parseFloat(listing.daily_price).toFixed(2)} / day
                   </CardDescription>
                 </CardContent>
@@ -123,20 +133,11 @@ function RentPageComponent() {
     }
 
     try {
-      const payload: any = {
-        order: 'createdAt',
-        asc: 'DESC',
-        page: 1,
-        pageSize: 20, // Fetch more for rent page
-        not_owner_id: user.id
-      };
-      
-      const response = await api.post(`${backendUrl}/tools/all`, payload);
-
+      const response = await api.get(`${backendUrl}/tools/gooleNearby/${user.id}`);
       const result = await response.json();
       
       if (!response.ok) {
-        throw new Error(result.message || result.error || `Failed to fetch rentable listings.`);
+        throw new Error(result.message || result.error || `Failed to fetch nearby listings.`);
       }
       
       setRentListings(result.data || []);
@@ -144,7 +145,7 @@ function RentPageComponent() {
       setError(err.message);
       toast({
         variant: 'destructive',
-        title: `Error fetching rentable listings`,
+        title: `Error fetching nearby listings`,
         description: err.message,
       });
     } finally {
@@ -162,14 +163,14 @@ function RentPageComponent() {
     <div className="space-y-4">
         <div>
             <h1 className="text-2xl font-bold">Rent from Your Nexus</h1>
-            <p className="text-muted-foreground">Browse tools and skills shared by others in your community.</p>
+            <p className="text-muted-foreground">Browse tools and skills shared by others in your community, sorted by proximity.</p>
         </div>
          <ListingsGrid 
             listings={rentListings}
             isLoading={isLoading}
             error={error}
-            noDataTitle="Nothing to Rent"
-            noDataDescription="There are currently no items available for rent from other users in your nexus."
+            noDataTitle="Nothing to Rent Nearby"
+            noDataDescription="There are currently no items available for rent from other users near you."
           />
     </div>
   );
