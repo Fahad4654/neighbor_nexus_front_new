@@ -96,7 +96,7 @@ export default function LoginPage() {
         <CardContent>
           <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="email">Email or Username</Label>
+              <Label htmlFor="email">Email, Username, or Phone</Label>
               <Input id="email" type="text" placeholder="user@example.com" required value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
             </div>
             <div className="grid gap-2">
