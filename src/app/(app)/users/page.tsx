@@ -190,7 +190,7 @@ export default function UsersPage() {
         header: 'Verified',
         cell: ({ row }) => (
              <Badge variant={row.original.isVerified ? 'default' : 'destructive'} className={row.original.isVerified ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}>
-                {row.original.isVerified ? 'Yes' : 'No'}
+                {row.original.isVerified ? 'Verified' : 'Not Verified'}
             </Badge>
         )
     },
