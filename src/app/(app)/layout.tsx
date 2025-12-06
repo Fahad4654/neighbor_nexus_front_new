@@ -97,10 +97,12 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
   if (user?.isAdmin) {
     navLinks = [
       { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-      { href: '/nexus', icon: Home, label: 'Nexus' },
+      { href: '/nexus', icon: Home, label: 'Home' },
       ...baseNavLinks,
-      { href: '/users', icon: Users, label: 'Users' },
     ];
+    if (user?.isAdmin) {
+      navLinks.push({ href: '/users', icon: Users, label: 'Users' });
+    }
   } else {
     navLinks = [
       { href: '/nexus', icon: Home, label: 'Home' },
