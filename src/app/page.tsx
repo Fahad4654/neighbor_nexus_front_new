@@ -131,9 +131,6 @@ export default function LoginPage() {
             <Button onClick={handleSignIn} type="submit" className="w-full">
               Sign in
             </Button>
-            <Button variant="outline" className="w-full">
-              Sign in with Google
-            </Button>
           </div>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
