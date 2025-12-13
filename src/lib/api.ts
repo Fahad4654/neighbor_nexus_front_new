@@ -18,13 +18,13 @@ const refreshToken = async (onLogout: () => void) => {
             body: JSON.stringify({ refreshToken: oldRefreshToken }),
         });
 
-        const data = await response.json();
+        const result = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.message || data.error || 'Failed to refresh token');
+            throw new Error(result.message || result.error || 'Failed to refresh token');
         }
 
-        const { accessToken } = data;
+        const { accessToken } = result.data;
         localStorage.setItem('accessToken', accessToken);
         return accessToken;
     } catch (error) {
