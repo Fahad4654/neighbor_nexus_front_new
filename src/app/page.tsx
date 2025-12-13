@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import AppLogo from "@/components/app-logo";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
@@ -19,7 +19,18 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
-  const { api } = useAuth();
+  const { api, user, isLoading } = useAuth();
+
+  useEffect(() => {
+    // If auth is not loading and user is logged in, redirect them.
+    if (!isLoading && user) {
+      if (user.isAdmin) {
+        router.replace('/dashboard');
+      } else {
+        router.replace('/home');
+      }
+    }
+  }, [user, isLoading, router]);
 
   const handleSignIn = async () => {
     if (!identifier || !password) {
@@ -84,6 +95,18 @@ export default function LoginPage() {
       });
     }
   };
+
+  // While checking auth or redirecting, show a loading state
+  if (isLoading || user) {
+     return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <AppLogo />
+          <p className="text-muted-foreground">Loading your experience...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4 sm:p-6 lg:p-8">
