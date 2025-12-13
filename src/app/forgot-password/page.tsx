@@ -50,7 +50,7 @@ export default function ForgotPasswordPage() {
 
       toast({
         title: "OTP Sent",
-        description: "An OTP has been sent to your registered contact method.",
+        description: data.data.message || data.message,
       });
 
       router.push(`/reset-password-otp?identifier=${identifier}`);
