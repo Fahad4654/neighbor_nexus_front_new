@@ -136,7 +136,7 @@ export default function SignupPage() {
 
       toast({
         title: "Registration Successful",
-        description: "Please check your email to verify your account.",
+        description: data.message || "Please check your email to verify your account.",
       });
 
       router.push(`/verify-otp?identifier=${email}`);
