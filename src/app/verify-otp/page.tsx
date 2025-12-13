@@ -46,15 +46,15 @@ function VerifyOtpComponent() {
         body: JSON.stringify({ identifier, otp }),
       });
 
-      const data = await response.json();
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || data.error || 'An unknown error occurred.');
+        throw new Error(result.message || result.error || 'An unknown error occurred.');
       }
 
       toast({
         title: "Verification Successful",
-        description: "Your account has been verified. You can now log in.",
+        description: result.data.message || "Your account has been verified. You can now log in.",
       });
 
       router.push('/');
