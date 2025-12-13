@@ -51,23 +51,25 @@ export default function LoginPage() {
         body: JSON.stringify({ identifier, password }),
       });
 
-      const data = await response.json();
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || data.error || 'An unknown error occurred.');
+        throw new Error(result.message || result.error || 'An unknown error occurred.');
       }
+      
+      const { user, accessToken, refreshToken } = result.data;
 
       // Store user info and tokens in local storage
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('user', JSON.stringify(user));
 
       toast({
         title: "Login Successful",
         description: "Welcome back!",
       });
 
-      if (data.user?.isAdmin) {
+      if (user?.isAdmin) {
         router.push('/dashboard');
       } else {
         router.push('/home');
