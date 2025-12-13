@@ -23,9 +23,9 @@ function VerifyOtpComponent() {
       toast({
         variant: "destructive",
         title: "Time's Up!",
-        description: "The OTP has expired. Please try again.",
+        description: "The OTP has expired. Please try signing up again.",
       });
-      router.push('/');
+      router.push('/signup');
       return;
     }
 

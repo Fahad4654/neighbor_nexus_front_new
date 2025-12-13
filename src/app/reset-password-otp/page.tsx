@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,8 +14,27 @@ function ResetPasswordOtpComponent() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const [otp, setOtp] = useState('');
+  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
 
   const identifier = searchParams.get('identifier');
+
+  useEffect(() => {
+    if (timeLeft === 0) {
+      toast({
+        variant: "destructive",
+        title: "Time's Up!",
+        description: "The OTP has expired. Please request a new one.",
+      });
+      router.push('/forgot-password');
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft, router, toast]);
 
   const handleVerifyOtp = async () => {
     if (!otp || !identifier) {
@@ -68,6 +87,9 @@ function ResetPasswordOtpComponent() {
     }
   };
 
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4 sm:p-6 lg:p-8">
       <Card className="w-full max-w-sm mx-auto">
@@ -93,6 +115,9 @@ function ResetPasswordOtpComponent() {
                 onChange={(e) => setOtp(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleVerifyOtp()}
               />
+            </div>
+            <div className="text-center text-sm text-muted-foreground">
+              Time remaining: {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
             <Button onClick={handleVerifyOtp} type="submit" className="w-full">
               Verify
