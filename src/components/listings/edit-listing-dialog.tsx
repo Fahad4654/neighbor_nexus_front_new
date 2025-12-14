@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -171,30 +172,31 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         return;
     }
     
+    form.formState.isSubmitting = true;
+
+    // --- Promise 1: Update Text Data ---
+    const updateInfoPromise = api.put(`${backendUrl}/tools/update-info`, {
+        listing_id: listing.listing_id,
+        ...values,
+    });
+    
+    // --- Promise 2: Update Image Data (if changed) ---
     const originalPrimaryId = listing.images?.find(img => img.is_primary)?.id;
     const currentPrimaryImage = existingImages.find(img => img.is_primary);
     const newPrimaryId = currentPrimaryImage ? currentPrimaryImage.id : null;
+    const imageChangesMade = newImageFiles.length > 0 || removedImageIds.length > 0 || (newPrimaryId !== originalPrimaryId);
 
-    const hasImages = existingImages.length > 0 || newImageFiles.length > 0;
-    const hasPrimary = !!currentPrimaryImage || (newImageFiles.length > 0 && setFirstNewAsPrimary);
-
-    if (hasImages && !hasPrimary) {
-         toast({ variant: 'destructive', title: 'Primary Image Required', description: 'Please select a primary image for your listing.' });
-         return;
-    }
-    
-    // --- Promise 1: Update Text Data ---
-    const updateDetailsPromise = api.put(`${backendUrl}/tools`, {
-        ...values,
-        tool_id: listing.listing_id,
-        updatedBy: user.id
-    });
-    
-    // --- Promise 2: Update Image Data ---
-    let updateImagesPromise = Promise.resolve(); // Default to a resolved promise
-    const imageChangesMade = newImageFiles.length > 0 || removedImageIds.length > 0 || (newPrimaryId && newPrimaryId !== originalPrimaryId);
+    let updateImagesPromise = Promise.resolve(null);
     
     if (imageChangesMade) {
+        const hasImages = existingImages.length > 0 || newImageFiles.length > 0;
+        const hasPrimary = !!currentPrimaryImage || (newImageFiles.length > 0 && setFirstNewAsPrimary);
+        if (hasImages && !hasPrimary) {
+            toast({ variant: 'destructive', title: 'Primary Image Required', description: 'Please select a primary image.' });
+            form.formState.isSubmitting = false;
+            return;
+        }
+
         const imageFormData = new FormData();
         imageFormData.append('listing_id', listing.listing_id);
         
@@ -211,10 +213,10 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     }
     
     try {
-        const [detailsResponse, imagesResponse] = await Promise.all([updateDetailsPromise, updateImagesPromise]);
+        const [infoResponse, imagesResponse] = await Promise.all([updateInfoPromise, updateImagesPromise]);
 
-        if (!detailsResponse.ok) {
-             const result = await detailsResponse.json();
+        if (!infoResponse.ok) {
+             const result = await infoResponse.json();
              throw new Error(result.message || result.error || 'Failed to update listing details.');
         }
         if (imagesResponse && !imagesResponse.ok) {
@@ -227,6 +229,8 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         setOpen(false);
     } catch (error: any) {
         toast({ variant: 'destructive', title: 'Update Failed', description: error.message });
+    } finally {
+        form.formState.isSubmitting = false;
     }
   };
 
@@ -409,3 +413,5 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     </Dialog>
   );
 }
+
+  
