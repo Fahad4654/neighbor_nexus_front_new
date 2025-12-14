@@ -60,19 +60,25 @@ interface EditListingDialogProps {
     onListingUpdated: () => void;
 }
 
+type ToolImage = {
+  id: string;
+  image_url: string;
+  is_primary: boolean;
+};
+
+
 export function EditListingDialog({ listing, onListingUpdated }: EditListingDialogProps) {
   const [open, setOpen] = useState(false);
   const { user, api } = useAuth();
   const { toast } = useToast();
   
-  // State for image management
-  const [existingImages, setExistingImages] = useState(listing.images || []);
+  const [existingImages, setExistingImages] = useState<ToolImage[]>([]);
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
   const [removedImageIds, setRemovedImageIds] = useState<string[]>([]);
-  const [setFirstNewAsPrimary, setSetFirstNewAsPrimary] = useState(false);
-
-
+  
+  const isPrimaryImageSet = existingImages.some(img => img.is_primary);
+  
   const form = useForm<ListingFormValues>({
     resolver: zodResolver(listingSchema),
     defaultValues: {
@@ -86,16 +92,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     },
   });
   
-  const resetImageState = () => {
-    setExistingImages(listing.images || []);
-    setNewImageFiles([]);
-    setNewImagePreviews([]);
-    setRemovedImageIds([]);
-    setSetFirstNewAsPrimary(!listing.images?.some(img => img.is_primary));
-  };
-
-  useEffect(() => {
-    if (open) {
+  const resetState = () => {
       form.reset({
         title: listing.title,
         description: listing.description,
@@ -105,7 +102,15 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         security_deposit: parseFloat(listing.security_deposit),
         is_available: listing.is_available,
       });
-      resetImageState();
+      setExistingImages(listing.images || []);
+      setNewImageFiles([]);
+      setNewImagePreviews([]);
+      setRemovedImageIds([]);
+  };
+
+  useEffect(() => {
+    if (open) {
+      resetState();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, listing]);
@@ -115,14 +120,10 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     setExistingImages(prev => prev.filter(img => img.id !== id));
     setRemovedImageIds(prev => [...prev, id]);
 
-    // If the removed image was primary, and there are other images left,
-    // make the first remaining existing image the new primary.
     if (removedImage?.is_primary) {
         const remainingImages = existingImages.filter(img => img.id !== id);
         if (remainingImages.length > 0) {
             handleSetPrimary(remainingImages[0].id);
-        } else if (newImageFiles.length > 0) {
-            setSetFirstNewAsPrimary(true);
         }
     }
   };
@@ -139,7 +140,6 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
             is_primary: img.id === id,
         }))
     );
-    setSetFirstNewAsPrimary(false);
   };
   
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -171,7 +171,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         toast({ variant: 'destructive', title: 'Configuration Error' });
         return;
     }
-
+    
     // --- Promise 1: Update Text Data ---
     const updateInfoPromise = api.put(`${backendUrl}/tools/update-info`, {
         listing_id: listing.listing_id,
@@ -182,14 +182,14 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     const originalPrimaryId = listing.images?.find(img => img.is_primary)?.id;
     const currentPrimaryImage = existingImages.find(img => img.is_primary);
     const newPrimaryId = currentPrimaryImage ? currentPrimaryImage.id : null;
-    const imageChangesMade = newImageFiles.length > 0 || removedImageIds.length > 0 || (newPrimaryId !== originalPrimaryId);
+    const isPrimaryChanged = newPrimaryId !== originalPrimaryId;
 
     let updateImagesPromise = Promise.resolve(null);
     
-    if (imageChangesMade) {
+    if (newImageFiles.length > 0 || removedImageIds.length > 0 || isPrimaryChanged) {
         const hasImages = existingImages.length > 0 || newImageFiles.length > 0;
-        const hasPrimary = !!currentPrimaryImage || (newImageFiles.length > 0 && setFirstNewAsPrimary);
-        if (hasImages && !hasPrimary) {
+        
+        if (hasImages && !isPrimaryImageSet && newImageFiles.length === 0) {
             toast({ variant: 'destructive', title: 'Primary Image Required', description: 'Please select a primary image.' });
             return;
         }
@@ -200,9 +200,9 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         removedImageIds.forEach(id => imageFormData.append('remove_image_ids', id));
         newImageFiles.forEach(file => imageFormData.append('images', file));
         
-        if (newPrimaryId && newPrimaryId !== originalPrimaryId) {
+        if (newPrimaryId && isPrimaryChanged) {
             imageFormData.append('new_primary_id', newPrimaryId);
-        } else if (setFirstNewAsPrimary && newImageFiles.length > 0) {
+        } else if (!isPrimaryImageSet && newImageFiles.length > 0) {
             imageFormData.append('set_first_new_file_as_primary', 'true');
         }
 
@@ -267,6 +267,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
                             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <Button type="button" size="sm" variant="destructive" className="h-6 text-xs px-1" onClick={() => handleRemoveNewImage(index)}><X className="mr-1 h-3 w-3" /> Remove</Button>
                             </div>
+                            {!isPrimaryImageSet && index === 0 && <Badge className="absolute bottom-1 right-1 text-xs" variant="secondary"><Star className="h-3 w-3 mr-1" />Primary</Badge>}
                          </div>
                     ))}
                  </div>
@@ -278,17 +279,6 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
                  )}
                 <Input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" id="image-upload-edit" />
             </div>
-
-            {existingImages.length === 0 && newImageFiles.length > 0 && (
-                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                    <div className="space-y-0.5">
-                        <FormLabel>Set First New Image as Primary</FormLabel>
-                    </div>
-                    <FormControl>
-                        <Switch checked={setFirstNewAsPrimary} onCheckedChange={setSetFirstNewAsPrimary} />
-                    </FormControl>
-                </FormItem>
-            )}
             
             <FormField
               control={form.control}
@@ -408,5 +398,3 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     </Dialog>
   );
 }
-
-    
