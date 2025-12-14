@@ -77,7 +77,6 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
   const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
   const [removedImageIds, setRemovedImageIds] = useState<string[]>([]);
   
-  const isPrimaryImageSet = existingImages.some(img => img.is_primary);
   
   const form = useForm<ListingFormValues>({
     resolver: zodResolver(listingSchema),
@@ -117,13 +116,19 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
 
   const handleRemoveExistingImage = (id: string) => {
     const removedImage = existingImages.find(img => img.id === id);
+    if (!removedImage) return;
+
     setExistingImages(prev => prev.filter(img => img.id !== id));
     setRemovedImageIds(prev => [...prev, id]);
 
-    if (removedImage?.is_primary) {
+    // If the removed image was the primary one, we need to assign a new primary.
+    if (removedImage.is_primary) {
         const remainingImages = existingImages.filter(img => img.id !== id);
         if (remainingImages.length > 0) {
             handleSetPrimary(remainingImages[0].id);
+        } else if (newImagePreviews.length > 0) {
+            // If no existing images are left, the first new image will become primary on submit.
+            // No explicit action needed here, but the logic on submit should handle it.
         }
     }
   };
@@ -179,17 +184,15 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     });
     
     // --- Promise 2: Update Image Data (if changed) ---
-    const originalPrimaryId = listing.images?.find(img => img.is_primary)?.id;
-    const currentPrimaryImage = existingImages.find(img => img.is_primary);
-    const newPrimaryId = currentPrimaryImage ? currentPrimaryImage.id : null;
-    const isPrimaryChanged = newPrimaryId !== originalPrimaryId;
+    let updateImagesPromise = Promise.resolve<Response | null>(null);
+    const primaryImage = existingImages.find(img => img.is_primary);
+    const newPrimaryId = primaryImage ? primaryImage.id : null;
+    const isPrimaryChanged = newPrimaryId !== listing.images.find(img => img.is_primary)?.id;
 
-    let updateImagesPromise = Promise.resolve(null);
-    
     if (newImageFiles.length > 0 || removedImageIds.length > 0 || isPrimaryChanged) {
         const hasImages = existingImages.length > 0 || newImageFiles.length > 0;
         
-        if (hasImages && !isPrimaryImageSet && newImageFiles.length === 0) {
+        if (hasImages && !primaryImage && newImageFiles.length === 0) {
             toast({ variant: 'destructive', title: 'Primary Image Required', description: 'Please select a primary image.' });
             return;
         }
@@ -197,12 +200,15 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         const imageFormData = new FormData();
         imageFormData.append('listing_id', listing.listing_id);
         
-        removedImageIds.forEach(id => imageFormData.append('remove_image_ids', id));
+        if (removedImageIds.length > 0) {
+          imageFormData.append('remove_image_ids', JSON.stringify(removedImageIds));
+        }
+
         newImageFiles.forEach(file => imageFormData.append('images', file));
         
         if (newPrimaryId && isPrimaryChanged) {
             imageFormData.append('new_primary_id', newPrimaryId);
-        } else if (!isPrimaryImageSet && newImageFiles.length > 0) {
+        } else if (!primaryImage && newImageFiles.length > 0) {
             imageFormData.append('set_first_new_file_as_primary', 'true');
         }
 
@@ -267,7 +273,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
                             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <Button type="button" size="sm" variant="destructive" className="h-6 text-xs px-1" onClick={() => handleRemoveNewImage(index)}><X className="mr-1 h-3 w-3" /> Remove</Button>
                             </div>
-                            {!isPrimaryImageSet && index === 0 && <Badge className="absolute bottom-1 right-1 text-xs" variant="secondary"><Star className="h-3 w-3 mr-1" />Primary</Badge>}
+                            {!existingImages.some(img => img.is_primary) && index === 0 && <Badge className="absolute bottom-1 right-1 text-xs" variant="secondary"><Star className="h-3 w-3 mr-1" />Primary</Badge>}
                          </div>
                     ))}
                  </div>
