@@ -68,6 +68,10 @@ export function ListingDetailDialog({ listing, open, onOpenChange }: ListingDeta
                         </div>
                     </DialogTrigger>
                     <DialogContent className="max-w-4xl h-[90vh] flex items-center justify-center p-2">
+                        <DialogHeader className="sr-only">
+                            <DialogTitle>{listing.title} - Zoomed Image</DialogTitle>
+                            <DialogDescription>A larger view of the listing image.</DialogDescription>
+                        </DialogHeader>
                         <AuthenticatedImage
                             src={selectedImage}
                             alt={listing.title}
