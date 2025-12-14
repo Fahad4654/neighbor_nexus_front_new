@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -9,13 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar } from "lucide-react";
+import { MapPin, Calendar, Star, PackageCheck, PackageX, Package, KeyRound, TrendingUp } from "lucide-react";
 import AuthenticatedImage from "@/components/shared/authenticated-image";
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+
 
 type ToolImage = {
   id: string;
@@ -44,6 +46,9 @@ type ListingData = {
     daily_price: string;
     security_deposit: string;
     is_available: boolean;
+    rental_count: number;
+    is_approved: boolean;
+    geo_location: any;
     createdAt: string;
     updatedAt: string;
     owner: Owner;
@@ -230,6 +235,46 @@ export default function ListingDetailPage() {
               </CardContent>
             </Card>
           )}
+
+          <Card>
+            <CardHeader>
+                <CardTitle>Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+                <div className="flex justify-between items-center">
+                    <span className="font-semibold text-muted-foreground flex items-center gap-2"><KeyRound/> Security Deposit</span>
+                    <span className="font-bold text-lg">BDT {parseFloat(listing.security_deposit).toFixed(2)}</span>
+                </div>
+                <Separator />
+                 <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground flex items-center gap-2"><TrendingUp /> Rental Count</span>
+                    <span>{listing.rental_count}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground flex items-center gap-2">
+                        {listing.is_approved ? <PackageCheck /> : <PackageX />}
+                        Approval Status
+                    </span>
+                    <Badge variant={listing.is_approved ? 'secondary' : 'destructive'}>
+                        {listing.is_approved ? 'Verified' : 'Pending'}
+                    </Badge>
+                </div>
+                 <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground flex items-center gap-2">
+                        {listing.is_available ? <PackageCheck /> : <PackageX />}
+                        Availability
+                    </span>
+                    <Badge variant={listing.is_available ? 'secondary' : 'destructive'}>
+                        {listing.is_available ? 'Available' : 'Unavailable'}
+                    </Badge>
+                </div>
+                 <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground flex items-center gap-2"><Calendar /> Listed On</span>
+                    <span>{format(new Date(listing.createdAt), 'PP')}</span>
+                </div>
+            </CardContent>
+          </Card>
+          
           {owner && (
             <Card>
               <CardHeader>
