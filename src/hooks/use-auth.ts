@@ -1,8 +1,10 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { api as apiFactory } from '@/lib/api';
+import { useToast } from './use-toast';
 
 type User = {
     id: string;
@@ -30,6 +32,7 @@ export const useAuth = () => {
     const [refreshToken, setRefreshToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
+    const { toast } = useToast();
 
     const performLogout = useCallback(() => {
         localStorage.removeItem('user');
@@ -89,13 +92,18 @@ export const useAuth = () => {
     
     const logout = useCallback(async () => {
         const currentRefreshToken = localStorage.getItem('refreshToken');
+        let logoutMessage = "You have been logged out.";
+        
         if (currentRefreshToken) {
             try {
                 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
                 if(backendUrl) {
                     const response = await api.post(`${backendUrl}/auth/logout`, { refreshToken: currentRefreshToken });
                     const result = await response.json();
-                    if (result.status !== 'success') {
+                    
+                    if (result.status === 'success') {
+                        logoutMessage = result.message || logoutMessage;
+                    } else {
                         console.error("Server-side logout failed:", result.message);
                     }
                 }
@@ -103,8 +111,15 @@ export const useAuth = () => {
                 console.error("Logout API call failed, logging out client-side anyway.", error);
             }
         }
+        
         performLogout();
-    }, [api, performLogout]);
+        
+        toast({
+            title: "Logout Successful",
+            description: logoutMessage,
+        });
+
+    }, [api, performLogout, toast]);
 
     const updateUser = useCallback((newUserData: User) => {
         // Update localStorage
