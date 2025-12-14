@@ -69,7 +69,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
   const [removedImageIds, setRemovedImageIds] = useState<string[]>([]);
-  const [newPrimaryId, setNewPrimaryId] = useState<string | null>(listing.images.find(img => img.is_primary)?.id || null);
+  const [newPrimaryId, setNewPrimaryId] = useState<string | null>(listing.images?.find(img => img.is_primary)?.id || null);
   const [setFirstNewAsPrimary, setSetFirstNewAsPrimary] = useState(false);
 
 
@@ -91,7 +91,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     setNewImageFiles([]);
     setNewImagePreviews([]);
     setRemovedImageIds([]);
-    setNewPrimaryId(listing.images.find(img => img.is_primary)?.id || null);
+    setNewPrimaryId(listing.images?.find(img => img.is_primary)?.id || null);
     setSetFirstNewAsPrimary(false);
   };
 
@@ -174,7 +174,8 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     
     // --- Promise 2: Update Image Data ---
     let updateImagesPromise = Promise.resolve(); // Default to a resolved promise
-    const imageChangesMade = newImageFiles.length > 0 || removedImageIds.length > 0 || newPrimaryId !== listing.images.find(img => img.is_primary)?.id;
+    const primaryImageInListing = listing.images?.find(img => img.is_primary);
+    const imageChangesMade = newImageFiles.length > 0 || removedImageIds.length > 0 || newPrimaryId !== (primaryImageInListing?.id || null);
     
     if (imageChangesMade) {
         const imageFormData = new FormData();
@@ -183,7 +184,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         removedImageIds.forEach(id => imageFormData.append('remove_image_ids', id));
         newImageFiles.forEach(file => imageFormData.append('images', file));
         
-        if (newPrimaryId && newPrimaryId !== listing.images.find(img => img.is_primary)?.id) {
+        if (newPrimaryId && newPrimaryId !== (primaryImageInListing?.id || null)) {
             imageFormData.append('new_primary_id', newPrimaryId);
         } else if (setFirstNewAsPrimary) {
             imageFormData.append('set_first_new_file_as_primary', 'true');
@@ -263,20 +264,14 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
             </div>
 
             {!newPrimaryId && newImageFiles.length > 0 && (
-                 <FormField
-                    control={form.control}
-                    name="is_available" // Re-using a boolean field for the switch, field name doesn't matter here
-                    render={() => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                        <div className="space-y-0.5">
-                            <FormLabel>Set First New Image as Primary</FormLabel>
-                        </div>
-                        <FormControl>
-                            <Switch checked={setFirstNewAsPrimary} onCheckedChange={setSetFirstNewAsPrimary} />
-                        </FormControl>
-                        </FormItem>
-                    )}
-                    />
+                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                        <FormLabel>Set First New Image as Primary</FormLabel>
+                    </div>
+                    <FormControl>
+                        <Switch checked={setFirstNewAsPrimary} onCheckedChange={setSetFirstNewAsPrimary} />
+                    </FormControl>
+                </FormItem>
             )}
             
             <FormField
