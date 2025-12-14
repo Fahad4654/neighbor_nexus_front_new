@@ -115,10 +115,21 @@ function ListingsPageComponent() {
   // Pagination and sorting state
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
+  const [sortColumn, setSortColumn] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState('DESC');
   const [totalPages, setTotalPages] = useState(0);
   const [totalListings, setTotalListings] = useState(0);
 
+  const SORT_COLUMNS = [
+    { value: 'createdAt', label: 'Created Date' },
+    { value: 'listing_type', label: 'Listing Type' },
+    { value: 'title', label: 'Title' },
+    { value: 'hourly_price', label: 'Hourly Price' },
+    { value: 'daily_price', label: 'Daily Price' },
+    { value: 'security_deposit', label: 'Security Deposit' },
+    { value: 'is_available', label: 'Availability' },
+    { value: 'rental_count', label: 'Rental Count' },
+  ];
 
   const fetchMyListings = useCallback(async () => {
     if (!user) return;
@@ -134,7 +145,7 @@ function ListingsPageComponent() {
 
     try {
       const payload = {
-        order: 'createdAt',
+        order: sortColumn,
         asc: sortOrder,
         page: pageIndex + 1,
         pageSize: pageSize,
@@ -161,7 +172,7 @@ function ListingsPageComponent() {
     } finally {
       setIsLoading(false);
     }
-  }, [api, toast, user, pageIndex, pageSize, sortOrder]);
+  }, [api, toast, user, pageIndex, pageSize, sortColumn, sortOrder]);
 
   useEffect(() => {
     if (user) {
@@ -176,6 +187,11 @@ function ListingsPageComponent() {
 
   const handlePageSizeChange = (value: string) => {
     setPageSize(Number(value));
+    setPageIndex(0);
+  };
+  
+  const handleSortColumnChange = (value: string) => {
+    setSortColumn(value);
     setPageIndex(0);
   };
   
@@ -203,18 +219,30 @@ function ListingsPageComponent() {
         <Card>
             <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                 <div className="space-y-2">
+                    <Label htmlFor="sort-column">Sort By</Label>
+                    <Select value={sortColumn} onValueChange={handleSortColumnChange}>
+                        <SelectTrigger id="sort-column">
+                            <SelectValue placeholder="Sort by" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {SORT_COLUMNS.map(col => (
+                                <SelectItem key={col.value} value={col.value}>{col.label}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                 <div className="space-y-2">
                     <Label htmlFor="sort-order">Order</Label>
                     <Select value={sortOrder} onValueChange={handleSortOrderChange}>
                         <SelectTrigger id="sort-order">
                             <SelectValue placeholder="Sort Order" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="DESC">Newest First</SelectItem>
-                            <SelectItem value="ASC">Oldest First</SelectItem>
+                            <SelectItem value="DESC">Descending</SelectItem>
+                            <SelectItem value="ASC">Ascending</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
-
                 <div className="space-y-2">
                     <Label htmlFor="page-size">Page Size</Label>
                     <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
@@ -229,7 +257,7 @@ function ListingsPageComponent() {
                     </Select>
                 </div>
                 
-                <div className="lg:col-span-2 flex items-center justify-end gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center justify-end gap-4 text-sm text-muted-foreground">
                     <span>
                         Showing {startRecord} - {endRecord} of {totalListings}
                     </span>
