@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/use-auth';
@@ -10,8 +9,11 @@ import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import AuthenticatedImage from '@/components/shared/authenticated-image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Wrench } from 'lucide-react';
+import { Wrench, PlusCircle } from 'lucide-react';
 import { CreateListingDialog } from '@/components/listings/create-listing-dialog';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 type ToolImage = {
   id: string;
@@ -110,6 +112,14 @@ function ListingsPageComponent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Pagination and sorting state
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [sortOrder, setSortOrder] = useState('DESC');
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalListings, setTotalListings] = useState(0);
+
+
   const fetchMyListings = useCallback(async () => {
     if (!user) return;
     
@@ -123,11 +133,11 @@ function ListingsPageComponent() {
     }
 
     try {
-      const payload: any = {
+      const payload = {
         order: 'createdAt',
-        asc: 'DESC',
-        page: 1,
-        pageSize: 10,
+        asc: sortOrder,
+        page: pageIndex + 1,
+        pageSize: pageSize,
       };
       
       const response = await api.post(`${backendUrl}/tools/all`, payload);
@@ -138,6 +148,9 @@ function ListingsPageComponent() {
       }
       
       setMyListings(result.data?.toolsList || []);
+      setTotalPages(result.pagination?.totalPages || 0);
+      setTotalListings(result.pagination?.totalCount || 0);
+
     } catch (err: any) {
       setError(err.message);
       toast({
@@ -148,7 +161,7 @@ function ListingsPageComponent() {
     } finally {
       setIsLoading(false);
     }
-  }, [api, toast, user]);
+  }, [api, toast, user, pageIndex, pageSize, sortOrder]);
 
   useEffect(() => {
     if (user) {
@@ -157,8 +170,25 @@ function ListingsPageComponent() {
   }, [fetchMyListings, user]);
   
   const handleListingCreated = () => {
+    setPageIndex(0); // Reset to first page
     fetchMyListings();
   }
+
+  const handlePageSizeChange = (value: string) => {
+    setPageSize(Number(value));
+    setPageIndex(0);
+  };
+  
+  const handleSortOrderChange = (value: string) => {
+    setSortOrder(value);
+    setPageIndex(0);
+  };
+
+  const canPreviousPage = pageIndex > 0;
+  const canNextPage = pageIndex < totalPages - 1;
+
+  const startRecord = totalListings > 0 ? pageIndex * pageSize + 1 : 0;
+  const endRecord = Math.min((pageIndex + 1) * pageSize, totalListings);
 
   return (
      <div className="space-y-4">
@@ -169,6 +199,62 @@ function ListingsPageComponent() {
             </div>
             {user && !user.isAdmin && <CreateListingDialog onListingCreated={handleListingCreated} />}
         </div>
+
+        <Card>
+            <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                <div className="space-y-2">
+                    <Label htmlFor="sort-order">Order</Label>
+                    <Select value={sortOrder} onValueChange={handleSortOrderChange}>
+                        <SelectTrigger id="sort-order">
+                            <SelectValue placeholder="Sort Order" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="DESC">Newest First</SelectItem>
+                            <SelectItem value="ASC">Oldest First</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="page-size">Page Size</Label>
+                    <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
+                        <SelectTrigger id="page-size">
+                            <SelectValue placeholder="Page Size" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {[10, 20, 50, 100].map(size => (
+                                <SelectItem key={size} value={String(size)}>{size}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                
+                <div className="lg:col-span-2 flex items-center justify-end gap-4 text-sm text-muted-foreground">
+                    <span>
+                        Showing {startRecord} - {endRecord} of {totalListings}
+                    </span>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPageIndex(p => p - 1)}
+                            disabled={!canPreviousPage}
+                        >
+                            Previous
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPageIndex(p => p + 1)}
+                            disabled={!canNextPage}
+                        >
+                            Next
+                        </Button>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
         <ListingsGrid 
             listings={myListings}
             isLoading={isLoading}
