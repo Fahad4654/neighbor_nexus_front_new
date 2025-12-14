@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -15,21 +16,23 @@ interface AuthenticatedImageProps extends Omit<ImageProps, 'src' | 'width' | 'he
 const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', width, height, ...props }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { accessToken } = useAuth();
+  const { api, accessToken } = useAuth(); // Use the custom api from useAuth
 
   useEffect(() => {
     let isMounted = true; 
+    let objectUrl: string | null = null;
 
     const fetchImage = async () => {
       if (!src || !accessToken) {
-        setIsLoading(false);
+        if (isMounted) setIsLoading(false);
         return;
       }
       
-      setIsLoading(true);
+      if (isMounted) setIsLoading(true);
+      
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
       if (!backendUrl) {
-          setIsLoading(false);
+          if (isMounted) setIsLoading(false);
           console.error("Backend URL is not configured.");
           return;
       }
@@ -41,18 +44,15 @@ const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', 
       }
 
       try {
-        const response = await fetch(fullSrc, {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-          },
-        });
+        // Use the custom api.get which handles authentication
+        const response = await api.get(fullSrc);
 
         if (!response.ok) {
           throw new Error(`Failed to fetch image. Status: ${response.status}`);
         }
 
         const blob = await response.blob();
-        const objectUrl = URL.createObjectURL(blob);
+        objectUrl = URL.createObjectURL(blob);
         
         if (isMounted) {
             setImageUrl(objectUrl);
@@ -74,19 +74,20 @@ const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', 
 
     return () => {
       isMounted = false;
-      if (imageUrl) {
-        URL.revokeObjectURL(imageUrl);
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [src, accessToken]);
+  }, [src, accessToken, api]); // Add api as a dependency
 
   if (isLoading) {
     return <Skeleton className="h-full w-full" />;
   }
 
   if (!imageUrl) {
-    return null;
+    // Render a placeholder or nothing if the image fails to load
+    return <div className="h-full w-full bg-muted flex items-center justify-center"><span className="text-xs text-muted-foreground">No Image</span></div>;
   }
   
   if (width && height) {
