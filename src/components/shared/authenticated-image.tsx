@@ -18,7 +18,6 @@ const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', 
   const { accessToken } = useAuth();
 
   useEffect(() => {
-    // Keep track of whether the component is still mounted
     let isMounted = true; 
 
     const fetchImage = async () => {
@@ -35,15 +34,21 @@ const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', 
           return;
       }
 
+      // Determine if the src is a full URL or a relative path
+      let fullSrc = src;
+      if (!src.startsWith('http://') && !src.startsWith('https://')) {
+        fullSrc = `${backendUrl}${src}`;
+      }
+
       try {
-        const response = await fetch(`${backendUrl}${src}`, {
+        const response = await fetch(fullSrc, {
           headers: {
             'Authorization': `Bearer ${accessToken}`,
           },
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch image');
+          throw new Error(`Failed to fetch image. Status: ${response.status}`);
         }
 
         const blob = await response.blob();
@@ -67,11 +72,9 @@ const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', 
 
     fetchImage();
 
-    // Cleanup function
     return () => {
-      isMounted = false; // Mark as unmounted
+      isMounted = false;
       if (imageUrl) {
-        // Revoke the object URL to free up memory
         URL.revokeObjectURL(imageUrl);
       }
     };
@@ -83,8 +86,6 @@ const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', 
   }
 
   if (!imageUrl) {
-    // Fallback to just the alt text or a placeholder icon if you have one
-    // For now, AvatarFallback will handle this in parent components
     return null;
   }
   
@@ -92,8 +93,6 @@ const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', 
     return <Image src={imageUrl} alt={alt} width={width} height={height} {...props} />;
   }
 
-  // If width and height are not provided, we assume fill is desired.
-  // The parent container must have relative positioning.
   return <Image src={imageUrl} alt={alt} fill {...props} />;
 };
 
