@@ -16,35 +16,35 @@ interface AuthenticatedImageProps extends Omit<ImageProps, 'src' | 'width' | 'he
 const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', width, height, ...props }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { api, accessToken } = useAuth(); // Use the custom api from useAuth
+  const { api, accessToken } = useAuth();
 
   useEffect(() => {
-    let isMounted = true; 
+    let isMounted = true;
     let objectUrl: string | null = null;
 
     const fetchImage = async () => {
+      // Reset state when src changes
+      setIsLoading(true);
+      setImageUrl(null);
+
       if (!src || !accessToken) {
         if (isMounted) setIsLoading(false);
         return;
       }
-      
-      if (isMounted) setIsLoading(true);
-      
+
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
       if (!backendUrl) {
-          if (isMounted) setIsLoading(false);
-          console.error("Backend URL is not configured.");
-          return;
+        if (isMounted) setIsLoading(false);
+        console.error("Backend URL is not configured.");
+        return;
       }
 
-      // Determine if the src is a full URL or a relative path
       let fullSrc = src;
       if (!src.startsWith('http://') && !src.startsWith('https://')) {
         fullSrc = `${backendUrl}${src}`;
       }
 
       try {
-        // Use the custom api.get which handles authentication
         const response = await api.get(fullSrc);
 
         if (!response.ok) {
@@ -57,7 +57,6 @@ const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', 
         if (isMounted) {
             setImageUrl(objectUrl);
         }
-
       } catch (error) {
         console.error('Error fetching authenticated image:', error);
         if (isMounted) {
@@ -78,15 +77,13 @@ const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', 
         URL.revokeObjectURL(objectUrl);
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [src, accessToken, api]); // Add api as a dependency
+  }, [src, accessToken, api]); 
 
   if (isLoading) {
     return <Skeleton className="h-full w-full" />;
   }
 
   if (!imageUrl) {
-    // Render a placeholder or nothing if the image fails to load
     return <div className="h-full w-full bg-muted flex items-center justify-center"><span className="text-xs text-muted-foreground">No Image</span></div>;
   }
   
