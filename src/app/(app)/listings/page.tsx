@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
@@ -120,8 +121,14 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
                     </CardContent>
                 </div>
                 {user && !user.isAdmin && user.id === listing.owner_id && (
-                     <CardFooter className="p-2 border-t flex gap-2">
+                    <CardFooter className="p-2 border-t grid grid-cols-2 gap-2">
                         <EditListingDialog listing={listing} onListingUpdated={onListingUpdated} />
+                        <DeleteListingDialog listing={listing} onListingDeleted={onListingUpdated}>
+                            <Button variant="destructive" className="w-full">
+                                <Wrench className="mr-2 h-4 w-4" />
+                                Delete
+                            </Button>
+                        </DeleteListingDialog>
                     </CardFooter>
                 )}
               </Card>

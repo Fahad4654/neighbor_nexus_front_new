@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -40,7 +41,6 @@ import type { Tool } from '@/app/(app)/listings/page';
 import AuthenticatedImage from '../shared/authenticated-image';
 import { Badge } from '../ui/badge';
 import NextImage from 'next/image';
-import { DeleteListingDialog } from './delete-listing-dialog';
 
 const MAX_IMAGES = 5;
 
@@ -394,17 +394,11 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
                 </FormItem>
               )}
             />
-            <DialogFooter className="flex-row justify-between w-full">
-                <DeleteListingDialog listing={listing} onListingDeleted={() => {
-                    setOpen(false);
-                    onListingUpdated();
-                }} />
-                <div className="flex gap-2">
-                    <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                    <Button type="submit" disabled={form.formState.isSubmitting}>
-                        {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}
-                    </Button>
-                </div>
+            <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+                <Button type="submit" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}
+                </Button>
             </DialogFooter>
           </form>
         </Form>
