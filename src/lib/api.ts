@@ -81,4 +81,5 @@ export const api = (onLogout: () => void) => ({
     put: (url: string, body: any, options: RequestInit = {}) => customFetch(url, { ...options, method: 'PUT', body: JSON.stringify(body) }, onLogout),
     delete: (url: string, body: any, options: RequestInit = {}) => customFetch(url, { ...options, method: 'DELETE', body: JSON.stringify(body) }, onLogout),
     postFormData: (url: string, formData: FormData, options: RequestInit = {}) => customFetch(url, { ...options, method: 'POST', body: formData }, onLogout, true),
+    putFormData: (url: string, formData: FormData, options: RequestInit = {}) => customFetch(url, { ...options, method: 'PUT', body: formData }, onLogout, true),
 });

@@ -34,10 +34,13 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { Edit } from 'lucide-react';
+import { Edit, Image as ImageIcon, X, Star, Upload } from 'lucide-react';
 import type { Tool } from '@/app/(app)/listings/page';
 import AuthenticatedImage from '../shared/authenticated-image';
 import { Badge } from '../ui/badge';
+import NextImage from 'next/image';
+
+const MAX_IMAGES = 5;
 
 const listingSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -61,11 +64,14 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
   const { user, api } = useAuth();
   const { toast } = useToast();
   
-  const getPrimaryImage = (images: Tool['images']) => {
-    if (!images || images.length === 0) return '/media/tools/default.png';
-    const primary = images.find(img => img.is_primary);
-    return primary ? primary.image_url : images[0].image_url;
-  };
+  // State for image management
+  const [existingImages, setExistingImages] = useState(listing.images || []);
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
+  const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
+  const [removedImageIds, setRemovedImageIds] = useState<string[]>([]);
+  const [newPrimaryId, setNewPrimaryId] = useState<string | null>(listing.images.find(img => img.is_primary)?.id || null);
+  const [setFirstNewAsPrimary, setSetFirstNewAsPrimary] = useState(false);
+
 
   const form = useForm<ListingFormValues>({
     resolver: zodResolver(listingSchema),
@@ -79,6 +85,15 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
       is_available: listing.is_available,
     },
   });
+  
+  const resetImageState = () => {
+    setExistingImages(listing.images || []);
+    setNewImageFiles([]);
+    setNewImagePreviews([]);
+    setRemovedImageIds([]);
+    setNewPrimaryId(listing.images.find(img => img.is_primary)?.id || null);
+    setSetFirstNewAsPrimary(false);
+  };
 
   useEffect(() => {
     if (open) {
@@ -91,57 +106,112 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         security_deposit: parseFloat(listing.security_deposit),
         is_available: listing.is_available,
       });
+      resetImageState();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, listing, form]);
 
-  const onSubmit = async (values: ListingFormValues) => {
-    if (!user) {
-      toast({
-        variant: 'destructive',
-        title: 'Authentication Error',
-        description: 'You must be logged in to update a listing.',
-      });
-      return;
-    }
-    
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-    if (!backendUrl) {
-      toast({
-        variant: 'destructive',
-        title: 'Configuration Error',
-        description: 'Backend URL is not configured.',
-      });
-      return;
-    }
-
-    try {
-      const response = await api.put(`${backendUrl}/tools`, {
-          ...values,
-          tool_id: listing.listing_id,
-          updatedBy: user.id
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || result.error || 'Failed to update listing.');
-      }
-
-      toast({
-        title: 'Listing Updated',
-        description: `Your ${values.listing_type.toLowerCase()} has been successfully updated.`,
-      });
-
-      onListingUpdated(); // Refresh the listings on the parent page
-      setOpen(false); // Close the dialog
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Error Updating Listing',
-        description: error.message,
-      });
+  const handleRemoveExistingImage = (id: string) => {
+    setExistingImages(prev => prev.filter(img => img.id !== id));
+    setRemovedImageIds(prev => [...prev, id]);
+    if (newPrimaryId === id) {
+        setNewPrimaryId(null);
     }
   };
+
+  const handleRemoveNewImage = (index: number) => {
+    setNewImageFiles(prev => prev.filter((_, i) => i !== index));
+    setNewImagePreviews(prev => prev.filter((_, i) => i !== index));
+  };
+  
+  const handleSetPrimary = (id: string) => {
+    setNewPrimaryId(id);
+    setSetFirstNewAsPrimary(false);
+  };
+  
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    const totalImages = existingImages.length + newImageFiles.length;
+    const remainingSlots = MAX_IMAGES - totalImages;
+
+    if (files.length > remainingSlots) {
+        toast({
+            variant: 'destructive',
+            title: 'Too many images',
+            description: `You can only add ${remainingSlots} more image(s).`,
+        });
+    }
+
+    const newFiles = files.slice(0, remainingSlots);
+    setNewImageFiles(prev => [...prev, ...newFiles]);
+    const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+    setNewImagePreviews(prev => [...prev, ...newPreviews]);
+  };
+  
+  const onSubmit = async (values: ListingFormValues) => {
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Authentication Error' });
+        return;
+    }
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl) {
+        toast({ variant: 'destructive', title: 'Configuration Error' });
+        return;
+    }
+
+    const hasPrimaryImage = newPrimaryId || setFirstNewAsPrimary || existingImages.some(img => img.is_primary && !removedImageIds.includes(img.id));
+    if (!hasPrimaryImage && (existingImages.length + newImageFiles.length > 0)) {
+         toast({ variant: 'destructive', title: 'Primary Image Required', description: 'Please select a primary image for your listing.' });
+         return;
+    }
+    
+    // --- Promise 1: Update Text Data ---
+    const updateDetailsPromise = api.put(`${backendUrl}/tools`, {
+        ...values,
+        tool_id: listing.listing_id,
+        updatedBy: user.id
+    });
+    
+    // --- Promise 2: Update Image Data ---
+    let updateImagesPromise = Promise.resolve(); // Default to a resolved promise
+    const imageChangesMade = newImageFiles.length > 0 || removedImageIds.length > 0 || newPrimaryId !== listing.images.find(img => img.is_primary)?.id;
+    
+    if (imageChangesMade) {
+        const imageFormData = new FormData();
+        imageFormData.append('listing_id', listing.listing_id);
+        
+        removedImageIds.forEach(id => imageFormData.append('remove_image_ids', id));
+        newImageFiles.forEach(file => imageFormData.append('images', file));
+        
+        if (newPrimaryId && newPrimaryId !== listing.images.find(img => img.is_primary)?.id) {
+            imageFormData.append('new_primary_id', newPrimaryId);
+        } else if (setFirstNewAsPrimary) {
+            imageFormData.append('set_first_new_file_as_primary', 'true');
+        }
+
+        updateImagesPromise = api.putFormData(`${backendUrl}/tools/update-images`, imageFormData);
+    }
+    
+    try {
+        const [detailsResponse, imagesResponse] = await Promise.all([updateDetailsPromise, updateImagesPromise]);
+
+        if (!detailsResponse.ok) {
+             const result = await detailsResponse.json();
+             throw new Error(result.message || result.error || 'Failed to update listing details.');
+        }
+        if (imageChangesMade && imagesResponse && !imagesResponse.ok) {
+            const result = await imagesResponse.json();
+            throw new Error(result.message || result.error || 'Failed to update listing images.');
+        }
+
+        toast({ title: 'Listing Updated Successfully' });
+        onListingUpdated();
+        setOpen(false);
+    } catch (error: any) {
+        toast({ variant: 'destructive', title: 'Update Failed', description: error.message });
+    }
+  };
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -155,31 +225,60 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         <DialogHeader>
           <DialogTitle>Edit Listing</DialogTitle>
           <DialogDescription>
-            Update the details for your listing below. Note: Image and location changes are not yet supported.
+            Update the details for your listing below.
           </DialogDescription>
         </DialogHeader>
         
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
-            {listing.images && listing.images.length > 0 && (
-                <div className="space-y-2">
-                    <FormLabel>Current Images</FormLabel>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                    {listing.images.map((image, index) => (
-                        <div key={image.id} className="relative aspect-square">
-                            <AuthenticatedImage
-                                src={image.image_url}
-                                alt={`${listing.title} image ${index + 1}`}
-                                className="object-cover rounded-md"
-                            />
-                            {image.is_primary && (
-                                <Badge className="absolute bottom-1 right-1 text-xs" variant="secondary">Primary</Badge>
-                            )}
+             <div className="space-y-2">
+                <FormLabel>Manage Images</FormLabel>
+                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                    {existingImages.map((image) => (
+                        <div key={image.id} className="relative group">
+                            <AuthenticatedImage src={image.image_url} alt={listing.title} className="object-cover rounded-md aspect-square" />
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 p-1">
+                                {newPrimaryId !== image.id && <Button type="button" size="sm" className="h-6 text-xs px-1" onClick={() => handleSetPrimary(image.id)}><Star className="mr-1 h-3 w-3" /> Primary</Button>}
+                                <Button type="button" size="sm" variant="destructive" className="h-6 text-xs px-1" onClick={() => handleRemoveExistingImage(image.id)}><X className="mr-1 h-3 w-3" /> Remove</Button>
+                            </div>
+                            {newPrimaryId === image.id && <Badge className="absolute bottom-1 right-1 text-xs" variant="secondary"><Star className="h-3 w-3 mr-1" />Primary</Badge>}
                         </div>
                     ))}
-                    </div>
-                </div>
+                    {newImagePreviews.map((src, index) => (
+                         <div key={src} className="relative group">
+                            <NextImage src={src} alt={`New image ${index + 1}`} width={100} height={100} className="object-cover rounded-md aspect-square" />
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <Button type="button" size="sm" variant="destructive" className="h-6 text-xs px-1" onClick={() => handleRemoveNewImage(index)}><X className="mr-1 h-3 w-3" /> Remove</Button>
+                            </div>
+                         </div>
+                    ))}
+                 </div>
+                 {existingImages.length + newImageFiles.length < MAX_IMAGES && (
+                     <label htmlFor="image-upload-edit" className="mt-2 cursor-pointer border-2 border-dashed border-muted-foreground/50 rounded-md p-4 flex flex-col items-center justify-center text-muted-foreground hover:bg-muted/50">
+                        <Upload className="h-8 w-8 mb-2" />
+                        <span>Add more images</span>
+                    </label>
+                 )}
+                <Input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" id="image-upload-edit" />
+            </div>
+
+            {!newPrimaryId && newImageFiles.length > 0 && (
+                 <FormField
+                    control={form.control}
+                    name="is_available" // Re-using a boolean field for the switch, field name doesn't matter here
+                    render={() => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                            <FormLabel>Set First New Image as Primary</FormLabel>
+                        </div>
+                        <FormControl>
+                            <Switch checked={setFirstNewAsPrimary} onCheckedChange={setSetFirstNewAsPrimary} />
+                        </FormControl>
+                        </FormItem>
+                    )}
+                    />
             )}
+            
             <FormField
               control={form.control}
               name="title"
