@@ -12,7 +12,9 @@ import { Badge } from '@/components/ui/badge';
 import AuthenticatedImage from '@/components/shared/authenticated-image';
 import type { Tool } from '@/app/(app)/listings/page';
 import { cn } from '@/lib/utils';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, PackageCheck, PackageX, TrendingUp, Calendar, KeyRound } from 'lucide-react';
+import { format } from 'date-fns';
+import { Separator } from '../ui/separator';
 
 interface ListingDetailDialogProps {
   listing: Tool;
@@ -51,24 +53,37 @@ export function ListingDetailDialog({ listing, open, onOpenChange }: ListingDeta
                 </DialogHeader>
                 <DialogDescription className="text-base">{listing.description}</DialogDescription>
 
-                <div className="border-t pt-4 space-y-2">
+                <div className="border-t pt-4 space-y-3 text-sm">
                     <div className="flex justify-between">
-                        <span className="font-semibold">Daily Price:</span>
+                        <span className="font-semibold text-muted-foreground flex items-center gap-2">Daily Price:</span>
                         <span className="text-primary font-bold">BDT {parseFloat(listing.daily_price).toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between">
-                        <span className="font-semibold">Hourly Price:</span>
+                     <div className="flex justify-between">
+                        <span className="font-semibold text-muted-foreground flex items-center gap-2">Hourly Price:</span>
                         <span className="text-primary font-bold">BDT {parseFloat(listing.hourly_price).toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between">
-                        <span className="font-semibold">Security Deposit:</span>
-                        <span className="text-primary font-bold">BDT {parseFloat(listing.security_deposit).toFixed(2)}</span>
+                    <Separator />
+                    <div className="flex justify-between items-center">
+                        <span className="font-semibold text-muted-foreground flex items-center gap-2"><KeyRound/> Security Deposit</span>
+                        <span className="font-bold text-lg">BDT {parseFloat(listing.security_deposit).toFixed(2)}</span>
+                    </div>
+                    <Separator />
+                    <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground flex items-center gap-2"><TrendingUp /> Rental Count</span>
+                        <span>{listing.rental_count}</span>
                     </div>
                      <div className="flex justify-between items-center">
-                        <span className="font-semibold">Availability:</span>
+                        <span className="text-muted-foreground flex items-center gap-2">
+                            {listing.is_available ? <PackageCheck /> : <PackageX />}
+                            Availability
+                        </span>
                         <Badge variant={listing.is_available ? 'secondary' : 'destructive'}>
                            {listing.is_available ? 'Available' : 'Unavailable'}
                         </Badge>
+                    </div>
+                     <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground flex items-center gap-2"><Calendar /> Listed On</span>
+                        <span>{format(new Date(listing.createdAt), 'PP')}</span>
                     </div>
                 </div>
             </div>

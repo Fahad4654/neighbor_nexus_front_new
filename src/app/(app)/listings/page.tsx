@@ -37,6 +37,8 @@ export type Tool = {
   description: string;
   images: ToolImage[];
   owner_id: string;
+  rental_count: number;
+  createdAt: string;
 };
 
 function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescription, onListingUpdated, onListingSelected }: { listings: Tool[], isLoading: boolean, error: string | null, noDataTitle: string, noDataDescription: string, onListingUpdated: () => void; onListingSelected: (listing: Tool) => void; }) {
