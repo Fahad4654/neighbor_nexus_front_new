@@ -2,18 +2,20 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import AuthenticatedImage from '@/components/shared/authenticated-image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Wrench, PlusCircle } from 'lucide-react';
+import { Wrench, PlusCircle, Edit } from 'lucide-react';
 import { CreateListingDialog } from '@/components/listings/create-listing-dialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { EditListingDialog } from '@/components/listings/edit-listing-dialog';
+
 
 type ToolImage = {
   id: string;
@@ -26,11 +28,16 @@ export type Tool = {
   title: string;
   listing_type: 'Tool' | 'Skill';
   daily_price: string;
+  hourly_price: string;
+  security_deposit: string;
+  is_available: boolean;
+  description: string;
   images: ToolImage[];
   owner_id: string;
 };
 
-function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescription }: { listings: Tool[], isLoading: boolean, error: string | null, noDataTitle: string, noDataDescription: string }) {
+function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescription, onListingUpdated }: { listings: Tool[], isLoading: boolean, error: string | null, noDataTitle: string, noDataDescription: string, onListingUpdated: () => void; }) {
+    const { user } = useAuth();
     
     const getPrimaryImage = (images: ToolImage[]) => {
         if (!images || images.length === 0) {
@@ -83,22 +90,29 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {listings.map((listing) => (
               <Card key={listing.listing_id} className="overflow-hidden h-full flex flex-col">
-                <CardHeader className="p-0">
-                  <div className="relative aspect-video">
-                    <AuthenticatedImage
-                      src={getPrimaryImage(listing.images)}
-                      alt={listing.title}
-                      className="object-contain"
-                    />
-                  </div>
-                </CardHeader>
-                <CardContent className="p-4 flex flex-col flex-grow">
-                  <Badge variant={listing.listing_type === 'Tool' ? 'secondary' : 'default'} className="w-fit mb-2">{listing.listing_type}</Badge>
-                  <CardTitle className="text-lg font-headline mb-1">{listing.title}</CardTitle>
-                  <CardDescription className="text-base font-bold text-primary flex-grow mt-auto">
-                    BDT {parseFloat(listing.daily_price).toFixed(2)} / day
-                  </CardDescription>
-                </CardContent>
+                <Link href={`/rent/${listing.listing_id}`} className='flex flex-col flex-grow'>
+                    <CardHeader className="p-0">
+                    <div className="relative aspect-video">
+                        <AuthenticatedImage
+                        src={getPrimaryImage(listing.images)}
+                        alt={listing.title}
+                        className="object-contain"
+                        />
+                    </div>
+                    </CardHeader>
+                    <CardContent className="p-4 flex flex-col flex-grow">
+                    <Badge variant={listing.listing_type === 'Tool' ? 'secondary' : 'default'} className="w-fit mb-2">{listing.listing_type}</Badge>
+                    <CardTitle className="text-lg font-headline mb-1">{listing.title}</CardTitle>
+                    <CardDescription className="text-base font-bold text-primary flex-grow mt-auto">
+                        BDT {parseFloat(listing.daily_price).toFixed(2)} / day
+                    </CardDescription>
+                    </CardContent>
+                </Link>
+                {user && !user.isAdmin && user.id === listing.owner_id && (
+                     <CardFooter className="p-2 border-t">
+                        <EditListingDialog listing={listing} onListingUpdated={onListingUpdated} />
+                    </CardFooter>
+                )}
               </Card>
           ))}
         </div>
@@ -180,7 +194,7 @@ function ListingsPageComponent() {
     }
   }, [fetchMyListings, user]);
   
-  const handleListingCreated = () => {
+  const handleListingCreatedOrUpdated = () => {
     setPageIndex(0); // Reset to first page
     fetchMyListings();
   }
@@ -213,7 +227,7 @@ function ListingsPageComponent() {
                 <h1 className="text-2xl font-bold">My Listings</h1>
                 <p className="text-muted-foreground">Manage your tools and skills available for rent.</p>
             </div>
-            {user && !user.isAdmin && <CreateListingDialog onListingCreated={handleListingCreated} />}
+            {user && !user.isAdmin && <CreateListingDialog onListingCreated={handleListingCreatedOrUpdated} />}
         </div>
 
         <Card>
@@ -289,6 +303,7 @@ function ListingsPageComponent() {
             error={error}
             noDataTitle="No Listings Found"
             noDataDescription="You haven't created any listings yet. Get started by adding a new tool or skill!"
+            onListingUpdated={handleListingCreatedOrUpdated}
         />
     </div>
   );
