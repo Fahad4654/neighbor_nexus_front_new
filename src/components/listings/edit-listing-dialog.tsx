@@ -36,6 +36,9 @@ import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { Edit } from 'lucide-react';
 import type { Tool } from '@/app/(app)/listings/page';
+import AuthenticatedImage from '../shared/authenticated-image';
+import { cn } from '@/lib/utils';
+import { Badge } from '../ui/badge';
 
 const listingSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -58,6 +61,12 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
   const [open, setOpen] = useState(false);
   const { user, api } = useAuth();
   const { toast } = useToast();
+  
+  const getPrimaryImage = (images: Tool['images']) => {
+    if (!images || images.length === 0) return '/media/tools/default.png';
+    const primary = images.find(img => img.is_primary);
+    return primary ? primary.image_url : images[0].image_url;
+  };
 
   const form = useForm<ListingFormValues>({
     resolver: zodResolver(listingSchema),
@@ -143,13 +152,34 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
           Edit Listing
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent className="sm:max-w-[625px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Listing</DialogTitle>
           <DialogDescription>
-            Update the details for your listing below.
+            Update the details for your listing below. Note: Image and location changes are not yet supported.
           </DialogDescription>
         </DialogHeader>
+        
+        {listing.images && listing.images.length > 0 && (
+            <div className="space-y-2">
+                <FormLabel>Current Images</FormLabel>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                {listing.images.map((image, index) => (
+                    <div key={image.id} className="relative aspect-square">
+                        <AuthenticatedImage
+                            src={image.image_url}
+                            alt={`${listing.title} image ${index + 1}`}
+                            className="object-cover rounded-md"
+                        />
+                         {image.is_primary && (
+                            <Badge className="absolute bottom-1 right-1 text-xs" variant="secondary">Primary</Badge>
+                        )}
+                    </div>
+                ))}
+                </div>
+            </div>
+        )}
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
             <FormField
