@@ -16,20 +16,24 @@ interface AuthenticatedImageProps extends Omit<ImageProps, 'src' | 'width' | 'he
 const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', width, height, ...props }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { api, accessToken } = useAuth();
+  const { api } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
     let objectUrl: string | null = null;
 
     const fetchImage = async () => {
-      // Reset state when src changes
-      setIsLoading(true);
-      setImageUrl(null);
-
-      if (!src || !accessToken) {
-        if (isMounted) setIsLoading(false);
+      if (!src) {
+        if (isMounted) {
+            setIsLoading(false);
+            setImageUrl(null);
+        }
         return;
+      }
+      
+      // Start loading when src changes
+      if (isMounted) {
+        setIsLoading(true);
       }
 
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -40,6 +44,7 @@ const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', 
       }
 
       let fullSrc = src;
+      // Check if src is a relative path
       if (!src.startsWith('http://') && !src.startsWith('https://')) {
         fullSrc = `${backendUrl}${src}`;
       }
@@ -77,7 +82,7 @@ const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', 
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [src, accessToken, api]); 
+  }, [src, api]); 
 
   if (isLoading) {
     return <Skeleton className="h-full w-full" />;
