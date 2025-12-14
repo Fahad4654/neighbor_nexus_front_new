@@ -93,7 +93,11 @@ export const useAuth = () => {
             try {
                 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
                 if(backendUrl) {
-                    await api.post(`${backendUrl}/auth/logout`, { refreshToken: currentRefreshToken });
+                    const response = await api.post(`${backendUrl}/auth/logout`, { refreshToken: currentRefreshToken });
+                    const result = await response.json();
+                    if (result.status !== 'success') {
+                        console.error("Server-side logout failed:", result.message);
+                    }
                 }
             } catch (error) {
                 console.error("Logout API call failed, logging out client-side anyway.", error);
