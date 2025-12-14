@@ -108,7 +108,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
       resetImageState();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, listing, form]);
+  }, [open, listing]);
 
   const handleRemoveExistingImage = (id: string) => {
     const removedImage = existingImages.find(img => img.id === id);
@@ -408,3 +408,5 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     </Dialog>
   );
 }
+
+    
