@@ -103,9 +103,9 @@ export default function UsersPage() {
         throw new Error(result.message || result.error || 'Failed to fetch users.');
       }
       
-      setUsers(result.usersList?.data || []);
-      setPageCount(result.usersList?.pagination?.totalPages || 0);
-      setTotalUsers(result.usersList?.pagination?.total || 0);
+      setUsers(result.data || []);
+      setPageCount(result.pagination?.totalPages || 0);
+      setTotalUsers(result.pagination?.totalCount || 0);
 
     } catch (err: any) {
       setError(err.message);
