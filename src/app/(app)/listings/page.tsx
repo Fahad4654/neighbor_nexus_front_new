@@ -138,7 +138,7 @@ function ListingsPageComponent() {
         throw new Error(result.message || result.error || `Failed to fetch your listings.`);
       }
       
-      setMyListings(result.data || []);
+      setMyListings(result.data?.toolsList || []);
     } catch (err: any) {
       setError(err.message);
       toast({
