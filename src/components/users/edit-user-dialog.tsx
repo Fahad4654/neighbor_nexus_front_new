@@ -114,7 +114,7 @@ export function EditUserDialog({ user, onUserUpdated }: EditUserDialogProps) {
             updatedBy: adminUser?.id
         };
         
-      const response = await api.put(`${backendUrl}/users`, payload);
+      const response = await api.post(`${backendUrl}/users`, payload);
       const result = await response.json();
 
       if (!response.ok) {
