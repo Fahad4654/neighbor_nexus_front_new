@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { EditListingDialog } from '@/components/listings/edit-listing-dialog';
 import { cn } from '@/lib/utils';
+import { ListingDetailDialog } from '@/components/listings/listing-detail-dialog';
 
 
 type ToolImage = {
@@ -38,7 +39,7 @@ export type Tool = {
   owner_id: string;
 };
 
-function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescription, onListingUpdated }: { listings: Tool[], isLoading: boolean, error: string | null, noDataTitle: string, noDataDescription: string, onListingUpdated: () => void; }) {
+function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescription, onListingUpdated, onListingSelected }: { listings: Tool[], isLoading: boolean, error: string | null, noDataTitle: string, noDataDescription: string, onListingUpdated: () => void; onListingSelected: (listing: Tool) => void; }) {
     const { user } = useAuth();
     
     const getPrimaryImage = (images: ToolImage[]) => {
@@ -92,7 +93,7 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {listings.map((listing) => (
               <Card key={listing.listing_id} className="overflow-hidden h-full flex flex-col">
-                <Link href={`/rent/${listing.listing_id}`} className='flex flex-col flex-grow'>
+                <div onClick={() => onListingSelected(listing)} className='cursor-pointer flex flex-col flex-grow'>
                     <CardHeader className="p-0">
                         <div className="relative aspect-video">
                             <AuthenticatedImage
@@ -113,7 +114,7 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
                         BDT {parseFloat(listing.daily_price).toFixed(2)} / day
                     </CardDescription>
                     </CardContent>
-                </Link>
+                </div>
                 {user && !user.isAdmin && user.id === listing.owner_id && (
                      <CardFooter className="p-2 border-t">
                         <EditListingDialog listing={listing} onListingUpdated={onListingUpdated} />
@@ -131,6 +132,8 @@ function ListingsPageComponent() {
   const [myListings, setMyListings] = useState<Tool[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedListing, setSelectedListing] = useState<Tool | null>(null);
+
 
   // Pagination and sorting state
   const [pageIndex, setPageIndex] = useState(0);
@@ -310,7 +313,20 @@ function ListingsPageComponent() {
             noDataTitle="No Listings Found"
             noDataDescription="You haven't created any listings yet. Get started by adding a new tool or skill!"
             onListingUpdated={handleListingCreatedOrUpdated}
+            onListingSelected={setSelectedListing}
         />
+        
+        {selectedListing && (
+            <ListingDetailDialog 
+                listing={selectedListing} 
+                open={!!selectedListing} 
+                onOpenChange={(isOpen) => {
+                    if (!isOpen) {
+                        setSelectedListing(null);
+                    }
+                }}
+            />
+        )}
     </div>
   );
 }
