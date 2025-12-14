@@ -97,7 +97,12 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
     }
 
     try {
-      const response = await api.post(`${backendUrl}/users`, values);
+      // The API for user creation is likely `/auth/register` based on signup flow
+      const response = await fetch(`${backendUrl}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
       const result = await response.json();
 
       if (!response.ok) {
@@ -256,7 +261,7 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
                         <FormLabel>Location</FormLabel>
                         <CardDescription>Search for or click on the map to set the user's location.</CardDescription>
                         <div className="h-[300px] rounded-md overflow-hidden border relative">
-                           <LocationPicker onLocationChange={field.onChange} />
+                           <LocationPicker onLocationChange={field.onChange} initialPosition={null}/>
                         </div>
                         <FormMessage />
                     </FormItem>
