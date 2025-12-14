@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from "react";
@@ -42,7 +43,7 @@ type User = {
     };
 };
 
-type UserProfileResponse = {
+type UserProfileData = {
     user: Omit<User, 'profile' | 'geo_location' | 'updatedAt'> & { geo_location: { type: string; coordinates: [number, number]; }};
     profile: {
         id: string;
@@ -51,6 +52,11 @@ type UserProfileResponse = {
         address: string;
     };
 };
+
+type UserProfileResponse = {
+    data: UserProfileData;
+};
+
 
 type EditableProfile = {
     firstname: string;
@@ -75,7 +81,7 @@ const getDayWithOrdinal = (day: number) => {
 export default function ProfilePage() {
   const { user: authUser, api, updateUser } = useAuth();
   const { toast } = useToast();
-  const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
+  const [profileData, setProfileData] = useState<UserProfileData | null>(null);
   const [editableData, setEditableData] = useState<EditableProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -94,11 +100,13 @@ export default function ProfilePage() {
 
     try {
       const response = await api.get(`${backendUrl}/users/${authUser.id}`);
-      const data: UserProfileResponse = await response.json();
+      const result: UserProfileResponse = await response.json();
 
       if (!response.ok) {
-          throw new Error((data as any).message || (data as any).error || 'Failed to fetch profile data');
+          throw new Error((result as any).message || (result as any).error || 'Failed to fetch profile data');
       }
+      
+      const data = result.data;
       setProfileData(data);
       const [lng, lat] = data.user.geo_location?.coordinates || [0, 0];
       setEditableData({
@@ -401,7 +409,7 @@ export default function ProfilePage() {
             </CardContent>
         </Card>
       </div>
-      <div className="lg:col-span-2">
+      <div className="lg-col-span-2">
         <Card>
           <CardHeader>
             <CardTitle>Profile Information</CardTitle>
