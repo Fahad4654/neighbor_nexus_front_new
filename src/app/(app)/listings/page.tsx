@@ -128,7 +128,6 @@ function ListingsPageComponent() {
         asc: 'DESC',
         page: 1,
         pageSize: 10,
-        owner_id: user.id
       };
       
       const response = await api.post(`${backendUrl}/tools/all`, payload);
