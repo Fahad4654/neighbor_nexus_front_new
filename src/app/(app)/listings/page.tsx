@@ -9,12 +9,13 @@ import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import AuthenticatedImage from '@/components/shared/authenticated-image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Wrench, PlusCircle, Edit } from 'lucide-react';
+import { Wrench, PlusCircle, Edit, CheckCircle, XCircle } from 'lucide-react';
 import { CreateListingDialog } from '@/components/listings/create-listing-dialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { EditListingDialog } from '@/components/listings/edit-listing-dialog';
+import { cn } from '@/lib/utils';
 
 
 type ToolImage = {
@@ -31,6 +32,7 @@ export type Tool = {
   hourly_price: string;
   security_deposit: string;
   is_available: boolean;
+  is_approved: boolean;
   description: string;
   images: ToolImage[];
   owner_id: string;
@@ -92,13 +94,17 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
               <Card key={listing.listing_id} className="overflow-hidden h-full flex flex-col">
                 <Link href={`/rent/${listing.listing_id}`} className='flex flex-col flex-grow'>
                     <CardHeader className="p-0">
-                    <div className="relative aspect-video">
-                        <AuthenticatedImage
-                        src={getPrimaryImage(listing.images)}
-                        alt={listing.title}
-                        className="object-contain"
-                        />
-                    </div>
+                        <div className="relative aspect-video">
+                            <AuthenticatedImage
+                            src={getPrimaryImage(listing.images)}
+                            alt={listing.title}
+                            className="object-contain"
+                            />
+                             <Badge variant={listing.is_approved ? 'default' : 'destructive'} className={cn('absolute top-2 right-2 gap-1', listing.is_approved ? 'bg-blue-500 hover:bg-blue-600' : 'bg-red-500 hover:bg-red-600')}>
+                                {listing.is_approved ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                                {listing.is_approved ? 'Verified' : 'Pending'}
+                            </Badge>
+                        </div>
                     </CardHeader>
                     <CardContent className="p-4 flex flex-col flex-grow">
                     <Badge variant={listing.listing_type === 'Tool' ? 'secondary' : 'default'} className="w-fit mb-2">{listing.listing_type}</Badge>
