@@ -171,8 +171,6 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         toast({ variant: 'destructive', title: 'Configuration Error' });
         return;
     }
-    
-    form.formState.isSubmitting = true;
 
     // --- Promise 1: Update Text Data ---
     const updateInfoPromise = api.put(`${backendUrl}/tools/update-info`, {
@@ -193,7 +191,6 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         const hasPrimary = !!currentPrimaryImage || (newImageFiles.length > 0 && setFirstNewAsPrimary);
         if (hasImages && !hasPrimary) {
             toast({ variant: 'destructive', title: 'Primary Image Required', description: 'Please select a primary image.' });
-            form.formState.isSubmitting = false;
             return;
         }
 
@@ -229,8 +226,6 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         setOpen(false);
     } catch (error: any) {
         toast({ variant: 'destructive', title: 'Update Failed', description: error.message });
-    } finally {
-        form.formState.isSubmitting = false;
     }
   };
 
@@ -413,5 +408,3 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     </Dialog>
   );
 }
-
-  
