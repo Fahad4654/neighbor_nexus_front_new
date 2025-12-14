@@ -40,6 +40,7 @@ import type { Tool } from '@/app/(app)/listings/page';
 import AuthenticatedImage from '../shared/authenticated-image';
 import { Badge } from '../ui/badge';
 import NextImage from 'next/image';
+import { DeleteListingDialog } from './delete-listing-dialog';
 
 const MAX_IMAGES = 5;
 
@@ -166,7 +167,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     setNewImagePreviews(prev => [...prev, ...newPreviews]);
   };
   
-  const onSubmit = async (values: ListingFormValues) => {
+ const onSubmit = async (values: ListingFormValues) => {
     if (!user) {
         toast({ variant: 'destructive', title: 'Authentication Error' });
         return;
@@ -176,18 +177,19 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         toast({ variant: 'destructive', title: 'Configuration Error' });
         return;
     }
-    
+
     // --- Promise 1: Update Text Data ---
     const updateInfoPromise = api.put(`${backendUrl}/tools/update-info`, {
         listing_id: listing.listing_id,
         ...values,
     });
-    
+
     // --- Promise 2: Update Image Data (if changed) ---
     let updateImagesPromise = Promise.resolve<Response | null>(null);
     const primaryImage = existingImages.find(img => img.is_primary);
-    const newPrimaryId = primaryImage ? primaryImage.id : null;
-    const isPrimaryChanged = newPrimaryId !== listing.images.find(img => img.is_primary)?.id;
+    const originalPrimaryId = listing.images.find(img => img.is_primary)?.id;
+    const currentPrimaryId = primaryImage ? primaryImage.id : null;
+    const isPrimaryChanged = currentPrimaryId !== originalPrimaryId;
 
     if (newImageFiles.length > 0 || removedImageIds.length > 0 || isPrimaryChanged) {
         const hasImages = existingImages.length > 0 || newImageFiles.length > 0;
@@ -206,8 +208,8 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
 
         newImageFiles.forEach(file => imageFormData.append('images', file));
         
-        if (newPrimaryId && isPrimaryChanged) {
-            imageFormData.append('new_primary_id', newPrimaryId);
+        if (currentPrimaryId && isPrimaryChanged) {
+            imageFormData.append('new_primary_id', currentPrimaryId);
         } else if (!primaryImage && newImageFiles.length > 0) {
             imageFormData.append('set_first_new_file_as_primary', 'true');
         }
@@ -392,11 +394,17 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
                 </FormItem>
               )}
             />
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}
-              </Button>
+            <DialogFooter className="flex-row justify-between w-full">
+                <DeleteListingDialog listing={listing} onListingDeleted={() => {
+                    setOpen(false);
+                    onListingUpdated();
+                }} />
+                <div className="flex gap-2">
+                    <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+                    <Button type="submit" disabled={form.formState.isSubmitting}>
+                        {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}
+                    </Button>
+                </div>
             </DialogFooter>
           </form>
         </Form>

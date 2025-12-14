@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
@@ -17,6 +18,7 @@ import { Label } from '@/components/ui/label';
 import { EditListingDialog } from '@/components/listings/edit-listing-dialog';
 import { cn } from '@/lib/utils';
 import { ListingDetailDialog } from '@/components/listings/listing-detail-dialog';
+import { DeleteListingDialog } from '@/components/listings/delete-listing-dialog';
 
 
 type ToolImage = {
@@ -118,7 +120,7 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
                     </CardContent>
                 </div>
                 {user && !user.isAdmin && user.id === listing.owner_id && (
-                     <CardFooter className="p-2 border-t">
+                     <CardFooter className="p-2 border-t flex gap-2">
                         <EditListingDialog listing={listing} onListingUpdated={onListingUpdated} />
                     </CardFooter>
                 )}
