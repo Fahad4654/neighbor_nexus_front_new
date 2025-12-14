@@ -69,7 +69,6 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
   const [removedImageIds, setRemovedImageIds] = useState<string[]>([]);
-  const [newPrimaryId, setNewPrimaryId] = useState<string | null>(listing.images?.find(img => img.is_primary)?.id || null);
   const [setFirstNewAsPrimary, setSetFirstNewAsPrimary] = useState(false);
 
 
@@ -91,8 +90,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     setNewImageFiles([]);
     setNewImagePreviews([]);
     setRemovedImageIds([]);
-    setNewPrimaryId(listing.images?.find(img => img.is_primary)?.id || null);
-    setSetFirstNewAsPrimary(false);
+    setSetFirstNewAsPrimary(!listing.images?.some(img => img.is_primary));
   };
 
   useEffect(() => {
@@ -112,10 +110,19 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
   }, [open, listing, form]);
 
   const handleRemoveExistingImage = (id: string) => {
+    const removedImage = existingImages.find(img => img.id === id);
     setExistingImages(prev => prev.filter(img => img.id !== id));
     setRemovedImageIds(prev => [...prev, id]);
-    if (newPrimaryId === id) {
-        setNewPrimaryId(null);
+
+    // If the removed image was primary, and there are other images left,
+    // make the first remaining existing image the new primary.
+    if (removedImage?.is_primary) {
+        const remainingImages = existingImages.filter(img => img.id !== id);
+        if (remainingImages.length > 0) {
+            handleSetPrimary(remainingImages[0].id);
+        } else if (newImageFiles.length > 0) {
+            setSetFirstNewAsPrimary(true);
+        }
     }
   };
 
@@ -125,7 +132,12 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
   };
   
   const handleSetPrimary = (id: string) => {
-    setNewPrimaryId(id);
+    setExistingImages(prev => 
+        prev.map(img => ({
+            ...img,
+            is_primary: img.id === id,
+        }))
+    );
     setSetFirstNewAsPrimary(false);
   };
   
@@ -158,9 +170,15 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         toast({ variant: 'destructive', title: 'Configuration Error' });
         return;
     }
+    
+    const originalPrimaryId = listing.images?.find(img => img.is_primary)?.id;
+    const currentPrimaryImage = existingImages.find(img => img.is_primary);
+    const newPrimaryId = currentPrimaryImage ? currentPrimaryImage.id : null;
 
-    const hasPrimaryImage = newPrimaryId || setFirstNewAsPrimary || existingImages.some(img => img.is_primary && !removedImageIds.includes(img.id));
-    if (!hasPrimaryImage && (existingImages.length + newImageFiles.length > 0)) {
+    const hasImages = existingImages.length > 0 || newImageFiles.length > 0;
+    const hasPrimary = !!currentPrimaryImage || (newImageFiles.length > 0 && setFirstNewAsPrimary);
+
+    if (hasImages && !hasPrimary) {
          toast({ variant: 'destructive', title: 'Primary Image Required', description: 'Please select a primary image for your listing.' });
          return;
     }
@@ -174,8 +192,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     
     // --- Promise 2: Update Image Data ---
     let updateImagesPromise = Promise.resolve(); // Default to a resolved promise
-    const primaryImageInListing = listing.images?.find(img => img.is_primary);
-    const imageChangesMade = newImageFiles.length > 0 || removedImageIds.length > 0 || newPrimaryId !== (primaryImageInListing?.id || null);
+    const imageChangesMade = newImageFiles.length > 0 || removedImageIds.length > 0 || (newPrimaryId && newPrimaryId !== originalPrimaryId);
     
     if (imageChangesMade) {
         const imageFormData = new FormData();
@@ -184,9 +201,9 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         removedImageIds.forEach(id => imageFormData.append('remove_image_ids', id));
         newImageFiles.forEach(file => imageFormData.append('images', file));
         
-        if (newPrimaryId && newPrimaryId !== (primaryImageInListing?.id || null)) {
+        if (newPrimaryId && newPrimaryId !== originalPrimaryId) {
             imageFormData.append('new_primary_id', newPrimaryId);
-        } else if (setFirstNewAsPrimary) {
+        } else if (setFirstNewAsPrimary && newImageFiles.length > 0) {
             imageFormData.append('set_first_new_file_as_primary', 'true');
         }
 
@@ -200,7 +217,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
              const result = await detailsResponse.json();
              throw new Error(result.message || result.error || 'Failed to update listing details.');
         }
-        if (imageChangesMade && imagesResponse && !imagesResponse.ok) {
+        if (imagesResponse && !imagesResponse.ok) {
             const result = await imagesResponse.json();
             throw new Error(result.message || result.error || 'Failed to update listing images.');
         }
@@ -239,10 +256,10 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
                         <div key={image.id} className="relative group">
                             <AuthenticatedImage src={image.image_url} alt={listing.title} className="object-cover rounded-md aspect-square" />
                             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 p-1">
-                                {newPrimaryId !== image.id && <Button type="button" size="sm" className="h-6 text-xs px-1" onClick={() => handleSetPrimary(image.id)}><Star className="mr-1 h-3 w-3" /> Primary</Button>}
+                                {!image.is_primary && <Button type="button" size="sm" className="h-6 text-xs px-1" onClick={() => handleSetPrimary(image.id)}><Star className="mr-1 h-3 w-3" /> Primary</Button>}
                                 <Button type="button" size="sm" variant="destructive" className="h-6 text-xs px-1" onClick={() => handleRemoveExistingImage(image.id)}><X className="mr-1 h-3 w-3" /> Remove</Button>
                             </div>
-                            {newPrimaryId === image.id && <Badge className="absolute bottom-1 right-1 text-xs" variant="secondary"><Star className="h-3 w-3 mr-1" />Primary</Badge>}
+                            {image.is_primary && <Badge className="absolute bottom-1 right-1 text-xs" variant="secondary"><Star className="h-3 w-3 mr-1" />Primary</Badge>}
                         </div>
                     ))}
                     {newImagePreviews.map((src, index) => (
@@ -263,7 +280,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
                 <Input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" id="image-upload-edit" />
             </div>
 
-            {!newPrimaryId && newImageFiles.length > 0 && (
+            {existingImages.length === 0 && newImageFiles.length > 0 && (
                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                     <div className="space-y-0.5">
                         <FormLabel>Set First New Image as Primary</FormLabel>
