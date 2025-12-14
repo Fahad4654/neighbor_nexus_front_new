@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -15,14 +16,6 @@ import { cn } from '@/lib/utils';
 import { CheckCircle, XCircle, PackageCheck, PackageX, TrendingUp, Calendar, KeyRound } from 'lucide-react';
 import { format } from 'date-fns';
 import { Separator } from '../ui/separator';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
-
 
 interface ListingDetailDialogProps {
   listing: Tool;
@@ -31,51 +24,63 @@ interface ListingDetailDialogProps {
 }
 
 export function ListingDetailDialog({ listing, open, onOpenChange }: ListingDetailDialogProps) {
+  const [primaryImage, setPrimaryImage] = useState('/media/tools/default.png');
+  const [secondaryImages, setSecondaryImages] = useState<string[]>([]);
+  const [selectedImage, setSelectedImage] = useState(primaryImage);
+
+  useEffect(() => {
+    if (listing?.images && listing.images.length > 0) {
+      const primary = listing.images.find(img => img.is_primary) || listing.images[0];
+      const secondaries = listing.images.map(img => img.image_url);
+      
+      setPrimaryImage(primary.image_url);
+      setSelectedImage(primary.image_url);
+      setSecondaryImages(secondaries);
+    } else {
+      const defaultImg = '/media/tools/default.png';
+      setPrimaryImage(defaultImg);
+      setSelectedImage(defaultImg);
+      setSecondaryImages([]);
+    }
+  }, [listing]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-3xl">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="relative">
-                 <Carousel className="w-full">
-                    <CarouselContent>
-                        {listing.images && listing.images.length > 0 ? (
-                            listing.images.map((image) => (
-                                <CarouselItem key={image.id}>
-                                    <div className="relative aspect-video">
-                                        <AuthenticatedImage
-                                            src={image.image_url}
-                                            alt={listing.title}
-                                            className="object-contain rounded-md"
-                                        />
-                                         {image.is_primary && (
-                                            <Badge className="absolute bottom-2 left-2">Primary</Badge>
-                                        )}
-                                    </div>
-                                </CarouselItem>
-                            ))
-                        ) : (
-                             <CarouselItem>
-                                <div className="relative aspect-video">
-                                    <AuthenticatedImage
-                                        src={'/media/tools/default.png'}
-                                        alt={listing.title}
-                                        className="object-contain rounded-md"
-                                    />
-                                </div>
-                            </CarouselItem>
-                        )}
-                    </CarouselContent>
-                    {listing.images && listing.images.length > 1 && (
-                        <>
-                            <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2" />
-                            <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
-                        </>
-                    )}
-                </Carousel>
-                <Badge variant={listing.is_approved ? 'default' : 'destructive'} className={cn('absolute top-2 right-2 gap-1 z-10', listing.is_approved ? 'bg-blue-500 hover:bg-blue-600' : 'bg-red-500 hover:bg-red-600')}>
-                    {listing.is_approved ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
-                    {listing.is_approved ? 'Verified' : 'Pending'}
-                </Badge>
+            <div className="flex flex-col gap-2">
+                 <div className="relative aspect-video w-full overflow-hidden rounded-md">
+                     <AuthenticatedImage
+                        src={selectedImage}
+                        alt={listing.title}
+                        className="object-contain"
+                    />
+                     <Badge variant={listing.is_approved ? 'default' : 'destructive'} className={cn('absolute top-2 right-2 gap-1 z-10', listing.is_approved ? 'bg-blue-500 hover:bg-blue-600' : 'bg-red-500 hover:bg-red-600')}>
+                        {listing.is_approved ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                        {listing.is_approved ? 'Verified' : 'Pending'}
+                    </Badge>
+                </div>
+
+                {secondaryImages.length > 1 && (
+                    <div className="grid grid-cols-5 gap-2">
+                        {secondaryImages.map((image, index) => (
+                            <div
+                                key={index}
+                                className={cn(
+                                    "relative aspect-square w-full overflow-hidden rounded-md cursor-pointer border-2",
+                                    selectedImage === image ? "border-primary" : "border-transparent"
+                                )}
+                                onClick={() => setSelectedImage(image)}
+                            >
+                                <AuthenticatedImage
+                                    src={image}
+                                    alt={`${listing.title} thumbnail ${index + 1}`}
+                                    className="object-cover"
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
             <div className="space-y-4">
                 <DialogHeader>
