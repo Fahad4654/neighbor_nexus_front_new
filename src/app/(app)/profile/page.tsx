@@ -409,7 +409,7 @@ export default function ProfilePage() {
             </CardContent>
         </Card>
       </div>
-      <div className="lg-col-span-2">
+      <div className="lg:col-span-2">
         <Card>
           <CardHeader>
             <CardTitle>Profile Information</CardTitle>
@@ -482,3 +482,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    
