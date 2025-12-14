@@ -8,12 +8,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import AuthenticatedImage from '@/components/shared/authenticated-image';
 import type { Tool } from '@/app/(app)/listings/page';
 import { cn } from '@/lib/utils';
-import { CheckCircle, XCircle, PackageCheck, PackageX, TrendingUp, Calendar, KeyRound } from 'lucide-react';
+import { CheckCircle, XCircle, PackageCheck, PackageX, TrendingUp, Calendar, KeyRound, ZoomIn } from 'lucide-react';
 import { format } from 'date-fns';
 import { Separator } from '../ui/separator';
 
@@ -49,18 +50,31 @@ export function ListingDetailDialog({ listing, open, onOpenChange }: ListingDeta
       <DialogContent className="sm:max-w-3xl">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col gap-2">
-                 <div className="relative aspect-video w-full overflow-hidden rounded-md">
-                     <AuthenticatedImage
-                        src={selectedImage}
-                        alt={listing.title}
-                        className="object-contain"
-                    />
-                     <Badge variant={listing.is_approved ? 'default' : 'destructive'} className={cn('absolute top-2 right-2 gap-1 z-10', listing.is_approved ? 'bg-blue-500 hover:bg-blue-600' : 'bg-red-500 hover:bg-red-600')}>
-                        {listing.is_approved ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
-                        {listing.is_approved ? 'Verified' : 'Pending'}
-                    </Badge>
-                </div>
-
+                 <Dialog>
+                    <DialogTrigger asChild>
+                        <div className="relative aspect-video w-full overflow-hidden rounded-md cursor-zoom-in group">
+                            <AuthenticatedImage
+                                src={selectedImage}
+                                alt={listing.title}
+                                className="object-contain"
+                            />
+                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <ZoomIn className="h-10 w-10 text-white" />
+                            </div>
+                            <Badge variant={listing.is_approved ? 'default' : 'destructive'} className={cn('absolute top-2 right-2 gap-1 z-10', listing.is_approved ? 'bg-blue-500 hover:bg-blue-600' : 'bg-red-500 hover:bg-red-600')}>
+                                {listing.is_approved ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                                {listing.is_approved ? 'Verified' : 'Pending'}
+                            </Badge>
+                        </div>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl h-[90vh] flex items-center justify-center p-2">
+                        <AuthenticatedImage
+                            src={selectedImage}
+                            alt={listing.title}
+                            className="object-contain max-w-full max-h-full"
+                        />
+                    </DialogContent>
+                 </Dialog>
                 {secondaryImages.length > 1 && (
                     <div className="grid grid-cols-5 gap-2">
                         {secondaryImages.map((image, index) => (
