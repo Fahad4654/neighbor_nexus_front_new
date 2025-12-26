@@ -60,35 +60,5 @@ service cloud.firestore {
     function isExistingOwner(userId) {
       return isOwner(userId) && resource != null;
     }
-
-    /**
-     * @description Enforces that only the user who owns the data tree can access their inbox.
-     * @path /users/{userId}/inboxes/{inboxId}
-     * @allow (get) An authenticated user (uid: 'user_abc') reading their own inbox at `/users/user_abc/inboxes/inbox_123`.
-     * @deny (get) A different user (uid: 'user_xyz') attempting to read `/users/user_abc/inboxes/inbox_123`.
-     * @principle Restricts access to a user's own data tree.
-     */
-    match /users/{userId}/inboxes/{inboxId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId) && request.resource.data.userId == userId;
-      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
-      allow delete: if isExistingOwner(userId);
-
-      /**
-       * @description Secures messages within an inbox, inheriting ownership from the parent path.
-       * @path /users/{userId}/inboxes/{inboxId}/messages/{messageId}
-       * @allow (list) An authenticated user (uid: 'user_abc') listing messages at `/users/user_abc/inboxes/inbox_123/messages`.
-       * @deny (create) An authenticated user (uid: 'user_abc') creating a message where the `senderId` is not them.
-       * @principle Enforces inherited document ownership and validates relational integrity on create.
-       */
-      match /messages/{messageId} {
-        allow get: if isOwner(userId);
-        allow list: if isOwner(userId);
-        allow create: if isOwner(userId) && request.resource.data.senderId == request.auth.uid && request.resource.data.recipientId == userId;
-        allow update: if isExistingOwner(userId) && request.resource.data.senderId == resource.data.senderId && request.resource.data.recipientId == resource.data.recipientId;
-        allow delete: if isExistingOwner(userId);
-      }
-    }
   }
 }
