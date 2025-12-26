@@ -91,7 +91,6 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
     { href: '/rent', icon: ShoppingCart, label: 'Rent' },
     { href: '/listings', icon: FolderKanban, label: 'My Listings' },
     { href: '/transactions', icon: History, label: 'Transactions' },
-    { href: '/chat', icon: MessageSquare, label: 'Messages' },
   ];
 
   let navLinks = [];
