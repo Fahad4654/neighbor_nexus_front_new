@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import AppLogo from "@/components/app-logo";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 const LocationPicker = dynamic(
   () => import('@/components/shared/location-picker'),
@@ -162,6 +162,14 @@ export default function SignupPage() {
           <p className="text-sm text-muted-foreground pt-2">All fields are required.</p>
         </CardHeader>
         <CardContent>
+           <div className="mb-4">
+            <Button variant="link" asChild className="p-0 h-auto">
+                <Link href="/">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Login
+                </Link>
+            </Button>
+          </div>
           <div className="grid gap-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-2">
@@ -261,9 +269,6 @@ export default function SignupPage() {
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
             <Link href="/" className="underline">Sign in</Link>
-          </div>
-          <div className="mt-2 text-center text-sm">
-            <Link href="/" className="underline">Back to Login</Link>
           </div>
         </CardContent>
       </Card>
