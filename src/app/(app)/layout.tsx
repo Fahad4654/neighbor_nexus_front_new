@@ -8,11 +8,11 @@ import {
   Home,
   LayoutDashboard,
   Users,
-  MessageSquare,
   History,
   FolderKanban,
   Settings,
   ShoppingCart,
+  Star,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { useAuth } from '@/hooks/use-auth';
@@ -91,6 +91,7 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
     { href: '/rent', icon: ShoppingCart, label: 'Rent' },
     { href: '/listings', icon: FolderKanban, label: 'My Listings' },
     { href: '/transactions', icon: History, label: 'Transactions' },
+    { href: '/reviews', icon: Star, label: 'Reviews' },
   ];
 
   let navLinks = [];
