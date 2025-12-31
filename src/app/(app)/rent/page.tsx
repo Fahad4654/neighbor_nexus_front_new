@@ -87,7 +87,7 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
         );
     }
 
-    if (listings.length === 0) {
+    if (!listings || listings.length === 0) {
         return (
             <Alert>
                 <Wrench className="h-4 w-4" />
@@ -185,7 +185,9 @@ function RentPageComponent() {
             throw new Error(result.message || result.error || `Failed to fetch nearby listings.`);
         }
       
-        setRentListings(result.data || []);
+        // The API returns { tools: [...] } inside the data object
+        const listingsArray = result.data?.tools || [];
+        setRentListings(listingsArray);
     } catch (err: any)      {
       setError(err.message);
       toast({
