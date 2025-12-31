@@ -226,6 +226,9 @@ export default function UsersPage() {
             </div>
         ),
         enableSorting: false,
+        meta: {
+            isSticky: true,
+        }
     },
 ], [pageIndex, pageSize, fetchUsers, sorting]);
   

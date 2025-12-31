@@ -26,6 +26,13 @@ import { LucideIcon, ArrowUpDown } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { cn } from '@/lib/utils';
 
+// Augment the ColumnMeta interface to include our custom property
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData, TValue> {
+    isSticky?: boolean;
+  }
+}
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -84,8 +91,15 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="border-b-0 hover:bg-primary">
                 {headerGroup.headers.map((header) => {
+                  const meta = header.column.columnDef.meta;
                   return (
-                    <TableHead key={header.id} className="whitespace-nowrap text-primary-foreground">
+                    <TableHead 
+                      key={header.id} 
+                      className={cn(
+                        "whitespace-nowrap text-primary-foreground",
+                        meta?.isSticky && "sticky right-0 bg-primary"
+                      )}
+                    >
                       {header.isPlaceholder
                         ? null
                         : (
@@ -137,14 +151,23 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && 'selected'}
                   className="even:bg-muted/50"
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="whitespace-nowrap">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    const meta = cell.column.columnDef.meta;
+                    return (
+                        <TableCell 
+                          key={cell.id} 
+                          className={cn(
+                            "whitespace-nowrap",
+                            meta?.isSticky && "sticky right-0 bg-card"
+                          )}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                    )
+                  })}
                 </TableRow>
               ))
             ) : (
