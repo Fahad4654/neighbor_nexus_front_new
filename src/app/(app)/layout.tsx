@@ -34,6 +34,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 function Header({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: boolean; }) {
   const { user, logout } = useAuth();
+  const router = useRouter();
 
   const getInitials = (firstname?: string, lastname?: string) => {
     if (firstname && lastname) {
@@ -70,10 +71,12 @@ function Header({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: bo
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => (window.location.href = '/profile')}>
+              <DropdownMenuItem onClick={() => router.push('/profile')}>
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/settings')}>
+                Settings
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
@@ -141,10 +144,10 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
         <Tooltip>
             <TooltipTrigger asChild>
                 <Link
-                    href="/profile"
+                    href="/settings"
                     className={cn(
                         'flex items-center gap-3 rounded-lg px-3 py-2 transition-colors duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                        pathname.startsWith('/profile') && 'bg-sidebar-accent text-sidebar-accent-foreground'
+                        pathname.startsWith('/settings') && 'bg-sidebar-accent text-sidebar-accent-foreground'
                     )}
                     >
                     <Settings className="h-5 w-5 shrink-0" />
