@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 function Header({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: boolean; }) {
   const { user, logout } = useAuth();
@@ -56,6 +57,7 @@ function Header({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: bo
         </div>
 
         <div className="ml-auto flex items-center gap-2">
+          <ThemeToggle />
           <span className='hidden sm:inline text-sidebar-foreground'>Welcome {user?.firstname}</span>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
