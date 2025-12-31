@@ -21,9 +21,10 @@ import type { User } from '@/app/(app)/users/page';
 interface DeleteUserDialogProps {
   user: User;
   onUserDeleted: () => void;
+  disabled?: boolean;
 }
 
-export function DeleteUserDialog({ user, onUserDeleted }: DeleteUserDialogProps) {
+export function DeleteUserDialog({ user, onUserDeleted, disabled = false }: DeleteUserDialogProps) {
   const [open, setOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { api } = useAuth();
@@ -73,7 +74,7 @@ export function DeleteUserDialog({ user, onUserDeleted }: DeleteUserDialogProps)
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive" size="sm">
+        <Button variant="destructive" size="sm" disabled={disabled}>
           <Trash2 className="mr-2 h-4 w-4" /> Delete
         </Button>
       </AlertDialogTrigger>

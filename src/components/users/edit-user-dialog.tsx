@@ -54,9 +54,10 @@ type EditUserFormValues = z.infer<typeof editUserSchema>;
 interface EditUserDialogProps {
   user: User;
   onUserUpdated: () => void;
+  disabled?: boolean;
 }
 
-export function EditUserDialog({ user, onUserUpdated }: EditUserDialogProps) {
+export function EditUserDialog({ user, onUserUpdated, disabled = false }: EditUserDialogProps) {
   const [open, setOpen] = useState(false);
   const { api, user: adminUser } = useAuth();
   const { toast } = useToast();
@@ -140,7 +141,7 @@ export function EditUserDialog({ user, onUserUpdated }: EditUserDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4" /> Edit</Button>
+        <Button variant="outline" size="sm" disabled={disabled}><Edit className="mr-2 h-4 w-4" /> Edit</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[625px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>

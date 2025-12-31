@@ -213,18 +213,23 @@ export default function UsersPage() {
      {
         id: 'actions',
         header: 'Actions',
-        cell: ({ row }) => (
-            <div className="flex flex-col gap-2">
-                <EditUserDialog 
-                    user={row.original} 
-                    onUserUpdated={() => fetchUsers(pageIndex, pageSize, sorting)} 
-                />
-                <DeleteUserDialog
-                    user={row.original}
-                    onUserDeleted={() => fetchUsers(pageIndex, pageSize, sorting)}
-                />
-            </div>
-        ),
+        cell: ({ row }) => {
+            const isRowAdmin = row.original.isAdmin;
+            return (
+                <div className="flex flex-col gap-2">
+                    <EditUserDialog 
+                        user={row.original} 
+                        onUserUpdated={() => fetchUsers(pageIndex, pageSize, sorting)}
+                        disabled={isRowAdmin}
+                    />
+                    <DeleteUserDialog
+                        user={row.original}
+                        onUserDeleted={() => fetchUsers(pageIndex, pageSize, sorting)}
+                        disabled={isRowAdmin}
+                    />
+                </div>
+            )
+        },
         enableSorting: false,
         meta: {
             isSticky: true,
