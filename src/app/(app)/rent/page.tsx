@@ -46,7 +46,7 @@ function useDebounce(value: string, delay: number) {
     return debouncedValue;
 }
 
-function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescription }: { listings: Tool[], isLoading: boolean, error: string | null, noDataTitle: string, noDataDescription: string }) {
+function ToolsGrid({ tools, isLoading, error, noDataTitle, noDataDescription }: { tools: Tool[], isLoading: boolean, error: string | null, noDataTitle: string, noDataDescription: string }) {
     
     const getPrimaryImage = (images: ToolImage[] | null) => {
         if (!images || images.length === 0) {
@@ -87,7 +87,7 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
         );
     }
 
-    if (!listings || listings.length === 0) {
+    if (!tools || tools.length === 0) {
         return (
             <Alert>
                 <Wrench className="h-4 w-4" />
@@ -99,30 +99,30 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
     
     return (
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {listings.map((listing) => (
-            <Link href={`/rent/${listing.listing_id}`} key={listing.listing_id}>
+          {tools.map((tool) => (
+            <Link href={`/rent/${tool.listing_id}`} key={tool.listing_id}>
               <Card className="overflow-hidden h-full flex flex-col hover:shadow-lg transition-shadow">
                 <CardHeader className="p-0">
                   <div className="relative aspect-video">
                     <AuthenticatedImage
-                      src={getPrimaryImage(listing.images)}
-                      alt={listing.title}
+                      src={getPrimaryImage(tool.images)}
+                      alt={tool.title}
                       className="object-contain"
                     />
                   </div>
                 </CardHeader>
                 <CardContent className="p-4 flex flex-col flex-grow">
-                  <Badge variant={listing.listing_type === 'Tool' ? 'secondary' : 'default'} className="w-fit mb-2">{listing.listing_type}</Badge>
-                  <CardTitle className="text-lg font-headline mb-1">{listing.title}</CardTitle>
+                  <Badge variant={tool.listing_type === 'Tool' ? 'secondary' : 'default'} className="w-fit mb-2">{tool.listing_type}</Badge>
+                  <CardTitle className="text-lg font-headline mb-1">{tool.title}</CardTitle>
                   <div className="flex-grow" />
-                   {listing.distanceText && (
+                   {tool.distanceText && (
                     <div className="flex items-center gap-1 text-sm text-muted-foreground mt-2">
                         <MapPin className="h-4 w-4" />
-                        <span>{listing.distanceText} away</span>
+                        <span>{tool.distanceText} away</span>
                     </div>
                   )}
                   <CardDescription className="text-base font-bold text-primary mt-1">
-                    BDT {parseFloat(listing.daily_price).toFixed(2)} / day
+                    BDT {parseFloat(tool.daily_price).toFixed(2)} / day
                   </CardDescription>
                 </CardContent>
               </Card>
@@ -144,7 +144,7 @@ type SortOptionKey = keyof typeof SORT_OPTIONS;
 function RentPageComponent() {
   const { api, user } = useAuth();
   const { toast } = useToast();
-  const [rentListings, setRentListings] = useState<Tool[]>([]);
+  const [rentTools, setRentTools] = useState<Tool[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -156,7 +156,7 @@ function RentPageComponent() {
   // Debounce search query
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-  const fetchRentListings = useCallback(async () => {
+  const fetchRentTools = useCallback(async () => {
     if (!user) return;
     
     setIsLoading(true);
@@ -182,17 +182,17 @@ function RentPageComponent() {
         const result = await response.json();
       
         if (!response.ok) {
-            throw new Error(result.message || result.error || `Failed to fetch nearby listings.`);
+            throw new Error(result.message || result.error || `Failed to fetch nearby tools.`);
         }
       
         // The API returns { tools: [...] } inside the data object
-        const listingsArray = result.data?.tools || [];
-        setRentListings(listingsArray);
+        const toolsArray = result.data?.tools || [];
+        setRentTools(toolsArray);
     } catch (err: any)      {
       setError(err.message);
       toast({
         variant: 'destructive',
-        title: `Error fetching nearby listings`,
+        title: `Error fetching nearby tools`,
         description: err.message,
       });
     } finally {
@@ -202,9 +202,9 @@ function RentPageComponent() {
 
   useEffect(() => {
     if (user) {
-        fetchRentListings();
+        fetchRentTools();
     }
-  }, [fetchRentListings, user]);
+  }, [fetchRentTools, user]);
 
   return (
     <div className="space-y-6">
@@ -256,8 +256,8 @@ function RentPageComponent() {
         </CardContent>
       </Card>
 
-      <ListingsGrid 
-          listings={rentListings}
+      <ToolsGrid 
+          tools={rentTools}
           isLoading={isLoading}
           error={error}
           noDataTitle="Nothing to Rent Nearby"
@@ -274,3 +274,5 @@ export default function RentPage() {
         </Suspense>
     );
 }
+
+    
