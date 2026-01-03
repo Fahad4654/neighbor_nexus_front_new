@@ -94,7 +94,7 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
 
   const baseNavLinks = [
     { href: '/rent', icon: ShoppingCart, label: 'Rent' },
-    { href: '/listings', icon: FolderKanban, label: 'My Listings' },
+    { href: '/listings', icon: FolderKanban, label: 'My Tools' },
     { href: '/transactions', icon: History, label: 'Transactions' },
     { href: '/reviews', icon: Star, label: 'Reviews' },
   ];

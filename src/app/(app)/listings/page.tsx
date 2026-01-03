@@ -189,7 +189,7 @@ function ListingsPageComponent() {
       const result = await response.json();
       
       if (!response.ok) {
-        throw new Error(result.message || result.error || `Failed to fetch your listings.`);
+        throw new Error(result.message || result.error || `Failed to fetch your tools.`);
       }
       
       setMyTools(result.data?.toolsList || []);
@@ -200,7 +200,7 @@ function ListingsPageComponent() {
       setError(err.message);
       toast({
         variant: 'destructive',
-        title: `Error fetching your listings`,
+        title: `Error fetching your tools`,
         description: err.message,
       });
     } finally {
@@ -244,7 +244,7 @@ function ListingsPageComponent() {
      <div className="space-y-4">
        <div className="flex items-center justify-between gap-4">
             <div>
-                <h1 className="text-2xl font-bold">My Listings</h1>
+                <h1 className="text-2xl font-bold">My Tools</h1>
                 <p className="text-muted-foreground">Manage your tools and skills available for rent.</p>
             </div>
             {user && !user.isAdmin && <CreateListingDialog onListingCreated={handleToolCreatedOrUpdated} />}
@@ -321,8 +321,8 @@ function ListingsPageComponent() {
             tools={myTools}
             isLoading={isLoading}
             error={error}
-            noDataTitle="No Listings Found"
-            noDataDescription="You haven't created any listings yet. Get started by adding a new tool or skill!"
+            noDataTitle="No Tools Found"
+            noDataDescription="You haven't created any tools yet. Get started by adding a new tool or skill!"
             onToolUpdated={handleToolCreatedOrUpdated}
             onToolSelected={setSelectedTool}
         />
