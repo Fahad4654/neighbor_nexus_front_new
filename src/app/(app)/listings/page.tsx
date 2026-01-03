@@ -44,7 +44,7 @@ export type Tool = {
   createdAt: string;
 };
 
-function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescription, onListingUpdated, onListingSelected }: { listings: Tool[], isLoading: boolean, error: string | null, noDataTitle: string, noDataDescription: string, onListingUpdated: () => void; onListingSelected: (listing: Tool) => void; }) {
+function MyListingsGrid({ tools, isLoading, error, noDataTitle, noDataDescription, onToolUpdated, onToolSelected }: { tools: Tool[], isLoading: boolean, error: string | null, noDataTitle: string, noDataDescription: string, onToolUpdated: () => void; onToolSelected: (tool: Tool) => void; }) {
     const { user } = useAuth();
     
     const getPrimaryImage = (images: ToolImage[]) => {
@@ -84,7 +84,7 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
         );
     }
 
-    if (listings.length === 0) {
+    if (tools.length === 0) {
         return (
             <Alert>
                 <Wrench className="h-4 w-4" />
@@ -96,34 +96,34 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
     
     return (
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {listings.map((listing) => (
-              <Card key={listing.listing_id} className="overflow-hidden h-full flex flex-col">
-                <div onClick={() => onListingSelected(listing)} className='cursor-pointer flex flex-col flex-grow'>
+          {tools.map((tool) => (
+              <Card key={tool.listing_id} className="overflow-hidden h-full flex flex-col">
+                <div onClick={() => onToolSelected(tool)} className='cursor-pointer flex flex-col flex-grow'>
                     <CardHeader className="p-0">
                         <div className="relative aspect-video">
                             <AuthenticatedImage
-                            src={getPrimaryImage(listing.images)}
-                            alt={listing.title}
+                            src={getPrimaryImage(tool.images)}
+                            alt={tool.title}
                             className="object-contain"
                             />
-                             <Badge variant={listing.is_approved ? 'default' : 'destructive'} className={cn('absolute top-2 right-2 gap-1', listing.is_approved ? 'bg-blue-500 hover:bg-blue-600' : 'bg-red-500 hover:bg-red-600')}>
-                                {listing.is_approved ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
-                                {listing.is_approved ? 'Verified' : 'Pending'}
+                             <Badge variant={tool.is_approved ? 'default' : 'destructive'} className={cn('absolute top-2 right-2 gap-1', tool.is_approved ? 'bg-blue-500 hover:bg-blue-600' : 'bg-red-500 hover:bg-red-600')}>
+                                {tool.is_approved ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                                {tool.is_approved ? 'Verified' : 'Pending'}
                             </Badge>
                         </div>
                     </CardHeader>
                     <CardContent className="p-4 flex flex-col flex-grow">
-                    <Badge variant={listing.listing_type === 'Tool' ? 'secondary' : 'default'} className="w-fit mb-2">{listing.listing_type}</Badge>
-                    <CardTitle className="text-lg font-headline mb-1">{listing.title}</CardTitle>
+                    <Badge variant={tool.listing_type === 'Tool' ? 'secondary' : 'default'} className="w-fit mb-2">{tool.listing_type}</Badge>
+                    <CardTitle className="text-lg font-headline mb-1">{tool.title}</CardTitle>
                     <CardDescription className="text-base font-bold text-primary flex-grow mt-auto">
-                        BDT {parseFloat(listing.daily_price).toFixed(2)} / day
+                        BDT {parseFloat(tool.daily_price).toFixed(2)} / day
                     </CardDescription>
                     </CardContent>
                 </div>
-                {user && !user.isAdmin && user.id === listing.owner_id && (
+                {user && !user.isAdmin && user.id === tool.owner_id && (
                     <CardFooter className="p-2 border-t grid grid-cols-2 gap-2">
-                        <EditListingDialog listing={listing} onListingUpdated={onListingUpdated} />
-                        <DeleteListingDialog listing={listing} onListingDeleted={onListingUpdated}>
+                        <EditListingDialog listing={tool} onListingUpdated={onToolUpdated} />
+                        <DeleteListingDialog listing={tool} onListingDeleted={onToolUpdated}>
                             <Button variant="destructive" className="w-full">
                                 <Wrench className="mr-2 h-4 w-4" />
                                 Delete
@@ -140,10 +140,10 @@ function ListingsGrid({ listings, isLoading, error, noDataTitle, noDataDescripti
 function ListingsPageComponent() {
   const { api, user } = useAuth();
   const { toast } = useToast();
-  const [myListings, setMyListings] = useState<Tool[]>([]);
+  const [myTools, setMyTools] = useState<Tool[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedListing, setSelectedListing] = useState<Tool | null>(null);
+  const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
 
 
   // Pagination and sorting state
@@ -152,7 +152,7 @@ function ListingsPageComponent() {
   const [sortColumn, setSortColumn] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState('DESC');
   const [totalPages, setTotalPages] = useState(0);
-  const [totalListings, setTotalListings] = useState(0);
+  const [totalTools, setTotalTools] = useState(0);
 
   const SORT_COLUMNS = [
     { value: 'createdAt', label: 'Created Date' },
@@ -165,7 +165,7 @@ function ListingsPageComponent() {
     { value: 'rental_count', label: 'Rental Count' },
   ];
 
-  const fetchMyListings = useCallback(async () => {
+  const fetchMyTools = useCallback(async () => {
     if (!user) return;
     
     setIsLoading(true);
@@ -192,9 +192,9 @@ function ListingsPageComponent() {
         throw new Error(result.message || result.error || `Failed to fetch your listings.`);
       }
       
-      setMyListings(result.data?.toolsList || []);
+      setMyTools(result.data?.toolsList || []);
       setTotalPages(result.pagination?.totalPages || 0);
-      setTotalListings(result.pagination?.totalCount || 0);
+      setTotalTools(result.pagination?.totalCount || 0);
 
     } catch (err: any) {
       setError(err.message);
@@ -210,13 +210,13 @@ function ListingsPageComponent() {
 
   useEffect(() => {
     if (user) {
-        fetchMyListings();
+        fetchMyTools();
     }
-  }, [fetchMyListings, user]);
+  }, [fetchMyTools, user]);
   
-  const handleListingCreatedOrUpdated = () => {
+  const handleToolCreatedOrUpdated = () => {
     setPageIndex(0); // Reset to first page
-    fetchMyListings();
+    fetchMyTools();
   }
 
   const handlePageSizeChange = (value: string) => {
@@ -237,8 +237,8 @@ function ListingsPageComponent() {
   const canPreviousPage = pageIndex > 0;
   const canNextPage = pageIndex < totalPages - 1;
 
-  const startRecord = totalListings > 0 ? pageIndex * pageSize + 1 : 0;
-  const endRecord = Math.min((pageIndex + 1) * pageSize, totalListings);
+  const startRecord = totalTools > 0 ? pageIndex * pageSize + 1 : 0;
+  const endRecord = Math.min((pageIndex + 1) * pageSize, totalTools);
 
   return (
      <div className="space-y-4">
@@ -247,7 +247,7 @@ function ListingsPageComponent() {
                 <h1 className="text-2xl font-bold">My Listings</h1>
                 <p className="text-muted-foreground">Manage your tools and skills available for rent.</p>
             </div>
-            {user && !user.isAdmin && <CreateListingDialog onListingCreated={handleListingCreatedOrUpdated} />}
+            {user && !user.isAdmin && <CreateListingDialog onListingCreated={handleToolCreatedOrUpdated} />}
         </div>
 
         <Card>
@@ -293,7 +293,7 @@ function ListingsPageComponent() {
                 
                 <div className="flex items-center justify-end gap-4 text-sm text-muted-foreground">
                     <span>
-                        Showing {startRecord} - {endRecord} of {totalListings}
+                        Showing {startRecord} - {endRecord} of {totalTools}
                     </span>
                     <div className="flex items-center gap-2">
                         <Button
@@ -317,23 +317,23 @@ function ListingsPageComponent() {
             </CardContent>
         </Card>
 
-        <ListingsGrid 
-            listings={myListings}
+        <MyListingsGrid 
+            tools={myTools}
             isLoading={isLoading}
             error={error}
             noDataTitle="No Listings Found"
             noDataDescription="You haven't created any listings yet. Get started by adding a new tool or skill!"
-            onListingUpdated={handleListingCreatedOrUpdated}
-            onListingSelected={setSelectedListing}
+            onToolUpdated={handleToolCreatedOrUpdated}
+            onToolSelected={setSelectedTool}
         />
         
-        {selectedListing && (
+        {selectedTool && (
             <ListingDetailDialog 
-                listing={selectedListing} 
-                open={!!selectedListing} 
+                listing={selectedTool} 
+                open={!!selectedTool} 
                 onOpenChange={(isOpen) => {
                     if (!isOpen) {
-                        setSelectedListing(null);
+                        setSelectedTool(null);
                     }
                 }}
             />
