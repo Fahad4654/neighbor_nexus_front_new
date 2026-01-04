@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import AuthenticatedImage from '@/components/shared/authenticated-image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Wrench, PlusCircle, Edit, CheckCircle, XCircle } from 'lucide-react';
+import { Wrench, PlusCircle, Edit, CheckCircle, XCircle, Trash2 } from 'lucide-react';
 import { CreateListingDialog } from '@/components/listings/create-listing-dialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
