@@ -73,7 +73,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
   const { user, api } = useAuth();
   const { toast } = useToast();
   
-  const [existingImages, setExistingImages] = useState<ToolImage[]>([]);
+  const [existingImages, setExistingImages] = useState<ToolImage[]>(listing.images || []);
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
   const [removedImageIds, setRemovedImageIds] = useState<string[]>([]);
@@ -92,17 +92,17 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     },
   });
   
-  const resetState = () => {
+  const resetState = (currentListing: Tool) => {
       form.reset({
-        title: listing.title,
-        description: listing.description,
-        listing_type: listing.listing_type,
-        hourly_price: parseFloat(listing.hourly_price),
-        daily_price: parseFloat(listing.daily_price),
-        security_deposit: parseFloat(listing.security_deposit),
-        is_available: listing.is_available,
+        title: currentListing.title,
+        description: currentListing.description,
+        listing_type: currentListing.listing_type,
+        hourly_price: parseFloat(currentListing.hourly_price),
+        daily_price: parseFloat(currentListing.daily_price),
+        security_deposit: parseFloat(currentListing.security_deposit),
+        is_available: currentListing.is_available,
       });
-      setExistingImages(listing.images || []);
+      setExistingImages(currentListing.images || []);
       setNewImageFiles([]);
       setNewImagePreviews([]);
       setRemovedImageIds([]);
@@ -110,7 +110,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
 
   useEffect(() => {
     if (open) {
-      resetState();
+      resetState(listing);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, listing]);
