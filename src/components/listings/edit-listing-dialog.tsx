@@ -108,8 +108,6 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     setRemovedImageIds([]);
   };
 
-  // This effect synchronizes the dialog's state with the selected listing
-  // whenever the dialog is opened.
   useEffect(() => {
     if (open && listing) {
       resetAllState(listing);
@@ -125,14 +123,10 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     setExistingImages(prev => prev.filter(img => img.id !== id));
     setRemovedImageIds(prev => [...prev, id]);
 
-    // If the removed image was the primary one, we need to assign a new primary.
     if (removedImage.is_primary) {
         const remainingImages = existingImages.filter(img => img.id !== id);
         if (remainingImages.length > 0) {
             handleSetPrimary(remainingImages[0].id);
-        } else if (newImagePreviews.length > 0) {
-            // If no existing images are left, the first new image will become primary on submit.
-            // No explicit action needed here, but the logic on submit should handle it.
         }
     }
   };
@@ -181,13 +175,11 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         return;
     }
 
-    // --- Promise 1: Update Text Data ---
     const updateInfoPromise = api.put(`${backendUrl}/tools/update-info`, {
         listing_id: listing.listing_id,
         ...values,
     });
 
-    // --- Promise 2: Update Image Data (if changed) ---
     let updateImagesPromise = Promise.resolve<Response | null>(null);
     const primaryImage = existingImages.find(img => img.is_primary);
     const originalPrimaryId = listing.images.find(img => img.is_primary)?.id;
@@ -277,7 +269,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
                     ))}
                     {newImagePreviews.map((src, index) => (
                          <div key={src} className="relative group">
-                            <NextImage src={src} alt={`New image ${index + 1}`} width={100} height={100} className="object-cover rounded-md aspect-square" />
+                            <AuthenticatedImage src={src} alt={`New image ${index + 1}`} className="object-cover rounded-md aspect-square" />
                             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <Button type="button" size="sm" variant="destructive" className="h-6 text-xs px-1" onClick={() => handleRemoveNewImage(index)}><X className="mr-1 h-3 w-3" /> Remove</Button>
                             </div>
