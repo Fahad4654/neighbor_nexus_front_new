@@ -125,7 +125,7 @@ function MyListingsGrid({ tools, isLoading, error, noDataTitle, noDataDescriptio
                         <EditListingDialog listing={tool} onListingUpdated={onToolUpdated} />
                         <DeleteListingDialog listing={tool} onListingDeleted={onToolUpdated}>
                             <Button variant="destructive" className="w-full">
-                                <Wrench className="mr-2 h-4 w-4" />
+                                <Trash2 className="mr-2 h-4 w-4" />
                                 Delete
                             </Button>
                         </DeleteListingDialog>
@@ -349,3 +349,5 @@ export default function ListingsPage() {
         </Suspense>
     );
 }
+
+    
