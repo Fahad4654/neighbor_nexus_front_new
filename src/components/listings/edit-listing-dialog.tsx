@@ -241,14 +241,14 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full">
           <Edit className="mr-2 h-4 w-4" />
-          Edit Listing
+          Edit Tool
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[625px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Listing</DialogTitle>
+          <DialogTitle>Edit Tool</DialogTitle>
           <DialogDescription>
-            Update the details for your listing below.
+            Update the details for your tool below.
           </DialogDescription>
         </DialogHeader>
         
@@ -267,12 +267,13 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
                             {image.is_primary && <Badge className="absolute bottom-1 right-1 text-xs" variant="secondary"><Star className="h-3 w-3 mr-1" />Primary</Badge>}
                         </div>
                     ))}
-                    {newImagePreviews.map((src, index) => (
+                     {newImagePreviews.map((src, index) => (
                          <div key={src} className="relative group">
                             <NextImage src={src} alt={`New image ${index + 1}`} layout="fill" className="object-cover rounded-md aspect-square" />
                             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <Button type="button" size="sm" variant="destructive" className="h-6 text-xs px-1" onClick={() => handleRemoveNewImage(index)}><X className="mr-1 h-3 w-3" /> Remove</Button>
                             </div>
+                            {/* Mark as primary if it's the first new image and no existing primary exists */}
                             {!existingImages.some(img => img.is_primary) && index === 0 && <Badge className="absolute bottom-1 right-1 text-xs" variant="secondary"><Star className="h-3 w-3 mr-1" />Primary</Badge>}
                          </div>
                     ))}
