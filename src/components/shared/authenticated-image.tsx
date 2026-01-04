@@ -31,7 +31,6 @@ const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', 
         return;
       }
       
-      // Start loading when src changes
       if (isMounted) {
         setIsLoading(true);
       }
@@ -44,13 +43,15 @@ const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({ src, alt = '', 
       }
 
       let fullSrc = src;
-      // Check if src is a relative path
       if (!src.startsWith('http://') && !src.startsWith('https://')) {
         fullSrc = `${backendUrl}${src}`;
       }
 
       try {
-        const response = await api.get(fullSrc);
+        // Force re-validation by setting cache to 'no-cache'.
+        // This ensures the browser always checks with the server, allowing the server
+        // to validate the Authorization header on every request.
+        const response = await api.get(fullSrc, { cache: 'no-cache' });
 
         if (!response.ok) {
           throw new Error(`Failed to fetch image. Status: ${response.status}`);
