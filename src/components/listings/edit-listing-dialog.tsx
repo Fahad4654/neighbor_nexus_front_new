@@ -109,7 +109,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
   };
 
   useEffect(() => {
-    if (open && listing) {
+    if (open) {
       resetAllState(listing);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -269,7 +269,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
                     ))}
                     {newImagePreviews.map((src, index) => (
                          <div key={src} className="relative group">
-                            <AuthenticatedImage src={src} alt={`New image ${index + 1}`} className="object-cover rounded-md aspect-square" />
+                            <NextImage src={src} alt={`New image ${index + 1}`} layout="fill" className="object-cover rounded-md aspect-square" />
                             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <Button type="button" size="sm" variant="destructive" className="h-6 text-xs px-1" onClick={() => handleRemoveNewImage(index)}><X className="mr-1 h-3 w-3" /> Remove</Button>
                             </div>
