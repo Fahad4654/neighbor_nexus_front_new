@@ -109,12 +109,13 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
   };
 
   // This effect synchronizes the dialog's state with the selected listing
-  // whenever the dialog is opened or the listing prop itself changes.
+  // whenever the dialog is opened.
   useEffect(() => {
-    if (listing) {
+    if (open && listing) {
       resetAllState(listing);
     }
-  }, [listing, open]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, listing]);
 
 
   const handleRemoveExistingImage = (id: string) => {
@@ -220,6 +221,7 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
     }
     
     try {
+        form.formState.isSubmitting = true;
         const [infoResponse, imagesResponse] = await Promise.all([updateInfoPromise, updateImagesPromise]);
 
         if (!infoResponse.ok) {
@@ -236,6 +238,8 @@ export function EditListingDialog({ listing, onListingUpdated }: EditListingDial
         setOpen(false);
     } catch (error: any) {
         toast({ variant: 'destructive', title: 'Update Failed', description: error.message });
+    } finally {
+      form.formState.isSubmitting = false;
     }
   };
 
