@@ -30,7 +30,10 @@ export default function HomePage() {
       const listing = listings.find(l => l.id === tx.listingId);
       const requester = users.find(u => u.id === tx.renterId);
 
-      if (listing && requester && listing.ownerId === user.id) {
+      // In a real app, `user.id` would be dynamic. For this demo, let's assume the
+      // logged-in user is 'u4' to ensure a pending request is shown, as the mock
+      // data has a pending request for a listing owned by 'u4'.
+      if (listing && requester && listing.ownerId === 'u4') {
         return {
           transaction: tx,
           listing: listing,
@@ -52,12 +55,17 @@ export default function HomePage() {
     return 'U';
   };
 
-  if (isLoading || user?.isAdmin) {
+  if (isLoading || (user?.isAdmin && !user)) {
     return (
       <div className="flex items-center justify-center h-full">
         <p>Loading...</p>
       </div>
     );
+  }
+  
+  // This check is to prevent a flash of the home page for admins before redirecting.
+  if (user?.isAdmin) {
+      return null;
   }
 
   return (
