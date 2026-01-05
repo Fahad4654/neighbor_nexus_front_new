@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { users } from "@/lib/data";
-import { Users, Wrench } from "lucide-react";
+import { users, listings, transactions } from "@/lib/data";
+import { Users, Wrench, Check, X } from "lucide-react";
 import AuthenticatedImage from "@/components/shared/authenticated-image";
 import { useAuth } from '@/hooks/use-auth';
 
@@ -30,6 +30,10 @@ export default function HomePage() {
       </div>
     );
   }
+
+  const userListings = listings.filter(l => l.ownerId === user?.id);
+  const userListingIds = userListings.map(l => l.id);
+  const rentalRequests = transactions.filter(t => userListingIds.includes(t.listingId) && t.status === 'pending');
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">
@@ -62,6 +66,42 @@ export default function HomePage() {
                 </Card>
             </CardContent>
         </Card>
+        
+        {rentalRequests.length > 0 && (
+            <Card>
+                <CardHeader>
+                    <CardTitle>New Rental Requests</CardTitle>
+                    <CardDescription>Respond to these requests to rent your items.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {rentalRequests.map(req => {
+                        const renter = users.find(u => u.id === req.renterId);
+                        const listing = listings.find(l => l.id === req.listingId);
+                        return (
+                            <div key={req.id} className="flex items-center gap-4 p-2 rounded-lg border">
+                                <Avatar>
+                                    <AuthenticatedImage src={renter?.avatarUrl} alt={renter?.name} className="aspect-square h-full w-full" />
+                                    <AvatarFallback>{renter?.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <p className="font-semibold">{renter?.name}</p>
+                                    <p className="text-sm text-muted-foreground">Wants to rent <span className='font-medium'>{listing?.title}</span></p>
+                                </div>
+                                <div className="ml-auto flex gap-2">
+                                    <Button variant="outline" size="icon" className="text-green-600 border-green-600 hover:bg-green-100 hover:text-green-700">
+                                        <Check className="h-4 w-4" />
+                                    </Button>
+                                     <Button variant="outline" size="icon" className="text-red-600 border-red-600 hover:bg-red-100 hover:text-red-700">
+                                        <X className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </CardContent>
+            </Card>
+        )}
+
         <Card>
           <CardHeader>
             <CardTitle>Members in Oakwood</CardTitle>
