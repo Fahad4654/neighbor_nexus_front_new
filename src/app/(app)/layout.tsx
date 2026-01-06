@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState } from 'react';
@@ -51,41 +49,41 @@ function Header({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: bo
 
   return (
     <header className="flex h-16 shrink-0 items-center bg-sidebar text-sidebar-foreground shadow-md z-10 px-4">
-        <div className="flex items-center gap-4">
-            <AppLogo />
-            <button onClick={onToggleNav} className="rounded-md p-1.5 hover:bg-sidebar-accent">
-                {navOpen ? <CloseIcon /> : <MenuIcon />}
-            </button>
-        </div>
+      <div className="flex items-center gap-4">
+        <AppLogo />
+        <button onClick={onToggleNav} className="rounded-md p-1.5 hover:bg-sidebar-accent">
+          {navOpen ? <CloseIcon /> : <MenuIcon />}
+        </button>
+      </div>
 
-        <div className="ml-auto flex items-center gap-2">
-          <ThemeToggle />
-          <span className='hidden sm:inline text-sidebar-foreground'>Welcome {user?.firstname}</span>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Avatar className="h-8 w-8">
-                  <AuthenticatedImage src={user?.profile?.avatarUrl} alt={user?.username} key={user?.profile?.avatarUrl} />
-                  <AvatarFallback>
-                    {getInitials(user?.firstname, user?.lastname)}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => router.push('/profile')}>
-                Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/settings')}>
-                Settings
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+      <div className="ml-auto flex items-center gap-2">
+        <ThemeToggle />
+        <span className='hidden sm:inline text-sidebar-foreground'>Welcome {user?.firstname}</span>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <Avatar className="h-8 w-8">
+                <AuthenticatedImage src={user?.profile?.avatarUrl} alt={user?.username} key={user?.profile?.avatarUrl} />
+                <AvatarFallback>
+                  {getInitials(user?.firstname, user?.lastname)}
+                </AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => router.push('/profile')}>
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push('/settings')}>
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </header>
   );
 }
@@ -116,62 +114,76 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
     ];
   }
 
-
   return (
     <TooltipProvider delayDuration={0}>
-        <nav className="flex flex-col p-2 space-y-2 bg-sidebar text-sidebar-foreground h-full">
+      <nav className="flex flex-col p-2 space-y-2 bg-sidebar text-sidebar-foreground h-full">
         {navLinks.map((link) => {
-            const isActive = pathname.startsWith(link.href);
-            const isMyTools = link.label === 'My Tools';
-            return (
+          const isActive = pathname.startsWith(link.href);
+          return (
             <Tooltip key={link.href}>
-                <TooltipTrigger asChild>
+              <TooltipTrigger asChild>
                 <Link
-                    href={link.href}
-                    className={cn(
-                    'flex items-center gap-3 rounded-lg transition-colors duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                  href={link.href}
+                  className={cn(
+                    'flex items-center rounded-lg transition-colors duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                     isActive && 'bg-sidebar-accent text-sidebar-accent-foreground',
-                    navOpen ? 'px-3 py-2' : 'p-3 justify-center'
-                    )}
+                    navOpen ? 'px-3 py-2 gap-3' : 'p-3 justify-center' // gap-3 only when open
+                  )}
                 >
-                    <div className="w-5 h-5 flex items-center justify-center shrink-0">
-                        <link.icon className={cn(isMyTools ? 'h-4 w-4' : 'h-5 w-5')} />
-                    </div>
-                    <span className={cn('overflow-hidden transition-all duration-200', navOpen ? 'w-full' : 'w-0')}>{link.label}</span>
+                  <div className="flex items-center justify-center shrink-0">
+                    <link.icon className={cn(
+                      "transition-all duration-200",
+                      navOpen ? "h-5 w-5" : "h-6 w-6" // Slightly larger when closed
+                    )} />
+                  </div>
+                  <span className={cn(
+                    'overflow-hidden transition-all duration-200 whitespace-nowrap',
+                    navOpen ? 'w-full' : 'w-0'
+                  )}>
+                    {link.label}
+                  </span>
                 </Link>
-                </TooltipTrigger>
-                {!navOpen && (
-                    <TooltipContent side="right" className="bg-sidebar text-sidebar-foreground border-sidebar-border">
-                        <p>{link.label}</p>
-                    </TooltipContent>
-                )}
+              </TooltipTrigger>
+              {!navOpen && (
+                <TooltipContent side="right" className="bg-sidebar text-sidebar-foreground border-sidebar-border">
+                  <p>{link.label}</p>
+                </TooltipContent>
+              )}
             </Tooltip>
-            );
+          );
         })}
         <div className="flex-grow"></div>
         <Tooltip>
-            <TooltipTrigger asChild>
-                <Link
-                    href="/settings"
-                    className={cn(
-                        'flex items-center gap-3 rounded-lg transition-colors duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                        pathname.startsWith('/settings') && 'bg-sidebar-accent text-sidebar-accent-foreground',
-                        navOpen ? 'px-3 py-2' : 'p-3 justify-center'
-                    )}
-                    >
-                    <div className="w-5 h-5 flex items-center justify-center shrink-0">
-                        <Settings className="h-5 w-5" />
-                    </div>
-                    <span className={cn('overflow-hidden transition-all duration-200', navOpen ? 'w-full' : 'w-0')}>Settings</span>
-                </Link>
-            </TooltipTrigger>
-            {!navOpen && (
-                <TooltipContent side="right" className="bg-sidebar text-sidebar-foreground border-sidebar-border">
-                    <p>Settings</p>
-                </TooltipContent>
-            )}
+          <TooltipTrigger asChild>
+            <Link
+              href="/settings"
+              className={cn(
+                'flex items-center rounded-lg transition-colors duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                pathname.startsWith('/settings') && 'bg-sidebar-accent text-sidebar-accent-foreground',
+                navOpen ? 'px-3 py-2 gap-3' : 'p-3 justify-center' // gap-3 only when open
+              )}
+            >
+              <div className="flex items-center justify-center shrink-0">
+                <Settings className={cn(
+                  "transition-all duration-200",
+                  navOpen ? "h-5 w-5" : "h-6 w-6" // Slightly larger when closed
+                )} />
+              </div>
+              <span className={cn(
+                'overflow-hidden transition-all duration-200 whitespace-nowrap',
+                navOpen ? 'w-full' : 'w-0'
+              )}>
+                Settings
+              </span>
+            </Link>
+          </TooltipTrigger>
+          {!navOpen && (
+            <TooltipContent side="right" className="bg-sidebar text-sidebar-foreground border-sidebar-border">
+              <p>Settings</p>
+            </TooltipContent>
+          )}
         </Tooltip>
-        </nav>
+      </nav>
     </TooltipProvider>
   );
 }
@@ -220,7 +232,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         {/* Main Content */}
         <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6 md:p-8">
-            {children}
+          {children}
         </main>
       </div>
     </div>
