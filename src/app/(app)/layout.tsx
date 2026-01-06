@@ -12,7 +12,7 @@ import {
   Wrench,
   Settings,
   ShoppingCart,
-  Star,
+  MessageSquare,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { useAuth } from '@/hooks/use-auth';
@@ -96,7 +96,7 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
     { href: '/rent', icon: ShoppingCart, label: 'Rent' },
     { href: '/listings', icon: Wrench, label: 'My Tools' },
     { href: '/transactions', icon: History, label: 'Transactions' },
-    { href: '/reviews', icon: Star, label: 'Reviews' },
+    { href: '/reviews', icon: MessageSquare, label: 'Reviews' },
   ];
 
   let navLinks = [];
