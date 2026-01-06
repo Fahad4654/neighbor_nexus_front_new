@@ -134,7 +134,9 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
                     navOpen ? 'px-3 py-2' : 'p-3 justify-center'
                     )}
                 >
-                    <link.icon className={cn('shrink-0', isMyTools ? 'h-4 w-4' : 'h-5 w-5')} />
+                    <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                        <link.icon className={cn(isMyTools ? 'h-4 w-4' : 'h-5 w-5')} />
+                    </div>
                     <span className={cn('overflow-hidden transition-all duration-200', navOpen ? 'w-full' : 'w-0')}>{link.label}</span>
                 </Link>
                 </TooltipTrigger>
@@ -157,7 +159,9 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
                         navOpen ? 'px-3 py-2' : 'p-3 justify-center'
                     )}
                     >
-                    <Settings className="h-5 w-5 shrink-0" />
+                    <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                        <Settings className="h-5 w-5" />
+                    </div>
                     <span className={cn('overflow-hidden transition-all duration-200', navOpen ? 'w-full' : 'w-0')}>Settings</span>
                 </Link>
             </TooltipTrigger>
