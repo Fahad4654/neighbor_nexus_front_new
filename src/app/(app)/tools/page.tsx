@@ -1,240 +1,351 @@
+
+
 'use client';
 
-import { useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import {
-  Menu as MenuIcon,
-  X as CloseIcon,
-  Home,
-  LayoutDashboard,
-  Users,
-  History,
-  Wrench,
-  Settings,
-  ShoppingCart,
-  MessageSquare,
-} from 'lucide-react';
-import AppLogo from '@/components/app-logo';
-import { useAuth } from '@/hooks/use-auth';
-import { useEffect } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 import AuthenticatedImage from '@/components/shared/authenticated-image';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Wrench, PlusCircle, Edit, CheckCircle, XCircle, Trash2 } from 'lucide-react';
+import { CreateListingDialog } from '@/components/listings/create-listing-dialog';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { EditListingDialog } from '@/components/listings/edit-listing-dialog';
+import { cn } from '@/lib/utils';
+import { ListingDetailDialog } from '@/components/listings/listing-detail-dialog';
+import { DeleteListingDialog } from '@/components/listings/delete-listing-dialog';
 
-function Header({ onToggleNav, navOpen }: { onToggleNav: () => void; navOpen: boolean; }) {
-  const { user, logout } = useAuth();
-  const router = useRouter();
 
-  const getInitials = (firstname?: string, lastname?: string) => {
-    if (firstname && lastname) {
-      return `${firstname.charAt(0)}${lastname.charAt(0)}`;
+type ToolImage = {
+  id: string;
+  image_url: string;
+  is_primary: boolean;
+};
+
+export type Tool = {
+  listing_id: string;
+  title: string;
+  listing_type: 'Tool' | 'Skill';
+  daily_price: string;
+  hourly_price: string;
+  security_deposit: string;
+  is_available: boolean;
+  is_approved: boolean;
+  description: string;
+  images: ToolImage[];
+  owner_id: string;
+  rental_count: number;
+  createdAt: string;
+};
+
+function MyListingsGrid({ tools, isLoading, error, noDataTitle, noDataDescription, onToolUpdated, onToolSelected }: { tools: Tool[], isLoading: boolean, error: string | null, noDataTitle: string, noDataDescription: string, onToolUpdated: () => void; onToolSelected: (tool: Tool) => void; }) {
+    const { user } = useAuth();
+    
+    const getPrimaryImage = (images: ToolImage[]) => {
+        if (!images || images.length === 0) {
+            return '/media/tools/default.png';
+        }
+        const primary = images.find(img => img.is_primary);
+        return primary ? primary.image_url : images[0].image_url;
+    };
+
+    if (isLoading) {
+        return (
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {Array.from({ length: 4 }).map((_, index) => (
+                    <Card key={index} className="overflow-hidden h-full flex flex-col">
+                        <CardHeader className="p-0">
+                            <Skeleton className="aspect-video w-full" />
+                        </CardHeader>
+                        <CardContent className="p-4 flex flex-col flex-grow">
+                            <Skeleton className="h-5 w-1/4 mb-2" />
+                            <Skeleton className="h-6 w-3/4 mb-2" />
+                            <Skeleton className="h-7 w-1/2 mt-auto" />
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        );
     }
-    if (firstname) {
-      return firstname.charAt(0);
+
+    if (error) {
+        return (
+            <Alert variant="destructive">
+                <Wrench className="h-4 w-4" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+            </Alert>
+        );
     }
-    return 'U';
-  };
 
-  return (
-    <header className="flex h-16 shrink-0 items-center bg-sidebar text-sidebar-foreground shadow-md z-10 px-4">
-      <div className="flex items-center gap-4">
-        <AppLogo />
-        <button onClick={onToggleNav} className="rounded-md p-1.5 hover:bg-sidebar-accent">
-          {navOpen ? <CloseIcon /> : <MenuIcon />}
-        </button>
-      </div>
-
-      <div className="ml-auto flex items-center gap-2">
-        <ThemeToggle />
-        <span className='hidden sm:inline text-sidebar-foreground'>Welcome {user?.firstname}</span>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Avatar className="h-8 w-8">
-                <AuthenticatedImage src={user?.profile?.avatarUrl} alt={user?.username} key={user?.profile?.avatarUrl} />
-                <AvatarFallback>
-                  {getInitials(user?.firstname, user?.lastname)}
-                </AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push('/profile')}>
-              Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => router.push('/settings')}>
-              Settings
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </header>
-  );
+    if (tools.length === 0) {
+        return (
+            <Alert>
+                <Wrench className="h-4 w-4" />
+                <AlertTitle>{noDataTitle}</AlertTitle>
+                <AlertDescription>{noDataDescription}</AlertDescription>
+            </Alert>
+        );
+    }
+    
+    return (
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {tools.map((tool) => (
+              <Card key={tool.listing_id} className="overflow-hidden h-full flex flex-col">
+                <div onClick={() => onToolSelected(tool)} className='cursor-pointer flex flex-col flex-grow'>
+                    <CardHeader className="p-0">
+                        <div className="relative aspect-video">
+                            <AuthenticatedImage
+                            src={getPrimaryImage(tool.images)}
+                            alt={tool.title}
+                            className="object-contain"
+                            />
+                             <Badge variant={tool.is_approved ? 'default' : 'destructive'} className={cn('absolute top-2 right-2 gap-1', tool.is_approved ? 'bg-blue-500 hover:bg-blue-600' : 'bg-red-500 hover:bg-red-600')}>
+                                {tool.is_approved ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                                {tool.is_approved ? 'Verified' : 'Pending'}
+                            </Badge>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-4 flex flex-col flex-grow">
+                    <Badge variant={tool.listing_type === 'Tool' ? 'secondary' : 'default'} className="w-fit mb-2">{tool.listing_type}</Badge>
+                    <CardTitle className="text-lg font-headline mb-1">{tool.title}</CardTitle>
+                    <CardDescription className="text-base font-bold text-primary flex-grow mt-auto">
+                        BDT {parseFloat(tool.daily_price).toFixed(2)} / day
+                    </CardDescription>
+                    </CardContent>
+                </div>
+                {user && !user.isAdmin && user.id === tool.owner_id && (
+                    <CardFooter className="p-2 border-t grid grid-cols-2 gap-2">
+                        <EditListingDialog listing={tool} onListingUpdated={onToolUpdated} />
+                        <DeleteListingDialog listing={tool} onListingDeleted={onToolUpdated}>
+                            <Button variant="destructive" className="w-full">
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                            </Button>
+                        </DeleteListingDialog>
+                    </CardFooter>
+                )}
+              </Card>
+          ))}
+        </div>
+    );
 }
 
-function Navbar({ navOpen }: { navOpen: boolean }) {
-  const pathname = usePathname();
-  const { user } = useAuth();
+function ListingsPageComponent() {
+  const { api, user } = useAuth();
+  const { toast } = useToast();
+  const [myTools, setMyTools] = useState<Tool[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
 
-  const baseNavLinks = [
-    { href: '/rent', icon: ShoppingCart, label: 'Rent' },
-    { href: '/tools', icon: Wrench, label: 'My Tools' },
-    { href: '/transactions', icon: History, label: 'Transactions' },
-    { href: '/reviews', icon: MessageSquare, label: 'Reviews' },
+
+  // Pagination and sorting state
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [sortColumn, setSortColumn] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('DESC');
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalTools, setTotalTools] = useState(0);
+
+  const SORT_COLUMNS = [
+    { value: 'createdAt', label: 'Created Date' },
+    { value: 'listing_type', label: 'Listing Type' },
+    { value: 'title', label: 'Title' },
+    { value: 'hourly_price', label: 'Hourly Price' },
+    { value: 'daily_price', label: 'Daily Price' },
+    { value: 'security_deposit', label: 'Security Deposit' },
+    { value: 'is_available', label: 'Availability' },
+    { value: 'rental_count', label: 'Rental Count' },
   ];
 
-  let navLinks = [];
+  const fetchMyTools = useCallback(async () => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    setError(null);
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl) {
+      setError("Backend URL is not configured.");
+      setIsLoading(false);
+      return;
+    }
 
-  if (user?.isAdmin) {
-    navLinks = [
-      { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-      ...baseNavLinks,
-      { href: '/users', icon: Users, label: 'Users' },
-    ];
-  } else {
-    navLinks = [
-      { href: '/home', icon: Home, label: 'Home' },
-      ...baseNavLinks,
-    ];
+    try {
+      const payload = {
+        order: sortColumn,
+        asc: sortOrder,
+        page: pageIndex + 1,
+        pageSize: pageSize,
+      };
+      
+      const response = await api.post(`${backendUrl}/tools/all`, payload);
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || result.error || `Failed to fetch your tools.`);
+      }
+      
+      setMyTools(result.data?.toolsList || []);
+      setTotalPages(result.pagination?.totalPages || 0);
+      setTotalTools(result.pagination?.totalCount || 0);
+
+    } catch (err: any) {
+      setError(err.message);
+      toast({
+        variant: 'destructive',
+        title: `Error fetching your tools`,
+        description: err.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [api, toast, user, pageIndex, pageSize, sortColumn, sortOrder]);
+
+  useEffect(() => {
+    if (user) {
+        fetchMyTools();
+    }
+  }, [fetchMyTools, user]);
+  
+  const handleToolCreatedOrUpdated = () => {
+    setPageIndex(0); // Reset to first page
+    fetchMyTools();
   }
 
+  const handlePageSizeChange = (value: string) => {
+    setPageSize(Number(value));
+    setPageIndex(0);
+  };
+  
+  const handleSortColumnChange = (value: string) => {
+    setSortColumn(value);
+    setPageIndex(0);
+  };
+  
+  const handleSortOrderChange = (value: string) => {
+    setSortOrder(value);
+    setPageIndex(0);
+  };
+
+  const canPreviousPage = pageIndex > 0;
+  const canNextPage = pageIndex < totalPages - 1;
+
+  const startRecord = totalTools > 0 ? pageIndex * pageSize + 1 : 0;
+  const endRecord = Math.min((pageIndex + 1) * pageSize, totalTools);
+
   return (
-    <TooltipProvider delayDuration={0}>
-      <nav className="flex flex-col p-2 space-y-2 bg-sidebar text-sidebar-foreground h-full">
-        {navLinks.map((link) => {
-          const isActive = pathname.startsWith(link.href);
-          return (
-            <Tooltip key={link.href}>
-              <TooltipTrigger asChild>
-                <Link
-                  href={link.href}
-                  className={cn(
-                    'flex items-center rounded-lg transition-colors duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                    isActive && 'bg-sidebar-accent text-sidebar-accent-foreground',
-                    navOpen ? 'px-3 py-2 gap-3' : 'p-3 justify-center' // gap-3 only when open
-                  )}
-                >
-                  <div className="flex items-center justify-center shrink-0">
-                    <link.icon className={cn(
-                      "transition-all duration-200",
-                      navOpen ? "h-5 w-5" : "h-6 w-6" // Slightly larger when closed
-                    )} />
-                  </div>
-                  <span className={cn(
-                    'overflow-hidden transition-all duration-200 whitespace-nowrap',
-                    navOpen ? 'w-full' : 'w-0'
-                  )}>
-                    {link.label}
-                  </span>
-                </Link>
-              </TooltipTrigger>
-              {!navOpen && (
-                <TooltipContent side="right" className="bg-sidebar text-sidebar-foreground border-sidebar-border">
-                  <p>{link.label}</p>
-                </TooltipContent>
-              )}
-            </Tooltip>
-          );
-        })}
-        <div className="flex-grow"></div>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Link
-              href="/settings"
-              className={cn(
-                'flex items-center rounded-lg transition-colors duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                pathname.startsWith('/settings') && 'bg-sidebar-accent text-sidebar-accent-foreground',
-                navOpen ? 'px-3 py-2 gap-3' : 'p-3 justify-center' // gap-3 only when open
-              )}
-            >
-              <div className="flex items-center justify-center shrink-0">
-                <Settings className={cn(
-                  "transition-all duration-200",
-                  navOpen ? "h-5 w-5" : "h-6 w-6" // Slightly larger when closed
-                )} />
-              </div>
-              <span className={cn(
-                'overflow-hidden transition-all duration-200 whitespace-nowrap',
-                navOpen ? 'w-full' : 'w-0'
-              )}>
-                Settings
-              </span>
-            </Link>
-          </TooltipTrigger>
-          {!navOpen && (
-            <TooltipContent side="right" className="bg-sidebar text-sidebar-foreground border-sidebar-border">
-              <p>Settings</p>
-            </TooltipContent>
-          )}
-        </Tooltip>
-      </nav>
-    </TooltipProvider>
+     <div className="space-y-4">
+       <div className="flex items-center justify-between gap-4">
+            <div>
+                <h1 className="text-2xl font-bold">My Tools</h1>
+                <p className="text-muted-foreground">Manage your tools and skills available for rent.</p>
+            </div>
+            {user && !user.isAdmin && <CreateListingDialog onListingCreated={handleToolCreatedOrUpdated} />}
+        </div>
+
+        <Card>
+            <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                <div className="space-y-2">
+                    <Label htmlFor="sort-column">Sort By</Label>
+                    <Select value={sortColumn} onValueChange={handleSortColumnChange}>
+                        <SelectTrigger id="sort-column">
+                            <SelectValue placeholder="Sort by" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {SORT_COLUMNS.map(col => (
+                                <SelectItem key={col.value} value={col.value}>{col.label}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="sort-order">Order</Label>
+                    <Select value={sortOrder} onValueChange={handleSortOrderChange}>
+                        <SelectTrigger id="sort-order">
+                            <SelectValue placeholder="Sort Order" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="DESC">Descending</SelectItem>
+                            <SelectItem value="ASC">Ascending</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="page-size">Page Size</Label>
+                    <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
+                        <SelectTrigger id="page-size">
+                            <SelectValue placeholder="Page Size" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {[10, 20, 50, 100].map(size => (
+                                <SelectItem key={size} value={String(size)}>{size}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                
+                <div className="flex items-center justify-end gap-4 text-sm text-muted-foreground">
+                    <span>
+                        Showing {startRecord} - {endRecord} of {totalTools}
+                    </span>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPageIndex(p => p - 1)}
+                            disabled={!canPreviousPage}
+                        >
+                            Previous
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPageIndex(p => p + 1)}
+                            disabled={!canNextPage}
+                        >
+                            Next
+                        </Button>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
+        <MyListingsGrid 
+            tools={myTools}
+            isLoading={isLoading}
+            error={error}
+            noDataTitle="No Tools Found"
+            noDataDescription="You haven't created any tools yet. Get started by adding a new tool or skill!"
+            onToolUpdated={handleToolCreatedOrUpdated}
+            onToolSelected={setSelectedTool}
+        />
+        
+        {selectedTool && (
+            <ListingDetailDialog 
+                listing={selectedTool} 
+                open={!!selectedTool} 
+                onOpenChange={(isOpen) => {
+                    if (!isOpen) {
+                        setSelectedTool(null);
+                    }
+                }}
+            />
+        )}
+    </div>
   );
 }
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const [navOpen, setNavOpen] = useState(true);
-  const { user, isLoading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/');
-    }
-  }, [user, isLoading, router]);
-
-  const toggleNav = () => {
-    setNavOpen(!navOpen);
-  };
-
-  if (isLoading || !user) {
+export default function ToolsPage() {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <AppLogo />
-          <p className="text-muted-foreground">Loading your experience...</p>
-        </div>
-      </div>
+        <Suspense fallback={<div>Loading...</div>}>
+            <ListingsPageComponent />
+        </Suspense>
     );
-  }
-
-  return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-background">
-      {/* Header */}
-      <Header onToggleNav={toggleNav} navOpen={navOpen} />
-
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <aside
-          className={cn(
-            'shrink-0 h-full overflow-y-auto bg-sidebar transition-all duration-300 ease-in-out',
-            navOpen ? 'w-56' : 'w-[72px]'
-          )}
-        >
-          <Navbar navOpen={navOpen} />
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6 md:p-8">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
 }
