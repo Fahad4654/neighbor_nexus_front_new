@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -126,8 +127,9 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
                 <Link
                     href={link.href}
                     className={cn(
-                    'flex items-center gap-3 rounded-lg px-3 py-2 transition-colors duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                    isActive && 'bg-sidebar-accent text-sidebar-accent-foreground'
+                    'flex items-center gap-3 rounded-lg transition-colors duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                    isActive && 'bg-sidebar-accent text-sidebar-accent-foreground',
+                    navOpen ? 'px-3 py-2' : 'p-3 justify-center'
                     )}
                 >
                     <link.icon className="h-5 w-5 shrink-0" />
@@ -148,8 +150,9 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
                 <Link
                     href="/settings"
                     className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2 transition-colors duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                        pathname.startsWith('/settings') && 'bg-sidebar-accent text-sidebar-accent-foreground'
+                        'flex items-center gap-3 rounded-lg transition-colors duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                        pathname.startsWith('/settings') && 'bg-sidebar-accent text-sidebar-accent-foreground',
+                        navOpen ? 'px-3 py-2' : 'p-3 justify-center'
                     )}
                     >
                     <Settings className="h-5 w-5 shrink-0" />
@@ -203,7 +206,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <aside
           className={cn(
             'shrink-0 h-full overflow-y-auto bg-sidebar transition-all duration-300 ease-in-out',
-            navOpen ? 'w-56' : 'w-20'
+            navOpen ? 'w-56' : 'w-[72px]'
           )}
         >
           <Navbar navOpen={navOpen} />
