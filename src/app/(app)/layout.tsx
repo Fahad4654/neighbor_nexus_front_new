@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -121,6 +122,7 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
         <nav className="flex flex-col p-2 space-y-2 bg-sidebar text-sidebar-foreground h-full">
         {navLinks.map((link) => {
             const isActive = pathname.startsWith(link.href);
+            const isMyTools = link.label === 'My Tools';
             return (
             <Tooltip key={link.href}>
                 <TooltipTrigger asChild>
@@ -132,7 +134,7 @@ function Navbar({ navOpen }: { navOpen: boolean }) {
                     navOpen ? 'px-3 py-2' : 'p-3 justify-center'
                     )}
                 >
-                    <link.icon className="h-5 w-5 shrink-0" />
+                    <link.icon className={cn('shrink-0', isMyTools ? 'h-4 w-4' : 'h-5 w-5')} />
                     <span className={cn('overflow-hidden transition-all duration-200', navOpen ? 'w-full' : 'w-0')}>{link.label}</span>
                 </Link>
                 </TooltipTrigger>
